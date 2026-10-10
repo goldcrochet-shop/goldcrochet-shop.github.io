@@ -1,8 +1,1 @@
-{
-  "name": "Gold Crochet",
-  "description": "Peças em crochê feitas à mão, com acabamento premium.",
-  "permissions": [],
-  "capabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}
+{"name":"goldcrochet-shop","description":"Peças em crochê feitas à mão, com acabamento premium.","permissions":[],"capabilities":["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]}

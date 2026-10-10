@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Rich Metallic Gold Gradients -->
+    <linearGradient id="goldShine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff8db"/>
+      <stop offset="18%" stop-color="#f8dc7e"/>
+      <stop offset="38%" stop-color="#d9a832"/>
+      <stop offset="62%" stop-color="#b88318"/>
+      <stop offset="85%" stop-color="#f3d26b"/>
+      <stop offset="100%" stop-color="#805608"/>
+    </linearGradient>
+
+    <linearGradient id="goldBase" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#f6e08c"/>
+      <stop offset="35%" stop-color="#d4a32c"/>
+      <stop offset="70%" stop-color="#a77717"/>
+      <stop offset="100%" stop-color="#694605"/>
+    </linearGradient>
+
+    <radialGradient id="highlightGlow" cx="45%" cy="35%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+      <stop offset="40%" stop-color="#fae28f" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#c59424" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="grooveDark" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#543703"/>
+      <stop offset="50%" stop-color="#7a5309"/>
+      <stop offset="100%" stop-color="#996a10"/>
+    </linearGradient>
+
+    <linearGradient id="creaseSpec" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#fff6cf" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#e8be50" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <filter id="softDrop" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#593b00" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Cowrie Shell / Búzio Dourado Emblem (Gold Crochet Alta Moda) -->
+  <g filter="url(#softDrop)" id="buzioGroup">
+    <!-- LEFT HALF OF COWRIE SHELL -->
+    <!-- Base Outer Shell -->
+    <path d="M 244 88
+             C 230 86, 218 96, 204 116
+             C 176 156, 150 216, 150 274
+             C 150 336, 178 392, 210 416
+             C 226 428, 238 428, 246 422
+             C 249 420, 249 414, 247 406
+             C 241 386, 239 366, 240 334
+             C 241 300, 243 250, 242 208
+             C 241 164, 242 128, 249 98
+             C 250 90, 247 88, 244 88 Z"
+          fill="url(#goldBase)" stroke="#744d06" stroke-width="2.5" stroke-linejoin="round"/>
+
+    <!-- Left Shell Metallic Shading Layer -->
+    <path d="M 244 88
+             C 230 86, 218 96, 204 116
+             C 176 156, 150 216, 150 274
+             C 150 336, 178 392, 210 416
+             C 226 428, 238 428, 246 422
+             C 249 420, 249 414, 247 406
+             C 241 386, 239 366, 240 334
+             C 241 300, 243 250, 242 208
+             C 241 164, 242 128, 249 98
+             C 250 90, 247 88, 244 88 Z"
+          fill="url(#goldShine)" opacity="0.82"/>
+
+    <!-- Left Shell Highlights & Convex Volumetric Glow -->
+    <path d="M 226 104
+             C 198 140, 168 200, 166 268
+             C 164 326, 186 376, 214 404
+             C 192 374, 178 322, 180 270
+             C 182 216, 204 158, 232 118 Z"
+          fill="url(#highlightGlow)" opacity="0.9"/>
+
+    <!-- Left Transverse Cowrie Teeth (Costelas Estriadas do Búzio) -->
+    <!-- 10 Horizontal ridges cut from aperture into shell body with 3D highlights -->
+    <!-- Tooth 1 -->
+    <path d="M 246 122 Q 224 124 206 130 Q 225 133 245 131 Z" fill="url(#grooveDark)"/>
+    <path d="M 246 120 Q 223 122 205 128" stroke="url(#creaseSpec)" stroke-width="2.2" fill="none"/>
+
+    <!-- Tooth 2 -->
+    <path d="M 245 146 Q 215 148 194 156 Q 216 160 244 157 Z" fill="url(#grooveDark)"/>
+    <path d="M 245 144 Q 214 146 193 154" stroke="url(#creaseSpec)" stroke-width="2.5" fill="none"/>
+
+    <!-- Tooth 3 -->
+    <path d="M 244 174 Q 206 177 182 186 Q 208 190 243 186 Z" fill="url(#grooveDark)"/>
+    <path d="M 244 172 Q 205 175 181 184" stroke="url(#creaseSpec)" stroke-width="2.8" fill="none"/>
+
+    <!-- Tooth 4 -->
+    <path d="M 243 204 Q 198 207 172 218 Q 202 222 243 216 Z" fill="url(#grooveDark)"/>
+    <path d="M 243 201 Q 196 204 171 216" stroke="url(#creaseSpec)" stroke-width="3" fill="none"/>
+
+    <!-- Tooth 5 -->
+    <path d="M 242 236 Q 194 238 168 250 Q 198 254 242 248 Z" fill="url(#grooveDark)"/>
+    <path d="M 242 233 Q 192 235 166 248" stroke="url(#creaseSpec)" stroke-width="3.2" fill="none"/>
+
+    <!-- Tooth 6 (Central Wide) -->
+    <path d="M 242 268 Q 192 270 166 282 Q 196 286 242 280 Z" fill="url(#grooveDark)"/>
+    <path d="M 242 265 Q 190 267 165 280" stroke="url(#creaseSpec)" stroke-width="3.2" fill="none"/>
+
+    <!-- Tooth 7 -->
+    <path d="M 241 300 Q 196 303 172 316 Q 200 318 241 312 Z" fill="url(#grooveDark)"/>
+    <path d="M 241 297 Q 194 300 170 314" stroke="url(#creaseSpec)" stroke-width="3" fill="none"/>
+
+    <!-- Tooth 8 -->
+    <path d="M 242 332 Q 202 335 180 348 Q 206 350 242 344 Z" fill="url(#grooveDark)"/>
+    <path d="M 242 329 Q 200 332 178 346" stroke="url(#creaseSpec)" stroke-width="2.8" fill="none"/>
+
+    <!-- Tooth 9 -->
+    <path d="M 244 364 Q 212 368 194 378 Q 216 380 244 374 Z" fill="url(#grooveDark)"/>
+    <path d="M 244 361 Q 210 365 192 376" stroke="url(#creaseSpec)" stroke-width="2.4" fill="none"/>
+
+    <!-- Tooth 10 (Bottom) -->
+    <path d="M 245 392 Q 224 395 210 404 Q 226 405 245 400 Z" fill="url(#grooveDark)"/>
+    <path d="M 245 389 Q 222 393 208 402" stroke="url(#creaseSpec)" stroke-width="2" fill="none"/>
+
+
+    <!-- RIGHT HALF OF COWRIE SHELL -->
+    <!-- Base Outer Shell -->
+    <path d="M 264 88
+             C 272 88, 282 98, 296 118
+             C 328 162, 358 224, 358 280
+             C 358 338, 332 394, 302 418
+             C 288 428, 276 428, 268 422
+             C 265 420, 265 414, 267 404
+             C 273 382, 275 358, 273 328
+             C 271 292, 267 246, 268 206
+             C 269 164, 272 126, 266 98
+             C 264 90, 263 88, 264 88 Z"
+          fill="url(#goldBase)" stroke="#744d06" stroke-width="2.5" stroke-linejoin="round"/>
+
+    <!-- Right Shell Metallic Shading Layer -->
+    <path d="M 264 88
+             C 272 88, 282 98, 296 118
+             C 328 162, 358 224, 358 280
+             C 358 338, 332 394, 302 418
+             C 288 428, 276 428, 268 422
+             C 265 420, 265 414, 267 404
+             C 273 382, 275 358, 273 328
+             C 271 292, 267 246, 268 206
+             C 269 164, 272 126, 266 98
+             C 264 90, 263 88, 264 88 Z"
+          fill="url(#goldShine)" opacity="0.85"/>
+
+    <!-- Right Shell Convex Specular Highlight Curve -->
+    <path d="M 284 108
+             C 314 148, 342 208, 342 274
+             C 342 334, 320 382, 296 408
+             C 316 376, 330 326, 328 274
+             C 326 218, 302 160, 276 120 Z"
+          fill="url(#highlightGlow)" opacity="0.85"/>
+
+    <!-- Right Transverse Cowrie Teeth (Costelas Direitas) -->
+    <!-- Tooth R1 -->
+    <path d="M 265 124 Q 284 126 300 132 Q 284 135 266 132 Z" fill="url(#grooveDark)"/>
+    <path d="M 265 122 Q 285 124 301 130" stroke="url(#creaseSpec)" stroke-width="2.2" fill="none"/>
+
+    <!-- Tooth R2 -->
+    <path d="M 266 150 Q 292 153 312 162 Q 290 165 267 160 Z" fill="url(#grooveDark)"/>
+    <path d="M 266 148 Q 293 151 313 160" stroke="url(#creaseSpec)" stroke-width="2.5" fill="none"/>
+
+    <!-- Tooth R3 -->
+    <path d="M 267 180 Q 298 184 322 196 Q 296 198 268 192 Z" fill="url(#grooveDark)"/>
+    <path d="M 267 178 Q 299 182 323 194" stroke="url(#creaseSpec)" stroke-width="2.8" fill="none"/>
+
+    <!-- Tooth R4 -->
+    <path d="M 268 214 Q 304 218 330 232 Q 302 235 269 226 Z" fill="url(#grooveDark)"/>
+    <path d="M 268 211 Q 305 215 331 229" stroke="url(#creaseSpec)" stroke-width="3" fill="none"/>
+
+    <!-- Tooth R5 -->
+    <path d="M 269 248 Q 308 252 334 268 Q 304 271 270 260 Z" fill="url(#grooveDark)"/>
+    <path d="M 269 245 Q 309 249 335 265" stroke="url(#creaseSpec)" stroke-width="3.2" fill="none"/>
+
+    <!-- Tooth R6 -->
+    <path d="M 270 282 Q 308 286 332 302 Q 304 305 271 294 Z" fill="url(#grooveDark)"/>
+    <path d="M 270 279 Q 309 283 333 299" stroke="url(#creaseSpec)" stroke-width="3.2" fill="none"/>
+
+    <!-- Tooth R7 -->
+    <path d="M 271 316 Q 304 320 326 336 Q 300 338 271 328 Z" fill="url(#grooveDark)"/>
+    <path d="M 271 313 Q 305 317 327 333" stroke="url(#creaseSpec)" stroke-width="3" fill="none"/>
+
+    <!-- Tooth R8 -->
+    <path d="M 271 350 Q 298 354 316 368 Q 294 370 270 360 Z" fill="url(#grooveDark)"/>
+    <path d="M 271 347 Q 299 351 317 365" stroke="url(#creaseSpec)" stroke-width="2.6" fill="none"/>
+
+    <!-- Tooth R9 -->
+    <path d="M 269 382 Q 290 385 304 396 Q 288 397 268 390 Z" fill="url(#grooveDark)"/>
+    <path d="M 269 379 Q 291 382 305 393" stroke="url(#creaseSpec)" stroke-width="2.2" fill="none"/>
+
+
+    <!-- CENTRAL APERTURE CREVICE (Sombra e Profundidade da Fenda) -->
+    <path d="M 248 94
+             C 246 140, 245 200, 246 260
+             C 247 320, 248 370, 249 414
+             L 264 414
+             C 266 370, 267 320, 267 260
+             C 267 200, 266 140, 264 94 Z"
+          fill="#3b2602" opacity="0.38"/>
+
+    <!-- Top & Bottom Shell Apex Sculpting -->
+    <path d="M 244 88 Q 254 82 264 88" stroke="#fff8dc" stroke-width="2.5" fill="none" opacity="0.8"/>
+    <path d="M 246 422 Q 256 428 268 422" stroke="#fff8dc" stroke-width="2.5" fill="none" opacity="0.8"/>
+  </g>
+</svg>

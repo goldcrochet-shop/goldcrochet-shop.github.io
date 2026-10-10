@@ -1,0 +1,23 @@
+{
+  "id": 1789954688278,
+  "name": "VESTIDO BOSSA CURTO",
+  "emoji": "🧶",
+  "desc": "Um clássico atemporal que captura a essência do luxo despretensioso carioca. O Vestido Bossa Curto possui uma trama milimetricamente estruturada, onde a fluidez da linha encontra a solidez do metal.",
+  "category": "saias-vestidos",
+  "section": "dia-a-dia",
+  "gender": "feminino",
+  "collection": "Essenciais",
+  "price": 85,
+  "badge": "Destaque",
+  "discount": 20,
+  "model3d": "",
+  "prod_time": "24",
+  "material": "Fio 100% Algodão Premium",
+  "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954680598_0.png",
+  "gallery": [
+    "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954683985_1.png"
+  ],
+  "colorSections": [],
+  "colors": [],
+  "slug": "vestido-bossa-curto"
+}

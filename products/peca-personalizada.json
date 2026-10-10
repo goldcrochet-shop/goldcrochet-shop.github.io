@@ -1,0 +1,32 @@
+{
+  "id": 9,
+  "name": "✨ Peça Personalizada",
+  "emoji": "🧶",
+  "category": "personalizado",
+  "desc": "Envie sua ideia, cor e tamanho — criamos sua peça exclusiva em crochê, do zero, com todo cuidado artesanal.",
+  "price": null,
+  "colorSections": [
+    {
+      "name": "Cores disponíveis",
+      "colors": [
+        {
+          "name": "Dourado",
+          "hex": "#cda434"
+        }
+      ]
+    }
+  ],
+  "badge": "Sob Medida",
+  "discount": 0,
+  "model3d": "",
+  "image": "",
+  "custom": true,
+  "gallery": [],
+  "colors": [
+    {
+      "name": "Dourado",
+      "hex": "#cda434"
+    }
+  ],
+  "slug": "peca-personalizada"
+}

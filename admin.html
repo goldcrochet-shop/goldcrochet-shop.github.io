@@ -597,7 +597,7 @@
       </div>
       <div class="server-api-status" style="display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:0.75rem;color:#78e08f;margin-bottom:6px;background:rgba(120,224,143,0.1);border-radius:var(--radius-sm);border:1px solid rgba(120,224,143,0.25);">
         <div style="width:8px;height:8px;border-radius:50%;background:#78e08f;box-shadow:0 0 8px rgba(120,224,143,0.8);"></div>
-        <span>Servidor Integrado (/api/data) ✓</span>
+        <span>100% Jamstack GitHub Pages ✓</span>
       </div>
       <button class="token-status" onclick="configureToken()">
         <div class="token-dot" id="tokenDot"></div>
@@ -642,6 +642,7 @@
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <button class="btn btn-primary" onclick="openNewProduct()">＋ Nova Peça</button>
           <button class="btn btn-primary" onclick="openNewBlogPost()">＋ Novo Post</button>
+          <button class="btn btn-primary" style="background:linear-gradient(135deg,#cda434,#8a6500);" onclick="generateAllStaticProductPages(getGHToken())">⚡ Gerar Páginas Estáticas (SSG)</button>
           <button class="btn btn-ghost" onclick="showTab('pedidos')">📦 Ver Pedidos</button>
           <button class="btn btn-ghost" onclick="showTab('clientes')">👥 Ver Clientes</button>
           <button class="btn btn-ghost" onclick="showTab('config')">⚙️ Config</button>
@@ -1295,16 +1296,91 @@ function updateTokenUI() {
   text.textContent = hasToken ? 'GitHub Conectado ✓' : 'Configurar Token GitHub';
 }
 function configureToken() {
-  const current = getGHToken();
-  const msg = current
-    ? 'Token atual configurado. Cole um novo para substituir:'
-    : '🔑 Cole seu Token do GitHub (classic, escopo "repo"):';
-  const token = prompt(msg, '');
-  if (token && token !== current) {
-    setGHToken(token);
-    logActivity('🔑 Token GitHub atualizado');
-    showToast('✅ Token salvo nesta sessão!');
+  const modal = document.getElementById('githubTokenModal');
+  if (modal) {
+    const input = document.getElementById('ghTokenInput');
+    if (input) input.value = getGHToken() || '';
+    testTokenLive(false);
+    modal.classList.add('open');
+    return;
   }
+  const current = getGHToken();
+  const token = prompt('Cole seu Token Pessoal do GitHub (escopo "repo"):', current || '');
+  if (token !== null) {
+    setGHToken(token.trim());
+    updateTokenStatusUI();
+    showToast('✅ Token salvo!');
+  }
+}
+
+function closeTokenModal() {
+  const modal = document.getElementById('githubTokenModal');
+  if (modal) modal.classList.remove('open');
+}
+
+async function testTokenLive(notify = true) {
+  const input = document.getElementById('ghTokenInput');
+  const token = input ? input.value.trim() : (getGHToken() || '');
+  const resultDiv = document.getElementById('ghTokenTestResult');
+  if (!resultDiv) return;
+
+  if (!token) {
+    resultDiv.innerHTML = '<span style="color:var(--text-soft);font-size:0.85rem;">Nenhum token inserido.</span>';
+    return;
+  }
+
+  resultDiv.innerHTML = '<span style="color:var(--gold-main);font-size:0.85rem;">⏳ Verificando no GitHub...</span>';
+
+  try {
+    const userRes = await fetch('https://api.github.com/user', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!userRes.ok) {
+      resultDiv.innerHTML = `<span style="color:var(--danger);font-size:0.85rem;">❌ Token inválido (Status ${userRes.status}). Verifique se não expirou.</span>`;
+      if (notify) showToast('❌ Token inválido ou expirado.', 'error');
+      return;
+    }
+    const user = await userRes.json();
+    const scopes = userRes.headers.get('x-oauth-scopes') || 'fine-grained';
+    const rateLimit = userRes.headers.get('x-ratelimit-remaining') || '5000';
+
+    resultDiv.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;background:var(--off-white);padding:12px;border-radius:var(--radius-sm);border:1px solid rgba(205,164,52,0.2);">
+        <img src="${user.avatar_url}" style="width:40px;height:40px;border-radius:50%;border:1px solid var(--gold-main);">
+        <div>
+          <strong style="color:var(--text-dark);font-size:0.95rem;">${user.name || user.login} (@${user.login})</strong>
+          <div style="font-size:0.75rem;color:var(--success);font-weight:600;">✓ Conectado ao GitHub • Rate Limit: ${rateLimit}</div>
+        </div>
+      </div>`;
+    if (notify) showToast(`✅ Conectado como @${user.login}!`, 'success');
+  } catch(e) {
+    resultDiv.innerHTML = `<span style="color:var(--danger);font-size:0.85rem;">❌ Falha de rede: ${e.message}</span>`;
+  }
+}
+
+function saveTokenFromModal() {
+  const input = document.getElementById('ghTokenInput');
+  const token = input ? input.value.trim() : '';
+  if (!token) {
+    showToast('⚠️ Digite um token antes de salvar.', 'warning');
+    return;
+  }
+  setGHToken(token);
+  updateTokenStatusUI();
+  closeTokenModal();
+  logActivity('🔑 Token GitHub configurado e salvo');
+  showToast('✅ Token salvo! Agora você pode criar páginas e atualizar o site diretamente no GitHub.', 'success');
+}
+
+function removeTokenModal() {
+  if (!confirm('Deseja remover o token salvo?')) return;
+  setGHToken('');
+  const input = document.getElementById('ghTokenInput');
+  if (input) input.value = '';
+  updateTokenStatusUI();
+  closeTokenModal();
+  logActivity('🔑 Token GitHub removido');
+  showToast('Token removido.');
 }
 
 // ════════════════════════════════════════
@@ -1471,7 +1547,10 @@ function updateFirestoreUI() {
   if (!isFirebaseAdmin()) {
     if (clients) { clients.textContent = '—'; clients.classList.remove('alert'); }
     if (orders) { orders.textContent = '—'; orders.classList.remove('alert'); }
-    fetch('/api/newsletter').then(r=>r.json()).then(d=>{ if (news) news.textContent = d.length || 0; }).catch(()=>{});
+    try {
+      const storedNews = JSON.parse(localStorage.getItem('goldcrochet_newsletter') || '[]');
+      if (news) news.textContent = storedNews.length || 0;
+    } catch(e) {}
     return;
   }
   loadFirebaseStats();
@@ -1618,9 +1697,9 @@ function updateFirestoreStatsFromCache() {
 // GITHUB DATA
 // ════════════════════════════════════════
 async function refreshFromGitHub(silent) {
-  if (!silent) showToast('🔄 Sincronizando dados com o servidor...');
+  if (!silent) showToast('🔄 Sincronizando dados com o catálogo...');
   try {
-    let resp = await fetch('/api/data?t=' + Date.now(), { cache: 'no-store' }).catch(() => null);
+    let resp = await fetch('./data.json?t=' + Date.now(), { cache: 'no-store' }).catch(() => null);
     if (!resp || !resp.ok) {
       resp = await fetch(
         `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${GH_DATA_PATH}?t=${Date.now()}`,
@@ -1754,6 +1833,8 @@ function renderProductList() {
       </div>
       <div class="product-row-price">${priceStr}</div>
       <div class="product-row-actions">
+        <a class="btn btn-ghost" href="./produtos/${p.slug || slugify(p.name)}.html" target="_blank" title="Ver Página Estática do Produto (HTML)">🔗</a>
+        <button class="btn btn-ghost" onclick="copyProductLink('${p.slug || slugify(p.name)}')" title="Copiar Link da Página">📋</button>
         <button class="btn btn-ghost" onclick="openEditProduct(${p.id})" title="Editar">✏️</button>
         <button class="btn btn-ghost" onclick="duplicateProduct(${p.id})" title="Duplicar">📄</button>
         <button class="btn btn-danger" onclick="deleteProduct(${p.id})" title="Remover">🗑</button>
@@ -1761,6 +1842,14 @@ function renderProductList() {
     </div>`;
   }).join('');
   updateCategoryFilter();
+}
+function copyProductLink(slug) {
+  const url = `https://goldcrochet-shop.github.io/goldcrochet-shop/produtos/${slug}.html`;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('📋 Link da página copiado: ' + url, 'success');
+  }).catch(() => {
+    showToast('Link: ' + url, 'info');
+  });
 }
 function filterProducts() { renderProductList(); }
 function updateCategoryFilter() {
@@ -1786,14 +1875,25 @@ function duplicateProduct(id) {
 async function deleteProduct(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
-  if (!confirm(`Remover "${p.name}"?`)) return;
-  products = products.filter(p => p.id !== id);
+  if (!confirm(`Remover "${p.name}"? Isso também excluirá o arquivo JSON e a página HTML no GitHub.`)) return;
+  const slug = p.slug || slugify(p.name);
+  products = products.filter(prod => prod.id !== id);
   saveState('goldcrochet_products', products);
   renderProductList();
   updateDashboard();
   logActivity(`🗑 Removida: ${p.name}`);
-  showToast('🗑 Peça removida.');
+  showToast('🗑 Removendo peça do catálogo e GitHub...');
+  const token = getGHToken();
+  if (token) {
+    try {
+      await deleteFromGitHub(`products/${slug}.json`, `Remover ${p.name} [JSON]`, token);
+      await deleteFromGitHub(`produtos/${slug}.html`, `Remover ${p.name} [HTML]`, token);
+    } catch(err) {
+      console.warn('Erro ao deletar arquivos do GitHub:', err);
+    }
+  }
   await publishAll();
+  showToast('🗑 Peça e página removidas com sucesso.');
 }
 
 // ════════════════════════════════════════
@@ -2691,33 +2791,17 @@ async function saveProduct() {
         showSaving(`Enviando imagem ${i+1}/${totalImgs}...`, fileName, ((i+1)/totalImgs)*60);
 
         let uploadedUrl = null;
-        // 1. Try local server upload first
-        try {
-          const apiResp = await fetch('/api/upload-image', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fileName, base64Data })
-          });
-          if (apiResp.ok) {
-            const apiRes = await apiResp.json();
-            uploadedUrl = apiRes.url;
-          }
-        } catch(apiErr) {
-          console.warn('Upload API local falhou:', apiErr);
-        }
-
-        // 2. If GitHub token is present, also upload to GitHub
+        // Upload direto para o GitHub sem depender de localhost
         if (token) {
           try {
-            await uploadToGitHub(`images/${fileName}`, base64Data, `Upload imagem ${fileName}`, token);
-            if (!uploadedUrl) {
-              uploadedUrl = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/images/${fileName}`;
-            }
+            await uploadToGitHub(`images/${fileName}`, base64Data, `Upload imagem ${fileName} [Admin]`, token);
+            uploadedUrl = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/images/${fileName}`;
+            logActivity(`🖼️ Imagem ${fileName} enviada diretamente ao GitHub`);
           } catch(err) {
             console.warn('Upload GitHub falhou:', err);
+            showToast(`⚠️ Falha no upload ao GitHub: ${err.message}`, 'warning');
           }
         }
-
         finalUrls.push(uploadedUrl || editingImages[i].src);
       } else {
         finalUrls.push(editingImages[i].src);
@@ -2756,20 +2840,39 @@ async function saveProduct() {
       colors: flatColors
     };
 
+    const targetSlug = productData.slug || slugify(productData.name);
+    productData.slug = targetSlug;
+
+    let savedProduct = null;
     if (editingId !== null) {
       const idx = products.findIndex(p => p.id === editingId);
-      if (idx >= 0) products[idx] = { ...products[idx], ...productData };
+      if (idx >= 0) {
+        products[idx] = { ...products[idx], ...productData };
+        savedProduct = products[idx];
+      }
       logActivity(`✏️ Editada: ${name}`);
     } else {
-      products.push({ id: Date.now(), ...productData });
+      savedProduct = { id: Date.now(), ...productData };
+      products.push(savedProduct);
       logActivity(`➕ Criada: ${name}`);
     }
 
     saveState('goldcrochet_products', products);
-    hideSaving();
     closeModal();
     renderProductList();
     updateDashboard();
+
+    const token = getGHToken();
+    if (token && savedProduct) {
+      showSaving('Gerando página estática...', `produtos/${targetSlug}.html`, 60);
+      try {
+        await publishProductToGitHub(savedProduct, token);
+        logActivity(`⚡ Página produtos/${targetSlug}.html gerada no GitHub`);
+      } catch(err) {
+        console.warn('Erro ao publicar página do produto no GitHub:', err);
+      }
+    }
+
     await publishAll();
   } catch(e) {
     hideSaving();
@@ -2971,49 +3074,417 @@ async function uploadToGitHub(path, contentBase64, commitMessage, token) {
   }
   return await response.json();
 }
-async function publishAll() {
-  showSaving('Sincronizando catálogo...', 'Salvando no servidor...', 45);
+async function deleteFromGitHub(path, commitMessage, token) {
+  if (!token) return false;
+  const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`;
+  let sha = null;
+  try {
+    const getRes = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (getRes.ok) { const fd = await getRes.json(); sha = fd.sha; }
+    else return false;
+  } catch(e) { return false; }
+  if (!sha) return false;
+  const body = { message: commitMessage, sha: sha, branch: GH_BRANCH };
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.github.v3+json'
+    },
+    body: JSON.stringify(body)
+  });
+  return response.ok;
+}
+
+function generateProductHtml(p, allProducts, cfg) {
+  const slug = p.slug || slugify(p.name);
+  const siteUrl = 'https://goldcrochet-shop.github.io/goldcrochet-shop';
+  const pageUrl = `${siteUrl}/produtos/${slug}.html`;
+  const whatsappNumber = (cfg && cfg.whatsapp) || '5521999999999';
+  
+  const formattedPrice = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+  const parcelPrice = p.price ? `3x de R$ ${(Number(p.price) / 3).toFixed(2).replace('.', ',')} sem juros` : '';
+  
+  const mainImage = p.image || (p.gallery && p.gallery[0]) || '../assets/logo.png';
+  const gallery = [p.image, ...(p.gallery || [])].filter(Boolean);
+  const uniqueGallery = [...new Set(gallery)];
+
+  const colors = p.colors || [];
+  const colorSections = p.colorSections || [];
+  let allColorItems = [...colors];
+  colorSections.forEach(cs => {
+    if (cs.colors && Array.isArray(cs.colors)) {
+      allColorItems.push(...cs.colors);
+    }
+  });
+
+  const categoryName = p.category ? p.category.toUpperCase() : 'EXCLUSIVO';
+  const material = p.material || 'Fio 100% Algodão Premium selecionado à mão';
+  const prodTime = p.prod_time ? `${p.prod_time} horas de confecção artesanal` : 'Feito sob demanda artesanalmente';
+  const desc = p.desc || 'Peça exclusiva em crochê feita à mão pela Gold Crochet.';
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": p.name,
+    "image": uniqueGallery.map(img => img.startsWith('http') ? img : `${siteUrl}/${img.replace(/^\.\//, '')}`),
+    "description": desc,
+    "sku": `GC-${p.id}`,
+    "brand": { "@type": "Brand", "name": "Gold Crochet" },
+    "offers": {
+      "@type": "Offer",
+      "url": pageUrl,
+      "priceCurrency": "BRL",
+      "price": p.price ? Number(p.price).toFixed(2) : "0.00",
+      "availability": "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition"
+    }
+  }, null, 2);
+
+  const related = (allProducts || []).filter(item => item.id !== p.id && item.slug).slice(0, 4);
+  const firstColor = allColorItems[0] ? allColorItems[0].name : '';
+
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>${p.name} — Gold Crochet</title>
+  <meta name="description" content="${desc.replace(/"/g, '&quot;')}">
+  <link rel="canonical" href="${pageUrl}">
+  <meta name="theme-color" content="#d4af37">
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="${p.name} — Gold Crochet">
+  <meta property="og:description" content="${desc.replace(/"/g, '&quot;')}">
+  <meta property="og:image" content="${mainImage}">
+  <meta property="og:url" content="${pageUrl}">
+  <meta property="og:site_name" content="Gold Crochet">
+  <meta property="product:price:amount" content="${p.price || 0}">
+  <meta property="product:price:currency" content="BRL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${p.name} — Gold Crochet">
+  <meta name="twitter:description" content="${desc.replace(/"/g, '&quot;')}">
+  <meta name="twitter:image" content="${mainImage}">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/icon.png?v=3">
+  <link rel="icon" type="image/svg+xml" href="../assets/icon.svg?v=3">
+  <link rel="shortcut icon" href="../assets/icon.ico?v=3">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/icon.png?v=3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <script type="application/ld+json">
+${schemaJson}
+  </script>
+  <style>
+    .product-standalone { max-width: 1200px; margin: 100px auto 60px; padding: 0 24px; }
+    .breadcrumbs { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #8b7a5a; margin-bottom: 24px; }
+    .breadcrumbs a { color: inherit; text-decoration: none; transition: color 0.2s; }
+    .breadcrumbs a:hover { color: #cda434; }
+    .breadcrumbs span { color: #c9b686; }
+    .product-grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; background: #ffffff; border-radius: 24px; padding: 36px; box-shadow: 0 10px 40px rgba(166,124,0,0.08); border: 1px solid rgba(205,164,52,0.15); }
+    @media (max-width: 868px) { .product-grid-layout { grid-template-columns: 1fr; gap: 32px; padding: 20px; } .product-standalone { margin-top: 80px; padding: 0 16px; } }
+    .gallery-container { display: flex; flex-direction: column; gap: 16px; }
+    .main-image-wrap { width: 100%; height: 480px; border-radius: 20px; overflow: hidden; background: #fdf9f0; position: relative; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(205,164,52,0.15); }
+    .main-image-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+    .main-image-wrap:hover img { transform: scale(1.03); }
+    .gallery-thumbs { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+    .thumb-btn { width: 80px; height: 80px; border-radius: 12px; border: 2px solid transparent; overflow: hidden; cursor: pointer; background: #fdf9f0; padding: 0; flex-shrink: 0; transition: all 0.2s; }
+    .thumb-btn.active { border-color: #cda434; box-shadow: 0 0 12px rgba(205,164,52,0.3); }
+    .thumb-btn img { width: 100%; height: 100%; object-fit: cover; }
+    .product-details-col { display: flex; flex-direction: column; gap: 20px; }
+    .product-badge-tag { display: inline-block; align-self: flex-start; padding: 6px 14px; border-radius: 50px; background: linear-gradient(135deg, #cda434, #a67c00); color: #fff; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .product-title-h1 { font-family: 'DM Serif Display', serif; font-size: 2.2rem; color: #2a2210; line-height: 1.2; }
+    .product-price-box { background: #fdf9f0; padding: 16px 20px; border-radius: 16px; border-left: 4px solid #cda434; }
+    .price-value { font-size: 1.8rem; font-weight: 800; color: #a67c00; }
+    .price-installments { font-size: 0.88rem; color: #6b5b3a; margin-top: 4px; }
+    .product-description-text { color: #554830; font-size: 1rem; line-height: 1.7; }
+    .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; background: #faf6ed; border-radius: 14px; }
+    .spec-item { font-size: 0.85rem; color: #4a3e20; }
+    .spec-item strong { color: #2a2210; display: block; margin-bottom: 2px; }
+    .color-picker-box { display: flex; flex-direction: column; gap: 10px; }
+    .color-options { display: flex; gap: 10px; flex-wrap: wrap; }
+    .color-chip { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 50px; border: 1.5px solid #d4c29a; background: #fff; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+    .color-chip.selected { border-color: #a67c00; background: #fdf6e2; font-weight: 600; }
+    .color-dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); }
+    .action-buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+    .btn-buy-whatsapp { display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #25D366, #128C7E); color: #ffffff; padding: 16px 24px; border-radius: 50px; font-size: 1.05rem; font-weight: 700; text-decoration: none; box-shadow: 0 6px 20px rgba(37,211,102,0.3); transition: all 0.25s; }
+    .btn-buy-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,211,102,0.45); }
+    .btn-add-cart { display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #cda434, #a67c00); color: #ffffff; padding: 15px 24px; border-radius: 50px; font-size: 1rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.25s; box-shadow: 0 6px 20px rgba(205,164,52,0.25); }
+    .btn-add-cart:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(205,164,52,0.35); }
+    .btn-back-home { display: inline-flex; align-items: center; gap: 8px; color: #8b7a5a; text-decoration: none; font-size: 0.9rem; margin-top: 8px; transition: color 0.2s; }
+    .btn-back-home:hover { color: #cda434; }
+    .related-section { margin-top: 60px; }
+    .related-title { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: #2a2210; margin-bottom: 24px; text-align: center; }
+    .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .related-card { background: #fff; border-radius: 18px; overflow: hidden; border: 1px solid rgba(205,164,52,0.15); text-decoration: none; color: inherit; transition: all 0.25s; display: flex; flex-direction: column; }
+    .related-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(166,124,0,0.12); }
+    .related-img { width: 100%; height: 180px; object-fit: cover; background: #fdf9f0; }
+    .related-info { padding: 14px; display: flex; flex-direction: column; gap: 4px; }
+    .related-name { font-weight: 700; font-size: 0.95rem; color: #2a2210; }
+    .related-price { color: #a67c00; font-weight: 800; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <header class="header" role="banner" style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(205,164,52,0.15);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="../index.html" class="logo" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <img src="../assets/logo.png" alt="Gold Crochet" style="height:42px;width:auto;">
+    </a>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <a href="../index.html#catalogo" class="nav-link" style="color:#2a2210;text-decoration:none;font-weight:600;font-size:0.9rem;">Coleções</a>
+      <a href="../index.html" class="nav-link" style="color:#2a2210;text-decoration:none;font-weight:600;font-size:0.9rem;">Loja Completa</a>
+      <a href="../index.html#carrinho" class="nav-link" id="headerCartCount" style="background:#fdf9f0;border:1px solid #cda434;padding:6px 14px;border-radius:50px;color:#a67c00;text-decoration:none;font-weight:700;font-size:0.85rem;">Sacola 🛍️</a>
+    </div>
+  </header>
+  <main class="product-standalone">
+    <nav class="breadcrumbs" aria-label="Navegação">
+      <a href="../index.html">Início</a>
+      <span>/</span>
+      <a href="../index.html#catalogo">${categoryName}</a>
+      <span>/</span>
+      <span aria-current="page">${p.name}</span>
+    </nav>
+    <div class="product-grid-layout">
+      <div class="gallery-container">
+        <div class="main-image-wrap">
+          <img id="mainProductImg" src="${mainImage}" alt="${p.name}">
+        </div>
+        ${uniqueGallery.length > 1 ? `
+        <div class="gallery-thumbs">
+          ${uniqueGallery.map((img, idx) => `
+            <button class="thumb-btn ${idx === 0 ? 'active' : ''}" onclick="switchImage('${img}', this)" aria-label="Ver foto ${idx + 1}">
+              <img src="${img}" alt="${p.name} - Imagem ${idx + 1}">
+            </button>
+          `).join('')}
+        </div>` : ''}
+      </div>
+      <div class="product-details-col">
+        ${p.badge ? `<span class="product-badge-tag">${p.badge}</span>` : ''}
+        <h1 class="product-title-h1">${p.name}</h1>
+        <div class="product-price-box">
+          <div class="price-value">${formattedPrice}</div>
+          ${parcelPrice ? `<div class="price-installments">ou em até ${parcelPrice}</div>` : ''}
+        </div>
+        <p class="product-description-text">${desc}</p>
+        <div class="specs-grid">
+          <div class="spec-item"><strong>Material:</strong> ${material}</div>
+          <div class="spec-item"><strong>Confecção:</strong> ${prodTime}</div>
+          <div class="spec-item"><strong>Categoria:</strong> ${categoryName}</div>
+          <div class="spec-item"><strong>Acabamento:</strong> Exclusivo Gold Crochet</div>
+        </div>
+        ${allColorItems.length > 0 ? `
+        <div class="color-picker-box">
+          <label style="font-weight:700;font-size:0.9rem;color:#2a2210;">Escolha a Cor:</label>
+          <div class="color-options" id="colorOptions">
+            ${allColorItems.map((col, idx) => `
+              <div class="color-chip ${idx === 0 ? 'selected' : ''}" onclick="selectColor('${col.name}', this)">
+                <span class="color-dot" style="background-color: ${col.hex || '#cda434'};"></span>
+                <span>${col.name}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>` : ''}
+        <div class="action-buttons">
+          <a id="btnWhatsApp" class="btn-buy-whatsapp" href="#" target="_blank" rel="noopener noreferrer">
+            <span>💬 Comprar pelo WhatsApp</span>
+          </a>
+          <button class="btn-add-cart" onclick="addToCartCurrent()">
+            <span>🛍️ Adicionar à Sacola</span>
+          </button>
+          <a href="../index.html" class="btn-back-home">← Voltar para a Loja Principal</a>
+        </div>
+      </div>
+    </div>
+    ${related.length > 0 ? `
+    <section class="related-section">
+      <h2 class="related-title">Você Também Pode Gostar</h2>
+      <div class="related-grid">
+        ${related.map(rel => `
+          <a class="related-card" href="./${rel.slug}.html">
+            <img class="related-img" src="${rel.image || '../assets/logo.png'}" alt="${rel.name}">
+            <div class="related-info">
+              <span class="related-name">${rel.name}</span>
+              <span class="related-price">${rel.price ? `R$ ${Number(rel.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta'}</span>
+            </div>
+          </a>
+        `).join('')}
+      </div>
+    </section>` : ''}
+  </main>
+  <footer style="margin-top:80px;background:#15120c;color:#f0e8d8;padding:48px 24px;text-align:center;">
+    <p style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:#d4af37;margin-bottom:8px;">Gold Crochet</p>
+    <p style="font-size:0.85rem;color:#c9b686;margin-bottom:16px;">Peças em crochê feitas à mão, com acabamento premium.</p>
+    <p style="font-size:0.75rem;color:#8b7a5a;">&copy; 2026 Gold Crochet. Todos os direitos reservados.</p>
+  </footer>
+  <script>
+    let selectedColor = '${firstColor}';
+    const productName = "${p.name.replace(/"/g, '\"')}";
+    const productPrice = "${formattedPrice}";
+    const pageUrl = window.location.href;
+    const whatsappNum = "${whatsappNumber}";
+    function switchImage(src, btn) {
+      document.getElementById('mainProductImg').src = src;
+      document.querySelectorAll('.thumb-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+    function selectColor(name, el) {
+      selectedColor = name;
+      document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('selected'));
+      if (el) el.classList.add('selected');
+      updateWhatsAppLink();
+    }
+    function updateWhatsAppLink() {
+      const colorText = selectedColor ? ' na cor ' + selectedColor : '';
+      const text = encodeURIComponent('Olá! Gostaria de encomendar a peça *' + productName + '*' + colorText + ' (' + productPrice + ') que vi no site: ' + pageUrl);
+      document.getElementById('btnWhatsApp').href = 'https://wa.me/' + whatsappNum + '?text=' + text;
+    }
+    updateWhatsAppLink();
+    function addToCartCurrent() {
+      try {
+        const cart = JSON.parse(localStorage.getItem('gc_cart') || '[]');
+        const existing = cart.find(i => i.id === ${p.id} && i.selectedColor === selectedColor);
+        if (existing) { existing.qty = (existing.qty || 1) + 1; }
+        else {
+          cart.push({ id: ${p.id}, name: productName, price: ${p.price || 0}, image: "${mainImage}", selectedColor: selectedColor, qty: 1, slug: "${slug}" });
+        }
+        localStorage.setItem('gc_cart', JSON.stringify(cart));
+        alert('✨ "' + productName + '" adicionado à sua sacola!');
+        updateCartBadge();
+      } catch(e) { console.error(e); }
+    }
+    function updateCartBadge() {
+      try {
+        const cart = JSON.parse(localStorage.getItem('gc_cart') || '[]');
+        const total = cart.reduce((acc, i) => acc + (i.qty || 1), 0);
+        const badge = document.getElementById('headerCartCount');
+        if (badge) badge.textContent = 'Sacola (' + total + ') 🛍️';
+      } catch(e) {}
+    }
+    updateCartBadge();
+  </script>
+
+<!-- MODAL DE CONFIGURAÇÃO DO TOKEN GITHUB -->
+<div class="modal" id="githubTokenModal" role="dialog" aria-modal="true" aria-labelledby="ghTokenModalTitle">
+  <div class="modal-box" style="max-width:540px;">
+    <div class="modal-header">
+      <h3 id="ghTokenModalTitle">🔑 Token Pessoal do GitHub</h3>
+      <button class="modal-close" onclick="closeTokenModal()" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:16px;">
+      <p style="font-size:0.9rem;color:var(--text-mid);line-height:1.5;">
+        O painel administrativo usa o <strong>GitHub Personal Access Token (PAT)</strong> para criar os arquivos HTML individuais de cada produto, salvar o catálogo <code>data.json</code> e enviar fotos direto para o repositório, sem precisar de servidor localhost.
+      </p>
+
+      <div class="form-group">
+        <label for="ghTokenInput" style="font-weight:600;font-size:0.88rem;">Personal Access Token (com permissão <code>repo</code>):</label>
+        <input type="password" id="ghTokenInput" class="form-control" placeholder="ghp_... ou github_pat_..." style="font-family:var(--font-mono);font-size:0.9rem;">
+        <small style="color:var(--text-soft);font-size:0.75rem;margin-top:4px;">
+          Gere em: <em>GitHub > Settings > Developer Settings > Personal Access Tokens > Tokens (classic)</em> marcando a opção <strong>repo</strong>.
+        </small>
+      </div>
+
+      <div id="ghTokenTestResult"></div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+        <button class="btn btn-ghost" onclick="testTokenLive(true)">🔍 Testar Conexão</button>
+        <button class="btn btn-danger" onclick="removeTokenModal()">🗑 Remover</button>
+        <button class="btn btn-primary" onclick="saveTokenFromModal()">💾 Salvar Token</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>`;
+}
+
+async function publishProductToGitHub(p, token) {
+  if (!token) return;
+  const slug = p.slug || slugify(p.name);
+  
+  // 1. JSON individual em products/<slug>.json
+  const prodJson = JSON.stringify(p, null, 2);
+  const prodBase64 = btoa(unescape(encodeURIComponent(prodJson)));
+  await uploadToGitHub(`products/${slug}.json`, prodBase64, `Atualizar produto ${p.name} [JSON]`, token);
+  
+  // 2. HTML estático individual em produtos/<slug>.html
+  const prodHtml = generateProductHtml(p, products, siteConfig);
+  const htmlBase64 = btoa(unescape(encodeURIComponent(prodHtml)));
+  await uploadToGitHub(`produtos/${slug}.html`, htmlBase64, `Gerar página estática ${p.name} [HTML SSG]`, token);
+}
+
+async function generateAllStaticProductPages(token) {
+  token = token || getGHToken();
+  if (!token) {
+    showToast('⚠️ Configure o Token do GitHub para compilar as páginas.', 'warning');
+    configureToken();
+    return;
+  }
+  showSaving('Compilando páginas...', `Iniciando SSG para ${products.length} produtos...`, 10);
+  let done = 0;
+  for (const p of products) {
+    done++;
+    const slug = p.slug || slugify(p.name);
+    showSaving(`Gerando ${done}/${products.length}...`, `produtos/${slug}.html`, Math.round((done / products.length) * 85));
+    try {
+      await publishProductToGitHub(p, token);
+    } catch(err) {
+      console.warn(`Erro ao gerar ${p.name}:`, err);
+    }
+  }
+  showSaving('Atualizando catálogo...', 'Sincronizando data.json no GitHub...', 95);
   const data = {
     products, categories, badges, collections, globalColors, blogPosts,
     config: siteConfig,
-    _meta: { updated: new Date().toISOString(), version: '4.0' }
+    _meta: { updated: new Date().toISOString(), version: '5.0-jamstack' }
+  };
+  const jsonString = JSON.stringify(data, null, 2);
+  const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
+  await uploadToGitHub(GH_DATA_PATH, base64Content, `Catálogo e SSG sincronizados [${new Date().toLocaleString('pt-BR')}]`, token);
+  hideSaving();
+  showToast(`🎉 Sucesso! Todas as ${products.length} páginas de produto foram publicadas no GitHub!`, 'success');
+  logActivity(`🚀 Geradas ${products.length} páginas estáticas de produtos no GitHub`);
+}
+
+async function publishAll() {
+  showSaving('Sincronizando catálogo...', 'Preparando data.json...', 35);
+  const data = {
+    products, categories, badges, collections, globalColors, blogPosts,
+    config: siteConfig,
+    _meta: { updated: new Date().toISOString(), version: '5.0-jamstack' }
   };
 
-  let savedToServer = false;
-  try {
-    const resp = await fetch('/api/data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    if (resp.ok) {
-      savedToServer = true;
-      logActivity('💾 Dados salvos no servidor local');
-    }
-  } catch(err) {
-    console.warn('Erro ao salvar em /api/data:', err);
-  }
+  saveState('goldcrochet_products', products);
+  saveState('goldcrochet_categories', categories);
+  saveState('goldcrochet_badges', badges);
+  saveState('goldcrochet_collections', collections);
+  saveState('goldcrochet_global_colors', globalColors);
+  saveState('goldcrochet_blogPosts', blogPosts);
+  saveState('goldcrochet_config', siteConfig);
 
   let token = getGHToken();
   if (token) {
     try {
-      showSaving('Publicando no GitHub...', 'data.json', 80);
+      showSaving('Publicando no GitHub...', 'Atualizando data.json na nuvem...', 70);
       const jsonString = JSON.stringify(data, null, 2);
       const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
       await uploadToGitHub(GH_DATA_PATH, base64Content, `Catálogo atualizado [${new Date().toLocaleString('pt-BR')}]`, token);
-      logActivity('📤 Publicado no GitHub');
+      logActivity('📤 Catálogo data.json publicado no GitHub');
+      hideSaving();
+      showToast('✅ Publicado com sucesso no GitHub Pages!', 'success');
+      return;
     } catch(e) {
       console.warn('Erro GitHub:', e.message);
-      logActivity(`⚠️ GitHub: ${e.message}`);
+      logActivity(`⚠️ Erro GitHub: ${e.message}`);
+      hideSaving();
+      showToast(`⚠️ Erro GitHub: ${e.message}. Salvo localmente.`, 'warning');
+      return;
     }
   }
 
   hideSaving();
-  if (savedToServer) {
-    showToast('✅ Publicado! As alterações já estão ativas na loja.', 'success');
-  } else {
-    showToast('⚠️ Salvo no navegador localmente.', 'warning');
-  }
+  showToast('💾 Salvo no navegador. Configure o Token do GitHub para sincronizar na nuvem.', 'info');
 }
 async function testGitHubConnection() {
   const token = getGHToken();
@@ -3194,12 +3665,9 @@ async function renderNewsletter() {
 
   if (!subs.length) {
     try {
-      const res = await fetch('/api/newsletter');
-      if (res.ok) {
-        subs = await res.json();
-      }
+      subs = JSON.parse(localStorage.getItem('goldcrochet_newsletter') || '[]');
     } catch (e) {
-      console.warn('Erro ao buscar newsletter local:', e);
+      console.warn('Erro ao buscar newsletter do localStorage:', e);
     }
   }
 
@@ -3323,11 +3791,11 @@ async function deleteNewsletterSubscriber(id, email) {
     if (id && db && isFirebaseAdmin()) {
       await db.collection('newsletter').doc(id).delete();
     }
-    await fetch('/api/newsletter', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
+    try {
+      let list = JSON.parse(localStorage.getItem('goldcrochet_newsletter') || '[]');
+      list = list.filter(item => item.email !== email);
+      localStorage.setItem('goldcrochet_newsletter', JSON.stringify(list));
+    } catch(e) {}
     toast('Inscrito removido com sucesso!');
     renderNewsletter();
   } catch (e) {
@@ -3350,5 +3818,37 @@ window.addEventListener('beforeunload', e => {
 console.log('%c🧶 Gold Crochet Admin v4.0', 'color:#cda434;font-size:16px;font-weight:bold;');
 console.log('%cCtrl+S = Salvar · Ctrl+K = Buscar · ESC = Fechar', 'color:#8b7a5a;font-size:12px;');
 </script>
+
+<!-- MODAL DE CONFIGURAÇÃO DO TOKEN GITHUB -->
+<div class="modal" id="githubTokenModal" role="dialog" aria-modal="true" aria-labelledby="ghTokenModalTitle">
+  <div class="modal-box" style="max-width:540px;">
+    <div class="modal-header">
+      <h3 id="ghTokenModalTitle">🔑 Token Pessoal do GitHub</h3>
+      <button class="modal-close" onclick="closeTokenModal()" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:16px;">
+      <p style="font-size:0.9rem;color:var(--text-mid);line-height:1.5;">
+        O painel administrativo usa o <strong>GitHub Personal Access Token (PAT)</strong> para criar os arquivos HTML individuais de cada produto, salvar o catálogo <code>data.json</code> e enviar fotos direto para o repositório, sem precisar de servidor localhost.
+      </p>
+
+      <div class="form-group">
+        <label for="ghTokenInput" style="font-weight:600;font-size:0.88rem;">Personal Access Token (com permissão <code>repo</code>):</label>
+        <input type="password" id="ghTokenInput" class="form-control" placeholder="ghp_... ou github_pat_..." style="font-family:var(--font-mono);font-size:0.9rem;">
+        <small style="color:var(--text-soft);font-size:0.75rem;margin-top:4px;">
+          Gere em: <em>GitHub > Settings > Developer Settings > Personal Access Tokens > Tokens (classic)</em> marcando a opção <strong>repo</strong>.
+        </small>
+      </div>
+
+      <div id="ghTokenTestResult"></div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+        <button class="btn btn-ghost" onclick="testTokenLive(true)">🔍 Testar Conexão</button>
+        <button class="btn btn-danger" onclick="removeTokenModal()">🗑 Remover</button>
+        <button class="btn btn-primary" onclick="saveTokenFromModal()">💾 Salvar Token</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

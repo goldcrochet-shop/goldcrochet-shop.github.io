@@ -29,7 +29,8 @@
           "name": "Dourado",
           "hex": "#cda434"
         }
-      ]
+      ],
+      "slug": "peca-personalizada"
     },
     {
       "id": 1789954142890,
@@ -51,7 +52,8 @@
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954263874_1.png"
       ],
       "colorSections": [],
-      "colors": []
+      "colors": [],
+      "slug": "bolsa-dunas"
     },
     {
       "id": 1789954688278,
@@ -73,7 +75,8 @@
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954683985_1.png"
       ],
       "colorSections": [],
-      "colors": []
+      "colors": [],
+      "slug": "vestido-bossa-curto"
     },
     {
       "id": 1789955083971,
@@ -95,7 +98,8 @@
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955081599_1.png"
       ],
       "colorSections": [],
-      "colors": []
+      "colors": [],
+      "slug": "camisa-arpoador"
     },
     {
       "id": 1789956946626,
@@ -115,7 +119,8 @@
       "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957448381_0.png",
       "gallery": [],
       "colorSections": [],
-      "colors": []
+      "colors": [],
+      "slug": "regata-noronha"
     },
     {
       "id": 1789957117993,
@@ -135,7 +140,8 @@
       "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957346113_0.png",
       "gallery": [],
       "colorSections": [],
-      "colors": []
+      "colors": [],
+      "slug": "bolsa-paraty"
     },
     {
       "id": 1789957539765,
@@ -157,7 +163,8 @@
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644625238_1.webp"
       ],
       "colorSections": [],
-      "colors": []
+      "colors": [],
+      "slug": "vestido-trancoso-midi"
     },
     {
       "id": 1789957638397,
@@ -177,7 +184,8 @@
       "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957634052_0.png",
       "gallery": [],
       "colorSections": [],
-      "colors": []
+      "colors": [],
+      "slug": "short-noronha"
     },
     {
       "id": 1790643259085,
@@ -200,7 +208,8 @@
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643256984_2.webp"
       ],
       "colorSections": [],
-      "colors": []
+      "colors": [],
+      "slug": "duo-celestial-sol-e-lua"
     },
     {
       "id": 1790644607412,
@@ -222,7 +231,8 @@
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644605496_1.webp"
       ],
       "colorSections": [],
-      "colors": []
+      "colors": [],
+      "slug": "jogo-americano-trilho-ipe-rosa-casa-brasil"
     }
   ],
   "categories": [

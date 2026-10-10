@@ -1,0 +1,23 @@
+{
+  "id": 1789955083971,
+  "name": "CAMISA ARPOADOR",
+  "emoji": "🧶",
+  "desc": "Um clássico contemporâneo que captura a essência do luxo despretensioso carioca. A Camisa Arpoador possui uma trama vazada milimetricamente estruturada, onde a leveza do fio encontra o frescor do design moderno.",
+  "category": "tops",
+  "section": "dia-a-dia",
+  "gender": "masculino",
+  "collection": "Essenciais",
+  "price": 75,
+  "badge": "Novo",
+  "discount": 0,
+  "model3d": "",
+  "prod_time": "0",
+  "material": "Fio 100% Algodão Premium",
+  "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955074956_0.png",
+  "gallery": [
+    "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955081599_1.png"
+  ],
+  "colorSections": [],
+  "colors": [],
+  "slug": "camisa-arpoador"
+}
