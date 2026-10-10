@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Novidades — Gold Crochet Alta-Costura</title>
+  <meta name="description" content="Descubra os lançamentos mais recentes da Gold Crochet. Peças recém-saídas do ateliê tecidas à mão em tiragens limitadas.">
+  <link rel="canonical" href="https://goldcrochet-shop.github.io/novidades.html">
+  <meta name="theme-color" content="#cda434">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg?v=buzio2026">
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/icon.png?v=buzio2026">
+  <link rel="shortcut icon" href="./favicon.ico?v=buzio2026">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icon.png?v=buzio2026">
+
+  <!-- Fontes de Luxo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./css/luxury-core.css">
+
+  <style>
+    .gc-spotlight-card {
+      background: linear-gradient(135deg, #fdfbf7 0%, #f7f3e9 100%);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      margin: 30px auto 60px;
+      box-shadow: var(--shadow-luxury);
+    }
+    @media (max-width: 860px) {
+      .gc-spotlight-card {
+        grid-template-columns: 1fr;
+        padding: 24px;
+        gap: 24px;
+      }
+    }
+    .gc-spotlight-img {
+      width: 100%;
+      height: 420px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      box-shadow: var(--shadow-subtle);
+    }
+    .gc-spotlight-info h2 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--color-ebony);
+      margin-bottom: 12px;
+    }
+    .gc-spotlight-info p {
+      color: var(--color-muted);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="gc-container">
+    <!-- Hero das Novidades -->
+    <header class="gc-page-hero">
+      <span class="gc-page-hero-tag">Lançamentos da Estação</span>
+      <h1 class="gc-page-hero-title">Recém-Tecidas</h1>
+      <p class="gc-page-hero-desc">
+        Acompanhe em primeira mão as criações que acabam de sair das agulhas das nossas artesãs. Produções em pequenos lotes com acabamento impecável.
+      </p>
+    </header>
+
+    <!-- Destaque Especial de Lançamento -->
+    <section id="spotlightSection">
+      <!-- Injetado dinamicamente via JS -->
+    </section>
+
+    <!-- Grade de Todas as Novidades -->
+    <section>
+      <div style="border-bottom:1px solid var(--color-border);padding-bottom:14px;margin-bottom:28px">
+        <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-ebony)">Últimas Adições ao Ateliê</h2>
+      </div>
+      <div id="gridNovidades" class="gc-grid-products">
+        <!-- Injetado dinamicamente via JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts Essenciais de Luxo -->
+  <script src="./js/loader.js"></script>
+  <script src="./js/shared-ui.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const products = await window.fetchCatalog();
+      if (!products || !products.length) return;
+
+      // Ordenar pelas novidades ou por ID decrescente
+      const novidades = [...products].sort((a, b) => {
+        if (a.badge === 'Novo' && b.badge !== 'Novo') return -1;
+        if (b.badge === 'Novo' && a.badge !== 'Novo') return 1;
+        return (b.id || 0) - (a.id || 0);
+      });
+
+      // Destaque de lançamento
+      const spotlight = novidades[0];
+      const spotEl = document.getElementById('spotlightSection');
+      if (spotlight && spotEl) {
+        const spotPrice = spotlight.price ? `R$ ${Number(spotlight.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+        spotEl.innerHTML = `
+          <div class="gc-spotlight-card">
+            <img src="${spotlight.image || (spotlight.gallery && spotlight.gallery[0]) || './assets/icon.svg'}" alt="${spotlight.name}" class="gc-spotlight-img" onerror="this.src='./assets/icon.svg'">
+            <div class="gc-spotlight-info">
+              <span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:12px">Destaque Exclusivo</span>
+              <h2>${spotlight.name}</h2>
+              <p>${spotlight.desc || 'Peça artesanal recém-adicionada ao catálogo oficial com fio nobre e caimento incomparável.'}</p>
+              <div style="font-family:var(--font-body);font-size:1.6rem;font-weight:700;color:var(--color-gold-deep);margin-bottom:24px">${spotPrice}</div>
+              <a href="./produtos/${spotlight.slug || 'produto'}.html" class="gc-btn-checkout" style="text-decoration:none;display:inline-flex;padding:14px 28px">
+                Conhecer a Peça &rarr;
+              </a>
+            </div>
+          </div>
+        `;
+      }
+
+      // Grade com as outras novidades
+      const grid = document.getElementById('gridNovidades');
+      if (grid) {
+        grid.innerHTML = novidades.slice(1).map(p => {
+          const slug = p.slug || 'produto';
+          const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+          const installments = p.price ? `3x de R$ ${(Number(p.price) / 3).toFixed(2).replace('.', ',')}` : 'Feito à mão';
+          const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
+          const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '<span class="gc-badge-tag">Lançamento</span>';
+
+          return `
+            <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
+              <div class="gc-product-card-img-wrap">
+                ${badge}
+                <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </button>
+                <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
+              </div>
+              <div class="gc-product-card-body">
+                <span class="gc-product-category">${p.category || 'Ateliê'}</span>
+                <h3 class="gc-product-title">${p.name}</h3>
+                <p class="gc-product-desc">${p.desc || ''}</p>
+                <div class="gc-product-price-row">
+                  <span class="gc-product-price">${priceStr}</span>
+                  <span class="gc-product-installments">${installments}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (window.GoldFav && window.GoldFav.updateUI) {
+        window.GoldFav.updateUI();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Peças — Gold Crochet Alta-Costura</title>
+  <meta name="description" content="Catálogo completo de criações artesanais da Gold Crochet. Vestuário, bolsas, peças sob medida e mesa posta feitas à mão.">
+  <link rel="canonical" href="https://goldcrochet-shop.github.io/pecas.html">
+  <meta name="theme-color" content="#cda434">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg?v=buzio2026">
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/icon.png?v=buzio2026">
+  <link rel="shortcut icon" href="./favicon.ico?v=buzio2026">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icon.png?v=buzio2026">
+
+  <!-- Fontes de Luxo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./css/luxury-core.css">
+
+  <style>
+    .gc-catalog-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    .gc-search-box {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+    }
+    .gc-search-input {
+      width: 100%;
+      padding: 12px 18px 12px 42px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--color-border);
+      background: white;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+    .gc-search-input:focus {
+      border-color: var(--color-gold);
+      box-shadow: 0 0 16px var(--color-gold-glow);
+    }
+    .gc-search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-muted);
+      pointer-events: none;
+    }
+    .gc-empty-results {
+      text-align: center;
+      padding: 60px 20px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .gc-results-counter {
+      font-size: 0.85rem;
+      color: var(--color-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="gc-container">
+    <!-- Hero do Catálogo -->
+    <header class="gc-page-hero">
+      <span class="gc-page-hero-tag">Catálogo Completo</span>
+      <h1 class="gc-page-hero-title">Todas as Peças</h1>
+      <p class="gc-page-hero-desc">
+        Explore nosso acervo completo de criações tecidas à mão. Cada ponto, textura e acabamento é desenhado para durar gerações.
+      </p>
+    </header>
+
+    <!-- Controles & Filtros -->
+    <section class="gc-catalog-controls">
+      <div class="gc-search-box">
+        <svg class="gc-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="catalogSearch" class="gc-search-input" placeholder="Buscar por peça, tecido ou nome..." autocomplete="off">
+      </div>
+
+      <div class="gc-filters-bar" id="filtersBar">
+        <button class="gc-filter-pill active" data-filter="all">Todas as Peças</button>
+        <button class="gc-filter-pill" data-filter="vestuario">Vestuário</button>
+        <button class="gc-filter-pill" data-filter="bolsas">Bolsas</button>
+        <button class="gc-filter-pill" data-filter="casa">Casa &amp; Mesa</button>
+        <button class="gc-filter-pill" data-filter="personalizado">Sob Medida</button>
+        <button class="gc-filter-pill" data-filter="favoritos">Meus Favoritos</button>
+      </div>
+
+      <span class="gc-results-counter" id="resultsCount">Carregando acervo...</span>
+    </section>
+
+    <!-- Grade de Produtos -->
+    <section id="catalogGrid" class="gc-grid-products">
+      <!-- Injetado dinamicamente via JS -->
+    </section>
+
+    <!-- Mensagem de Vazio -->
+    <div id="catalogEmpty" class="gc-empty-results">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <h3 style="font-family:var(--font-display);font-size:1.4rem">Nenhuma peça encontrada</h3>
+      <p style="color:var(--color-muted);max-width:420px">Tente buscar por outro termo ou selecione outra categoria.</p>
+      <button class="gc-filter-pill" style="background:var(--color-gold);color:white;margin-top:10px" onclick="resetFilters()">Limpar Filtros</button>
+    </div>
+  </main>
+
+  <!-- Scripts Essenciais de Luxo -->
+  <script src="./js/loader.js"></script>
+  <script src="./js/shared-ui.js"></script>
+  <script>
+    let allProducts = [];
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      allProducts = await window.fetchCatalog();
+
+      // Checa parâmetros de URL (ex: ?filtro=bolsas ou ?filtro=favoritos)
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialFilter = urlParams.get('filtro') || urlParams.get('categoria') || 'all';
+
+      setFilter(initialFilter);
+
+      // Eventos de filtro
+      document.querySelectorAll('#filtersBar .gc-filter-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setFilter(btn.dataset.filter);
+        });
+      });
+
+      // Evento de pesquisa
+      const searchInput = document.getElementById('catalogSearch');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value.trim().toLowerCase();
+          renderCatalog();
+        });
+      }
+    });
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('#filtersBar .gc-filter-pill').forEach(btn => {
+        if (btn.dataset.filter === filter) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      renderCatalog();
+    }
+
+    function resetFilters() {
+      const searchInput = document.getElementById('catalogSearch');
+      if (searchInput) searchInput.value = '';
+      searchQuery = '';
+      setFilter('all');
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById('catalogGrid');
+      const empty = document.getElementById('catalogEmpty');
+      const counter = document.getElementById('resultsCount');
+      if (!grid) return;
+
+      const favs = window.GoldFav ? window.GoldFav.list() : [];
+
+      const filtered = allProducts.filter(p => {
+        // Filtro por categoria
+        if (currentFilter === 'vestuario') {
+          const isVest = p.category === 'vestuario' || p.category === 'saias-vestidos' || p.category === 'tops' || p.category === 'calcas';
+          if (!isVest) return false;
+        } else if (currentFilter === 'bolsas') {
+          if (p.category !== 'bolsas') return false;
+        } else if (currentFilter === 'casa') {
+          if (p.section !== 'casa' && p.category !== 'decoracoes') return false;
+        } else if (currentFilter === 'personalizado') {
+          if (p.category !== 'personalizado' && !p.custom) return false;
+        } else if (currentFilter === 'favoritos') {
+          if (!favs.includes(p.id)) return false;
+        }
+
+        // Filtro por busca
+        if (searchQuery) {
+          const name = (p.name || '').toLowerCase();
+          const desc = (p.desc || '').toLowerCase();
+          const cat = (p.category || '').toLowerCase();
+          const mat = (p.material || '').toLowerCase();
+          if (!name.includes(searchQuery) && !desc.includes(searchQuery) && !cat.includes(searchQuery) && !mat.includes(searchQuery)) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      if (counter) {
+        counter.textContent = `${filtered.length} ${filtered.length === 1 ? 'peça encontrada' : 'peças encontradas'}`;
+      }
+
+      if (filtered.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'flex';
+        return;
+      }
+
+      grid.style.display = 'grid';
+      empty.style.display = 'none';
+
+      grid.innerHTML = filtered.map(p => {
+        const slug = p.slug || 'produto';
+        const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+        const installments = p.price ? `3x de R$ ${(Number(p.price) / 3).toFixed(2).replace('.', ',')}` : 'Feito sob medida';
+        const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
+        const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '';
+
+        return `
+          <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
+            <div class="gc-product-card-img-wrap">
+              ${badge}
+              <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </button>
+              <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
+            </div>
+            <div class="gc-product-card-body">
+              <span class="gc-product-category">${p.category || 'Ateliê'}</span>
+              <h3 class="gc-product-title">${p.name}</h3>
+              <p class="gc-product-desc">${p.desc || ''}</p>
+              <div class="gc-product-price-row">
+                <span class="gc-product-price">${priceStr}</span>
+                <span class="gc-product-installments">${installments}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.GoldFav && window.GoldFav.updateUI) {
+        window.GoldFav.updateUI();
+      }
+    }
+  </script>
+</body>
+</html>

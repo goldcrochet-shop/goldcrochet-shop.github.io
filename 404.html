@@ -64,7 +64,7 @@
   </style>
 
   <script>
-    // GitHub Pages SPA & Slug Redirector
+    // GitHub Pages Traditional HTML & Slug Redirector
     (function() {
       var pathname = window.location.pathname;
       var repoPrefix = '';
@@ -79,15 +79,33 @@
         return;
       }
 
-      // 2. Redirecionamento de páginas de produtos limpas (ex: /regata-noronha -> /index.html#/produto/regata-noronha)
-      if (clean && !clean.includes('.') && clean !== 'index') {
-        var targetSlug = clean.replace(/^produtos\//, '');
-        window.location.replace(window.location.origin + repoPrefix + '/index.html#/produto/' + targetSlug);
+      // 2. Redirecionamento para páginas principais
+      if (clean === 'colecoes' || clean === 'colecoes/') {
+        window.location.replace(window.location.origin + repoPrefix + '/colecoes.html');
+        return;
+      }
+      if (clean === 'pecas' || clean === 'pecas/' || clean === 'catalogo') {
+        window.location.replace(window.location.origin + repoPrefix + '/pecas.html');
+        return;
+      }
+      if (clean === 'novidades' || clean === 'novidades/') {
+        window.location.replace(window.location.origin + repoPrefix + '/novidades.html');
+        return;
+      }
+      if (clean === 'casa-gold' || clean === 'casa-gold/' || clean === 'casa') {
+        window.location.replace(window.location.origin + repoPrefix + '/casa-gold.html');
         return;
       }
 
-      // 3. Fallback geral para o catálogo
-      window.location.replace(window.location.origin + repoPrefix + '/index.html#/catalogo');
+      // 3. Redirecionamento de páginas de produtos físicas (ex: /produtos/bolsa-dunas ou /bolsa-dunas -> /produtos/bolsa-dunas.html)
+      if (clean && !clean.includes('.')) {
+        var slug = clean.replace(/^(produtos|produto)\//, '');
+        window.location.replace(window.location.origin + repoPrefix + '/produtos/' + slug + '.html');
+        return;
+      }
+
+      // 4. Fallback geral para o Início
+      window.location.replace(window.location.origin + repoPrefix + '/index.html');
     })();
   </script>
 </head>

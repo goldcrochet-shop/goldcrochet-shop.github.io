@@ -1,1044 +1,414 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Gold Crochet</title>
-<meta name="description" content="Peças em crochê feitas à mão, com acabamento premium.">
-<meta name="theme-color" content="#d4af37">
-<meta name="color-scheme" content="light">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Gold Crochet — Alta-Costura em Crochê Artesanal</title>
+  <meta name="description" content="Ateliê de alta-costura brasileira especializado em crochê manual com fios nobres. Vestuário contemporâneo, bolsas estruturadas e mesa posta exclusiva.">
+  <link rel="canonical" href="https://goldcrochet-shop.github.io/">
+  <meta name="theme-color" content="#cda434">
 
-<link rel="icon" type="image/svg+xml" href="./assets/icon.svg?v=buzio2026">
-<link rel="icon" type="image/png" sizes="64x64" href="./assets/icon.png?v=buzio2026">
-<link rel="shortcut icon" href="./favicon.ico?v=buzio2026">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/icon.png?v=buzio2026">
+  <!-- OpenGraph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Gold Crochet — Alta-Costura em Crochê Artesanal">
+  <meta property="og:description" content="Ateliê de alta-costura brasileira especializado em crochê manual com fios nobres. Vestuário contemporâneo, bolsas estruturadas e mesa posta exclusiva.">
+  <meta property="og:image" content="./assets/icon.svg">
+  <meta property="og:url" content="https://goldcrochet-shop.github.io/">
+  <meta property="og:site_name" content="Gold Crochet">
 
-<meta property="og:title" content="Gold Crochet">
-<meta property="og:description" content="Peças únicas, personalizadas e com acabamento premium.">
-<meta property="og:type" content="website">
-<meta property="og:image" content="./assets/logo.png">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="dns-prefetch" href="https://raw.githubusercontent.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
-<link rel="stylesheet" href="./style.css">
+  <!-- Favicons Oficiais do Búzio Dourado -->
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg?v=buzio2026">
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/icon.png?v=buzio2026">
+  <link rel="shortcut icon" href="./favicon.ico?v=buzio2026">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icon.png?v=buzio2026">
+
+  <!-- Fontes de Alta Moda -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./css/luxury-core.css">
+
+  <style>
+    /* ════════════════════════════════════════
+       HERO EDITORIAL HAUTE COUTURE
+       ════════════════════════════════════════ */
+    .gc-hero-editorial {
+      position: relative;
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: radial-gradient(circle at 50% 40%, #fffdf9 0%, #f7f3e9 100%);
+      padding: 80px 24px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .gc-hero-editorial::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(205, 164, 52, 0.08) 0%, transparent 60%),
+                  radial-gradient(circle at 80% 80%, rgba(205, 164, 52, 0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .gc-hero-inner {
+      max-width: 900px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .gc-hero-subtag {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--color-gold-deep);
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .gc-hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 7vw, 5.2rem);
+      line-height: 1.08;
+      color: var(--color-ebony);
+      margin-bottom: 24px;
+      letter-spacing: -0.01em;
+    }
+
+    .gc-hero-title em {
+      font-style: italic;
+      color: var(--color-gold-deep);
+      font-weight: 400;
+    }
+
+    .gc-hero-lead {
+      font-family: var(--font-body);
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--color-muted);
+      line-height: 1.7;
+      max-width: 640px;
+      margin: 0 auto 36px;
+    }
+
+    .gc-hero-cta-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .gc-btn-hero-primary {
+      background: linear-gradient(135deg, var(--color-gold), var(--color-gold-deep));
+      color: white;
+      text-decoration: none;
+      padding: 16px 36px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 24px rgba(166, 124, 0, 0.32);
+      transition: var(--transition-smooth);
+    }
+
+    .gc-btn-hero-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(166, 124, 0, 0.45);
+    }
+
+    .gc-btn-hero-secondary {
+      background: white;
+      color: var(--color-charcoal);
+      text-decoration: none;
+      padding: 15px 32px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid var(--color-border);
+      transition: var(--transition-smooth);
+    }
+
+    .gc-btn-hero-secondary:hover {
+      background: var(--color-sand);
+      color: var(--color-gold-deep);
+      border-color: var(--color-gold);
+    }
+
+    /* ════════════════════════════════════════
+       GRID DE LINHAS E PORTAIS
+       ════════════════════════════════════════ */
+    .gc-lines-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin: 60px 0;
+    }
+
+    @media (max-width: 960px) {
+      .gc-lines-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 540px) {
+      .gc-lines-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gc-line-portal {
+      position: relative;
+      background: white;
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      padding: 32px 24px;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      transition: var(--transition-smooth);
+      box-shadow: var(--shadow-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gc-line-portal:hover {
+      transform: translateY(-6px);
+      border-color: var(--color-gold);
+      box-shadow: var(--shadow-luxury);
+    }
+
+    .gc-line-portal-icon {
+      font-size: 2.2rem;
+      margin-bottom: 14px;
+    }
+
+    .gc-line-portal h3 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      color: var(--color-ebony);
+      margin-bottom: 6px;
+    }
+
+    .gc-line-portal p {
+      font-size: 0.82rem;
+      color: var(--color-muted);
+      line-height: 1.5;
+    }
+
+    .gc-line-portal-arrow {
+      margin-top: 14px;
+      font-size: 0.8rem;
+      color: var(--color-gold-deep);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ════════════════════════════════════════
+       MANIFESTO DO ATELIÊ
+       ════════════════════════════════════════ */
+    .gc-manifesto-strip {
+      background: var(--color-ebony);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 60px 48px;
+      margin: 70px auto;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(205, 164, 52, 0.3);
+    }
+
+    .gc-manifesto-strip::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(205, 164, 52, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .gc-manifesto-strip h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      margin-bottom: 16px;
+      color: #fff8db;
+    }
+
+    .gc-manifesto-strip p {
+      font-size: 1.05rem;
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 680px;
+      margin: 0 auto 28px;
+      line-height: 1.8;
+    }
+
+    .gc-section-header-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 16px;
+      margin-bottom: 28px;
+    }
+
+    .gc-section-header-row h2 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--color-ebony);
+    }
+
+    .gc-section-header-row a {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--color-gold-deep);
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+  </style>
 </head>
 <body>
 
-<a href="#mainContent" class="skip-link">Pular para o conteúdo</a>
-<canvas id="particleCanvas" aria-hidden="true"></canvas>
-<div class="mouse-light" id="mouseLight" aria-hidden="true"></div>
-
-<!-- Indicador de swipe-back -->
-<div class="edge-swipe-indicator" id="edgeSwipeIndicator" aria-hidden="true"></div>
-
-<!-- SEARCH OVERLAY -->
-<div class="search-overlay" id="searchOverlay" role="dialog" aria-modal="true" aria-label="Pesquisa">
-  <div class="search-overlay-header">
-    <span class="search-overlay-title">Pesquisar</span>
-    <button class="search-overlay-close" onclick="closeSearchOverlay()" aria-label="Fechar pesquisa">✕</button>
-  </div>
-  <div class="search-overlay-content">
-    <div class="search-overlay-input-wrap">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="text" id="searchOverlayInput" placeholder="Buscar peças... (Ctrl+K)" oninput="onSearchOverlay(this.value)">
-      <button class="search-overlay-clear" id="searchOverlayClear" type="button" onclick="clearSearchOverlayInput()" aria-label="Limpar pesquisa" title="Limpar">✕</button>
+  <!-- Hero Editorial de Alta-Costura -->
+  <section class="gc-hero-editorial">
+    <div class="gc-hero-inner">
+      <span class="gc-hero-subtag">Ateliê de Alta-Costura Brasileira</span>
+      <h1 class="gc-hero-title">
+        A Beleza Imutável do <em>Crochê Artesanal</em>
+      </h1>
+      <p class="gc-hero-lead">
+        Peças tecidas ponto a ponto com fios nobres selecionados, modelagens contemporâneas e acabamento minucioso que traduz o luxo despretensioso do Brasil.
+      </p>
+      <div class="gc-hero-cta-group">
+        <a href="./pecas.html" class="gc-btn-hero-primary">Explorar Peças</a>
+        <a href="./colecoes.html" class="gc-btn-hero-secondary">Ver Coleções</a>
+      </div>
     </div>
-    <div class="search-overlay-results" id="searchOverlayResults"></div>
-  </div>
-</div>
+  </section>
 
-<!-- NAV -->
-<nav id="mainNav" aria-label="Navegação principal">
-  <div class="nav-inner">
+  <main class="gc-container">
+    <!-- Portais das 4 Linhas Principais -->
+    <section class="gc-lines-grid">
+      <a href="./colecoes.html" class="gc-line-portal">
+        <span class="gc-line-portal-icon">✨</span>
+        <h3>Coleções</h3>
+        <p>Narrativas autorais: Essenciais, Alto Verão e temas sazonais.</p>
+        <span class="gc-line-portal-arrow">Descobrir &rarr;</span>
+      </a>
 
-    <div class="nav-left">
-      <button class="hamburger" id="hamburger" type="button" onclick="toggleLeftMenu()" aria-label="Abrir menu" aria-expanded="false" aria-controls="leftMenu">
-        <span></span><span></span><span></span>
-      </button>
-      <button class="icon-btn search-trigger" id="searchTriggerBtn" aria-label="Pesquisa" onclick="toggleSearchOverlay()" title="Pesquisa (Ctrl+K)">
-        <svg class="st-icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <svg class="st-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        <span class="icon-btn-label">Pesquisa</span>
-      </button>
-    </div>
+      <a href="./pecas.html" class="gc-line-portal">
+        <span class="gc-line-portal-icon">🧶</span>
+        <h3>Todas as Peças</h3>
+        <p>Vestuário, saias, tops e acessórios com caimento impecável.</p>
+        <span class="gc-line-portal-arrow">Ver Catálogo &rarr;</span>
+      </a>
 
-    <a href="#" class="nav-logo" onclick="showPage('inicio');return false;" aria-label="Gold Crochet - Início">
-      <img id="navLogoImg" src="./assets/logo.png" alt="Gold Crochet">
-    </a>
+      <a href="./novidades.html" class="gc-line-portal">
+        <span class="gc-line-portal-icon">🌟</span>
+        <h3>Novidades</h3>
+        <p>Peças recém-saídas das agulhas em pequenos lotes exclusivos.</p>
+        <span class="gc-line-portal-arrow">Conferir &rarr;</span>
+      </a>
 
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#/inicio" onclick="showPage('inicio');return false;" class="active" id="nav-inicio">Início</a></li>
-      <li><a href="#/colecoes" onclick="showPage('colecoes');return false;" id="nav-colecoes">Coleções</a></li>
-      <li><a href="#/pecas" onclick="showPage('produtos');return false;" id="nav-produtos">Peças</a></li>
-      <li><a href="#/novidades" onclick="showPage('novidades');return false;" id="nav-novidades">Novidades</a></li>
-      <li><a href="#/casa-gold" onclick="showPage('sobre');return false;" id="nav-sobre">Casa Gold</a></li>
-    </ul>
+      <a href="./casa-gold.html" class="gc-line-portal">
+        <span class="gc-line-portal-icon">🏡</span>
+        <h3>Casa Gold</h3>
+        <p>Mesa posta, trilhos botânicos e sousplats em algodão nobre.</p>
+        <span class="gc-line-portal-arrow">Acessar &rarr;</span>
+      </a>
+    </section>
 
-    <div class="nav-icons">
-      <button class="icon-btn" aria-label="Conta" onclick="handleAccountAction()" title="Minha conta" id="userAccountBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      </button>
-      <button class="icon-btn" aria-label="Favoritos" onclick="handleFavoritesAction()" title="Favoritos" id="favIconBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-        <span class="badge hidden" id="navFavCount">0</span>
-      </button>
-      <button class="icon-btn" aria-label="Sacola de compras" onclick="toggleCart()" title="Sacola de compras">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-        <span class="badge hidden" id="navCartCount">0</span>
-      </button>
-    </div>
-  </div>
-</nav>
-
-<!-- MEGA MENU: PEÇAS -->
-<div class="mega-menu" id="megaMenuPecas" role="region" aria-label="Menu de peças">
-  <div class="mega-menu-inner">
-    <div class="mega-col">
-      <h3>Essenciais</h3>
-      <div class="mega-diaadia-grid">
+    <!-- Vitrine de Peças em Destaque -->
+    <section style="margin: 80px 0 50px;">
+      <div class="gc-section-header-row">
         <div>
-          <div class="mega-subhead">Para Ela</div>
-          <ul>
-            <li><a onclick="megaGoToCategory('roupas-noite','feminino');return false;">Roupas para noite</a></li>
-            <li><a onclick="megaGoToCategory('saias-vestidos','feminino');return false;">Saias e vestidos</a></li>
-            <li><a onclick="megaGoToCategory('jaquetas-casacos','feminino');return false;">Jaquetas e casacos</a></li>
-            <li><a onclick="megaGoToCategory('tops','feminino');return false;">Tops</a></li>
-            <li><a onclick="megaGoToCategory('calcas','feminino');return false;">Calças</a></li>
-            <li class="mega-see-all"><a onclick="megaGoToSectionGender('dia-a-dia','feminino');return false;">Ver tudo</a></li>
-          </ul>
+          <h2>Destaques do Ateliê</h2>
+          <p style="color:var(--color-muted);font-size:0.9rem">Criações mais desejadas pelas clientes da Gold Crochet.</p>
         </div>
-        <div>
-          <div class="mega-subhead">Para Ele</div>
-          <ul>
-            <li><a onclick="megaGoToCategory('roupas-noite','masculino');return false;">Roupas para noite</a></li>
-            <li><a onclick="megaGoToCategory('jaquetas-casacos','masculino');return false;">Jaquetas e casacos</a></li>
-            <li><a onclick="megaGoToCategory('calcas','masculino');return false;">Calças</a></li>
-            <li class="mega-see-all"><a onclick="megaGoToSectionGender('dia-a-dia','masculino');return false;">Ver tudo</a></li>
-          </ul>
-        </div>
+        <a href="./pecas.html">Ver Todo o Acervo &rarr;</a>
       </div>
-    </div>
 
-    <div class="mega-col">
-      <h3>Pequeninos</h3>
-      <ul>
-        <li><a onclick="megaGoToCategory('bebe');return false;">Bebê</a></li>
-        <li><a onclick="megaGoToCategory('garotas');return false;">Garotas</a></li>
-        <li><a onclick="megaGoToCategory('garotos');return false;">Garotos</a></li>
-        <li><a onclick="megaGoToCategory('presentes');return false;">Presentes</a></li>
-        <li class="mega-see-all"><a onclick="megaGoToSection('pequeninos');return false;">Ver tudo</a></li>
-      </ul>
-    </div>
-
-    <div class="mega-col">
-      <h3>Acessórios</h3>
-      <ul>
-        <li><a onclick="megaGoToCategory('bolsas');return false;">Bolsas</a></li>
-        <li><a onclick="megaGoToCategory('charms');return false;">Charms</a></li>
-        <li class="mega-see-all"><a onclick="megaGoToSection('acessorios');return false;">Ver tudo</a></li>
-      </ul>
-    </div>
-
-    <div class="mega-col">
-      <h3>Bijuterias</h3>
-      <ul>
-        <li><a onclick="megaGoToCategory('brincos');return false;">Brincos</a></li>
-        <li><a onclick="megaGoToCategory('colares');return false;">Colares</a></li>
-        <li><a onclick="megaGoToCategory('broches');return false;">Broches</a></li>
-        <li><a onclick="megaGoToCategory('braceletes');return false;">Braceletes</a></li>
-        <li><a onclick="megaGoToCategory('aneis');return false;">Anéis</a></li>
-        <li class="mega-see-all"><a onclick="megaGoToSection('bijuterias');return false;">Ver tudo</a></li>
-      </ul>
-    </div>
-
-    <div class="mega-col">
-      <h3>Artigos para Casa</h3>
-      <ul>
-        <li><a onclick="megaGoToCategory('decoracoes');return false;">Decorações</a></li>
-        <li><a onclick="megaGoToCategory('mantas');return false;">Mantas &amp; Cobertores</a></li>
-        <li><a onclick="megaGoToCategory('amigurumi');return false;">Amigurumis</a></li>
-        <li class="mega-see-all"><a onclick="megaGoToSection('casa');return false;">Ver tudo</a></li>
-      </ul>
-    </div>
-
-    <div class="mega-image-slot" aria-hidden="true">
-      <img src="./assets/mega-pecas.png" alt=""
-           onerror="this.style.display='none';this.nextElementSibling.style.display='inline';">
-      <span style="display:none">Sua imagem aqui</span>
-    </div>
-  </div>
-</div>
-
-<!-- MEGA MENU: CASA GOLD -->
-<div class="mega-menu" id="megaMenuCasa" role="region" aria-label="Menu Casa Gold">
-  <div class="mega-menu-inner mega-casa">
-    <a class="mega-casa-block" onclick="megaGoTo('sustentabilidade');return false;">
-      <h3>Sustentabilidade</h3>
-      <p>Nosso compromisso com o consumo consciente, fios responsáveis e produção artesanal de baixo impacto.</p>
-      <span class="mega-casa-arrow">Conhecer →</span>
-    </a>
-    <a class="mega-casa-block" onclick="megaGoTo('periodo-atemporal');return false;">
-      <h3>O período atemporal</h3>
-      <p>A relação entre o ciclo do ouro e a nossa visão de arte que atravessa gerações.</p>
-      <span class="mega-casa-arrow">Descobrir →</span>
-    </a>
-    <a class="mega-casa-block" onclick="megaGoTo('sobre');return false;">
-      <h3>Sobre Gold Crochet</h3>
-      <p>A história da casa, nossa essência e cada ponto que nos trouxe até aqui.</p>
-      <span class="mega-casa-arrow">Conhecer →</span>
-    </a>
-    <a class="mega-casa-block" onclick="megaGoTo('colaboracoes');return false;">
-      <h3>Colaborações & Artistas</h3>
-      <p>A influência dos artistas, parcerias criativas e o crochê como expressão coletiva.</p>
-      <span class="mega-casa-arrow">Descobrir →</span>
-    </a>
-    <a class="mega-casa-block" onclick="megaGoTo('cuidados');return false;">
-      <h3>Cuidados Gold Crochet</h3>
-      <p>Como lavar, secar e guardar suas peças para que durem por gerações.</p>
-      <span class="mega-casa-arrow">Saiba mais →</span>
-    </a>
-    <a class="mega-casa-block" onclick="megaGoTo('entregas');return false;">
-      <h3>Entrega & Devolução</h3>
-      <p>Prazos, formas de envio e nossa política de trocas e devoluções.</p>
-      <span class="mega-casa-arrow">Consultar →</span>
-    </a>
-  </div>
-</div>
-
-<!-- USER DROPDOWN -->
-<div class="user-dropdown" id="userDropdown" role="dialog" aria-label="Minha conta">
-  <div class="user-dropdown-top">
-    <div class="user-dropdown-avatar" id="userDropAvatar">GC</div>
-    <div class="user-dropdown-meta">
-      <div class="user-dropdown-name" id="userDropName">Olá, Visitante</div>
-      <div class="user-dropdown-sub" id="userDropSub">Entre para ver sua conta</div>
-    </div>
-  </div>
-  <div class="user-dropdown-actions" id="userDropActions"></div>
-</div>
-
-<!-- OVERLAY DO MENU -->
-<div class="left-menu-overlay" id="leftMenuOverlay" aria-hidden="true" onclick="closeLeftMenu()"></div>
-
-<!-- MENU LATERAL -->
-<aside class="left-menu" id="leftMenu" role="dialog" aria-modal="true" aria-label="Menu de navegação" aria-hidden="true">
-  <div class="left-menu-header">
-    <div class="left-menu-brand">
-      <div class="nav-logo-circle" style="width:38px;height:38px;">
-        <img src="./assets/icon.svg" alt="Gold Crochet" class="logo-round-img">
+      <div id="gridHomeFeatured" class="gc-grid-products">
+        <!-- Injetado dinamicamente via JS -->
       </div>
-      <div>
-        <div class="left-menu-title">Gold Crochet</div>
-        <span class="left-menu-subtitle">Alta Moda Brasileira</span>
-      </div>
-    </div>
-    <button class="left-menu-close" type="button" onclick="closeLeftMenu()" aria-label="Fechar menu">✕</button>
-  </div>
+    </section>
 
-  <div class="left-menu-scroll" id="leftMenuScroll">
-
-    <div class="left-menu-section-label">Navegação</div>
-    <nav class="left-menu-nav" id="leftMenuNav" aria-label="Menu principal">
-      <a href="#" id="left-nav-inicio" class="active" onclick="navigateFromMenu('inicio');return false;">
-        <span class="left-menu-icon" aria-hidden="true">🏠</span>
-        <span class="left-menu-link-text">Início</span>
-        <span class="left-menu-link-arrow" aria-hidden="true">›</span>
+    <!-- Manifesto do Feito à Mão -->
+    <section class="gc-manifesto-strip">
+      <h2>O Luxo da Paciência Artesanal</h2>
+      <p>
+        Na era da pressa e do descartável, a Gold Crochet celebra o tempo. Nossas peças levam dezenas de horas de dedicação manual minuciosa. Cada fio é entrelaçado com reverência à tradição têxtil e paixão pelo design.
+      </p>
+      <a href="./produtos/peca-personalizada.html" class="gc-btn-hero-primary" style="display:inline-block">
+        Encomendar Peça Sob Medida
       </a>
-      <a href="#" id="left-nav-colecoes" onclick="navigateFromMenu('colecoes');return false;">
-        <span class="left-menu-icon" aria-hidden="true">✨</span>
-        <span class="left-menu-link-text">Coleções</span>
-        <span class="left-menu-link-arrow" aria-hidden="true">›</span>
-      </a>
+    </section>
+  </main>
 
-      <a href="#" id="left-nav-produtos" class="has-sub" aria-expanded="false" aria-controls="leftMenuPecasSub" onclick="togglePecasSubmenu(event);return false;">
-        <span class="left-menu-icon" aria-hidden="true">🧶</span>
-        <span class="left-menu-link-text">Peças</span>
-        <span class="left-menu-link-arrow" aria-hidden="true">›</span>
-      </a>
-      <div class="left-menu-sub" id="leftMenuPecasSub">
+  <!-- Scripts Essenciais de Luxo -->
+  <script src="./js/loader.js"></script>
+  <script src="./js/shared-ui.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const products = await window.fetchCatalog();
+      if (!products || !products.length) return;
 
-        <div class="left-menu-sub-row">
-          <div class="left-menu-sub-group">
-            <span class="left-menu-sub-label">Para Ela</span>
-            <a href="#" onclick="navigateFromSubMenu('roupas-noite','feminino');return false;">Roupas p/ noite</a>
-            <a href="#" onclick="navigateFromSubMenu('saias-vestidos','feminino');return false;">Saias &amp; vestidos</a>
-            <a href="#" onclick="navigateFromSubMenu('jaquetas-casacos','feminino');return false;">Jaquetas &amp; casacos</a>
-            <a href="#" onclick="navigateFromSubMenu('tops','feminino');return false;">Tops</a>
-            <a href="#" onclick="navigateFromSubMenu('calcas','feminino');return false;">Calças</a>
-          </div>
-          <div class="left-menu-sub-group">
-            <span class="left-menu-sub-label">Para Ele</span>
-            <a href="#" onclick="navigateFromSubMenu('roupas-noite','masculino');return false;">Roupas p/ noite</a>
-            <a href="#" onclick="navigateFromSubMenu('jaquetas-casacos','masculino');return false;">Jaquetas &amp; casacos</a>
-            <a href="#" onclick="navigateFromSubMenu('calcas','masculino');return false;">Calças</a>
-          </div>
-        </div>
+      const grid = document.getElementById('gridHomeFeatured');
+      if (grid) {
+        // Seleciona peças em destaque ou primeiras 6 peças
+        const featured = products.filter(p => p.badge || p.price > 0).slice(0, 6);
 
-        <div class="left-menu-sub-group">
-          <span class="left-menu-sub-label">Pequeninos</span>
-          <a href="#" onclick="navigateFromSubMenu('bebe');return false;">Bebê</a>
-          <a href="#" onclick="navigateFromSubMenu('garotas');return false;">Garotas</a>
-          <a href="#" onclick="navigateFromSubMenu('garotos');return false;">Garotos</a>
-          <a href="#" onclick="navigateFromSubMenu('presentes');return false;">Presentes</a>
-        </div>
+        grid.innerHTML = featured.map(p => {
+          const slug = p.slug || 'produto';
+          const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+          const installments = p.price ? `3x de R$ ${(Number(p.price) / 3).toFixed(2).replace('.', ',')}` : 'Feito sob medida';
+          const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
+          const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '';
 
-        <div class="left-menu-sub-group">
-          <span class="left-menu-sub-label">Acessórios</span>
-          <a href="#" onclick="navigateFromSubMenu('bolsas');return false;">Bolsas</a>
-          <a href="#" onclick="navigateFromSubMenu('charms');return false;">Charms</a>
-        </div>
+          return `
+            <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
+              <div class="gc-product-card-img-wrap">
+                ${badge}
+                <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </button>
+                <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
+              </div>
+              <div class="gc-product-card-body">
+                <span class="gc-product-category">${p.category || 'Ateliê'}</span>
+                <h3 class="gc-product-title">${p.name}</h3>
+                <p class="gc-product-desc">${p.desc || ''}</p>
+                <div class="gc-product-price-row">
+                  <span class="gc-product-price">${priceStr}</span>
+                  <span class="gc-product-installments">${installments}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
 
-        <div class="left-menu-sub-group">
-          <span class="left-menu-sub-label">Bijuterias</span>
-          <a href="#" onclick="navigateFromSubMenu('brincos');return false;">Brincos</a>
-          <a href="#" onclick="navigateFromSubMenu('colares');return false;">Colares</a>
-          <a href="#" onclick="navigateFromSubMenu('broches');return false;">Broches</a>
-          <a href="#" onclick="navigateFromSubMenu('braceletes');return false;">Braceletes</a>
-          <a href="#" onclick="navigateFromSubMenu('aneis');return false;">Anéis</a>
-        </div>
-
-        <div class="left-menu-sub-group">
-          <span class="left-menu-sub-label">Artigos para Casa</span>
-          <a href="#" onclick="navigateFromSubMenu('decoracoes');return false;">Decorações</a>
-          <a href="#" onclick="navigateFromSubMenu('mantas');return false;">Mantas &amp; Cobertores</a>
-          <a href="#" onclick="navigateFromSubMenu('amigurumi');return false;">Amigurumis</a>
-        </div>
-
-        <a href="#" class="left-menu-sub-all" onclick="navigateFromSubMenu();return false;">Ver tudo</a>
-      </div>
-
-      <a href="#" id="left-nav-novidades" onclick="navigateFromMenu('novidades');return false;">
-        <span class="left-menu-icon" aria-hidden="true">📰</span>
-        <span class="left-menu-link-text">Novidades</span>
-        <span class="left-menu-link-arrow" aria-hidden="true">›</span>
-      </a>
-
-      <a href="#" id="left-nav-sobre" class="has-sub" aria-expanded="false" aria-controls="leftMenuCasaSub" onclick="toggleCasaSubmenu(event);return false;">
-        <span class="left-menu-icon" aria-hidden="true">🏛️</span>
-        <span class="left-menu-link-text">Casa Gold</span>
-        <span class="left-menu-link-arrow" aria-hidden="true">›</span>
-      </a>
-      <div class="left-menu-sub" id="leftMenuCasaSub">
-        <a href="#" onclick="navigateFromMenu('sustentabilidade');return false;">Sustentabilidade</a>
-        <a href="#" onclick="navigateFromMenu('periodo-atemporal');return false;">O período atemporal</a>
-        <a href="#" onclick="navigateFromMenu('sobre');return false;">Sobre Gold Crochet</a>
-        <a href="#" onclick="navigateFromMenu('colaboracoes');return false;">Colaborações &amp; Artistas</a>
-        <a href="#" onclick="navigateFromMenu('cuidados');return false;">Cuidados Gold Crochet</a>
-        <a href="#" onclick="navigateFromMenu('entregas');return false;">Entrega &amp; Devolução</a>
-      </div>
-    </nav>
-
-    <div class="left-menu-section-label">Acesso rápido</div>
-    <nav class="left-menu-nav" aria-label="Atalhos">
-      <a href="#" onclick="openSearchFromMenu();return false;">
-        <span class="left-menu-icon" aria-hidden="true">🔎</span>
-        <span class="left-menu-link-text">Pesquisar</span>
-        <span class="left-menu-link-arrow" aria-hidden="true">›</span>
-      </a>
-      <a href="#" id="drawerFavLink" onclick="openFavoritesFromMenu();return false;">
-        <span class="left-menu-icon" aria-hidden="true">❤️</span>
-        <span class="left-menu-link-text">Meus favoritos</span>
-        <span class="left-menu-link-arrow" aria-hidden="true">›</span>
-      </a>
-      <a href="#" id="drawerCartLink" onclick="openCartFromMenu();return false;">
-        <span class="left-menu-icon" aria-hidden="true">🛍️</span>
-        <span class="left-menu-link-text">Minha sacola</span>
-        <span class="left-menu-link-arrow" aria-hidden="true">›</span>
-      </a>
-      <a href="#" onclick="handleAccountFromMenu();return false;">
-        <span class="left-menu-icon" aria-hidden="true">👤</span>
-        <span class="left-menu-link-text">Minha conta</span>
-        <span class="left-menu-link-arrow" aria-hidden="true">›</span>
-      </a>
-    </nav>
-
-    <div class="left-menu-account" id="leftMenuAccount">
-      <div class="left-menu-account-head">
-        <div class="left-menu-avatar" id="leftMenuAvatar">GC</div>
-        <div class="left-menu-account-copy">
-          <div class="left-menu-account-name" id="leftMenuAccountName">Visitante</div>
-          <div class="left-menu-account-status" id="leftMenuAccountStatus">Entre para sincronizar favoritos.</div>
-        </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
-        <button type="button" id="leftMenuAccountAction" onclick="handleAccountFromMenu()" style="flex:1;">Entrar / Criar conta</button>
-        <button type="button" id="leftMenuLogoutBtn" onclick="closeLeftMenu();logoutUser()" style="display:none;background:rgba(235,87,87,0.08);border:1px solid rgba(235,87,87,0.3);color:#d93025;padding:8px 12px;border-radius:var(--radius-pill);font-size:0.8rem;font-weight:700;cursor:pointer;" title="Sair da conta">Sair</button>
-      </div>
-  </div>
-
-  <div class="left-menu-footer">
-    <p>Feito com amor, ponto por ponto 💛</p>
-    <div class="left-menu-social">
-      <a href="https://www.instagram.com/goldcrochetbrasil?stkn=MWVqaTlqcTBseGNtcQ%3D%3D&utm_source=qr" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="2.5" y="2.5" width="19" height="19" rx="5.4"></rect>
-          <circle cx="12" cy="12" r="4.2"></circle>
-          <circle cx="17.4" cy="6.6" r="1.15" fill="currentColor" stroke="none"></circle>
-        </svg>
-      </a>
-      <a href="mailto:rayssacrochet1404@gmail.com" aria-label="E-mail" title="E-mail">✉</a>
-    </div>
-  </div>
-</aside>
-
-<!-- FILTER SHEET (mobile) -->
-<div class="filter-sheet-overlay" id="filterSheetOverlay" onclick="closeFilterSheet()"></div>
-<aside class="filter-sheet" id="filterSheet" role="dialog" aria-modal="true" aria-label="Filtros">
-  <div class="filter-sheet-handle"></div>
-  <div class="filter-sheet-header">
-    <h3>Filtrar</h3>
-    <button class="filter-sheet-close" onclick="closeFilterSheet()" aria-label="Fechar filtros">✕</button>
-  </div>
-  <div class="filter-sheet-body" id="filterSheetBody"></div>
-  <div class="filter-sheet-footer">
-    <button class="filter-sheet-clear" onclick="clearFilterSheet()">Limpar</button>
-    <button class="filter-sheet-apply" onclick="closeFilterSheet()">Ver resultados</button>
-  </div>
-</aside>
-
-<!-- MOBILE BOTTOM NAV -->
-<nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Navegação rápida">
-  <button class="mbn-item active" data-page="inicio" onclick="showPage('inicio')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/></svg>
-    <span>Início</span>
-  </button>
-  <button class="mbn-item" data-page="produtos" onclick="showPage('produtos')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
-    <span>Peças</span>
-  </button>
-  <button class="mbn-item" onclick="handleFavoritesAction()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-    <span>Favoritos</span>
-    <span class="mbn-badge hidden" id="mbnFavBadge">0</span>
-  </button>
-  <button class="mbn-item" onclick="toggleCart()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    <span>Sacola</span>
-    <span class="mbn-badge hidden" id="mbnCartBadge">0</span>
-  </button>
-  <button class="mbn-item" onclick="handleAccountAction()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    <span>Conta</span>
-  </button>
-</nav>
-
-<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-</button>
-
-<!-- SACOLA -->
-<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-<div class="cart-panel" id="cartPanel" role="dialog" aria-modal="true" aria-label="Minha sacola">
-  <div class="cart-header"><h2>🛍️ Minha Sacola</h2><button class="cart-close" onclick="closeCart()" aria-label="Fechar sacola">✕</button></div>
-  <div class="cart-items" id="cartItems"><div class="cart-empty"><span class="empty-icon">🧶</span><p>Seu carrinho está vazio.<br>Explore nossas peças!</p></div></div>
-  <div class="cart-footer" id="cartFooter" style="display:none">
-    <div class="cart-total"><span>Total</span><strong id="cartTotal">R$ 0,00</strong></div>
-    <div class="cart-auth-note" id="cartAuthNote" style="display:none;"></div>
-    <button class="checkout-btn" id="checkoutBtn" onclick="handleCheckoutAction()">Finalizar pelo WhatsApp 🚀</button>
-    <div class="cart-auth-tip" id="cartAuthTip"></div>
-  </div>
-  <div class="cart-promo" id="cartPromo">
-    <h3>Pegue sua bolsa</h3>
-    <p>Faça login na Minha Conta para acessar sua sacola em todos os seus dispositivos.</p>
-    <button class="user-modal-btn" onclick="openUserModalFromCart()">Entrar na Minha Conta</button>
-  </div>
-</div>
-
-<!-- FAVORITOS -->
-<div class="fav-overlay" id="favOverlay" onclick="closeFavorites()"></div>
-<div class="fav-panel" id="favPanel" role="dialog" aria-modal="true" aria-label="Meus favoritos">
-  <div class="cart-header"><h2>❤️ Meus Favoritos</h2><button class="cart-close" onclick="closeFavorites()" aria-label="Fechar favoritos">✕</button></div>
-  <div class="cart-items" id="favItems"></div>
-</div>
-
-<!-- MODAL PRODUTO -->
-<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Detalhes do produto">
-  <div class="modal-box" id="modalBox">
-    <button class="modal-close" onclick="closeModal()" aria-label="Fechar produto">✕</button>
-    <div class="media-switcher-container">
-      <div class="media-switcher-tabs">
-        <button class="media-tab active" onclick="switchMedia('gallery')" id="tab-gallery">🖼 Galeria</button>
-        <button class="media-tab" onclick="switchMedia('model')" id="tab-model" style="display:none">🔲 Modelo 3D</button>
-      </div>
-      <div class="media-panel active" id="panel-gallery">
-        <div class="gallery-main" id="galleryMain"></div>
-        <div class="gallery-nav" id="galleryNav" style="display:none">
-          <button class="gallery-nav-btn" onclick="galleryPrev()" aria-label="Imagem anterior">‹</button>
-          <button class="gallery-nav-btn" onclick="galleryNext()" aria-label="Próxima imagem">›</button>
-        </div>
-        <div class="gallery-counter" id="galleryCounter"></div>
-        <div class="gallery-thumbs" id="galleryThumbs"></div>
-      </div>
-      <div class="media-panel" id="panel-model"></div>
-    </div>
-    <div class="modal-content" id="modalContent">
-      <h2 id="modalTitle"></h2>
-      <div class="modal-price-row" id="modalPriceRow"></div>
-      <div class="modal-print-info" id="modalPrintInfo"></div>
-      <p id="modalDesc"></p>
-      <div id="modalColors" style="margin-bottom:18px;"></div>
-      <button class="btn-primary" style="width:100%;font-size:1rem;border-radius:0 16px 0 16px;" onclick="addToCartFromModal()">Adicionar à Sacola 🛍️</button>
-    </div>
-  </div>
-</div>
-
-<!-- LOGIN & CONTA MODAL (ALTA MODA BRASILEIRA) -->
-<div class="user-modal-overlay" id="userModalOverlay" role="dialog" aria-modal="true" aria-label="Acesso ao Ateliê Gold Crochet">
-  <div class="user-modal-box">
-    <button class="user-modal-close" onclick="closeUserModal()" aria-label="Fechar modal">✕</button>
-    
-    <div class="user-modal-header">
-      <div class="user-modal-brand-badge">
-        <img src="./assets/icon.svg" alt="Gold Crochet" class="logo-round-img">
-      </div>
-      <h2 class="user-modal-title">Ateliê Gold Crochet</h2>
-      <p class="user-modal-subtitle">Acesse para acompanhar seus pedidos sob medida e salvar suas peças favoritas.</p>
-      
-      <div class="modal-tab-group">
-        <button type="button" class="user-tab-btn active" id="modalTabLogin" onclick="showLogin()">Entrar</button>
-        <button type="button" class="user-tab-btn" id="modalTabRegister" onclick="showRegister()">Cadastre-se</button>
-      </div>
-    </div>
-
-    <!-- LOGIN VIEW -->
-    <div id="loginView">
-      <button class="google-auth-btn" onclick="loginWithGoogle()" type="button">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-        <span>Entrar com Google</span>
-      </button>
-
-      <div class="auth-divider">
-        <span>ou acesse com seu e-mail</span>
-      </div>
-
-      <form id="loginForm" onsubmit="handleLoginSubmit(event)" novalidate>
-        <div class="form-group">
-          <label for="loginEmail">E-mail cadastrado</label>
-          <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="username email" required>
-        </div>
-        <div class="form-group">
-          <div class="label-row">
-            <label for="loginPassword">Senha</label>
-            <button type="button" class="btn-forgot-password" onclick="resetPassword()">Esqueci minha senha</button>
-          </div>
-          <div class="password-input-wrap">
-            <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
-            <button type="button" class="btn-toggle-pass" onclick="togglePasswordVisibility('loginPassword', this)" aria-label="Ver senha" title="Ver senha">👁️</button>
-          </div>
-        </div>
-
-        <div class="auth-error-msg" id="loginErrorMsg" role="alert" style="display:none;"></div>
-
-        <button type="submit" class="user-modal-btn" id="loginSubmitBtn">
-          <span>Entrar no Ateliê</span>
-        </button>
-      </form>
-      
-      <div class="user-modal-toggle">
-        Ainda não tem conta? <button type="button" onclick="showRegister()">Crie sua conta agora</button>
-      </div>
-    </div>
-
-    <!-- REGISTER VIEW -->
-    <div id="registerView" style="display:none;">
-      <button class="google-auth-btn" onclick="loginWithGoogle()" type="button">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-        <span>Cadastrar com Google</span>
-      </button>
-
-      <div class="auth-divider">
-        <span>ou crie com seu e-mail</span>
-      </div>
-
-      <form id="registerForm" onsubmit="handleRegisterSubmit(event)" novalidate>
-        <div class="form-group">
-          <label for="regName">Nome Completo</label>
-          <input type="text" id="regName" placeholder="Como deseja ser chamado(a)" autocomplete="name" required>
-        </div>
-        <div class="form-group">
-          <label for="regEmail">E-mail</label>
-          <input type="email" id="regEmail" placeholder="seu@email.com" autocomplete="email" required>
-        </div>
-        <div class="form-group">
-          <label for="regPassword">Senha de acesso</label>
-          <div class="password-input-wrap">
-            <input type="password" id="regPassword" placeholder="Mínimo de 6 dígitos" autocomplete="new-password" minlength="6" required>
-            <button type="button" class="btn-toggle-pass" onclick="togglePasswordVisibility('regPassword', this)" aria-label="Ver senha" title="Ver senha">👁️</button>
-          </div>
-        </div>
-
-        <div class="auth-error-msg" id="registerErrorMsg" role="alert" style="display:none;"></div>
-
-        <button type="submit" class="user-modal-btn" id="registerSubmitBtn">
-          <span>Criar Minha Conta</span>
-        </button>
-      </form>
-      
-      <div class="user-modal-toggle">
-        Já possui cadastro? <button type="button" onclick="showLogin()">Fazer Login</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-<div class="cookie-banner" id="cookieBanner">
-  <p>🍪 Usamos cookies para melhorar sua experiência. <a href="#">Política de Privacidade</a>.</p>
-  <button class="cookie-accept" onclick="acceptCookies()">Aceitar Tudo</button>
-  <button class="cookie-decline" onclick="acceptCookies()">Só Essenciais</button>
-</div>
-
-<main id="mainContent">
-
-<section class="page active" id="page-inicio">
-  <div class="hero">
-    <div class="hero-content">
-      <div class="hero-badge fade-in fade-in-1">🧶 Crochê Artesanal de Alto Padrão</div>
-      <h1 class="fade-in fade-in-2" id="heroTitle">Elegância que se <em>Tece</em><br>à Mão</h1>
-      <p class="fade-in fade-in-3" id="heroSubtitle">Peças únicas, personalizadas e com acabamento premium. Do amigurumi à peça sob medida, cada ponto carrega cuidado e sofisticação.</p>
-    </div>
-    <div class="hero-scroll" onclick="document.querySelector('.carousel-section').scrollIntoView({behavior:'smooth'})">
-      <span>Explorar</span>
-      <span class="hero-scroll-arrow" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </span>
-    </div>
-  </div>
-  <div class="carousel-section">
-    <div class="carousel-title">Peças em <span>Destaque</span></div>
-    <div class="carousel-wrapper" id="carouselWrapper"><div class="carousel-track" id="carouselTrack"></div></div>
-    <div class="carousel-arrows">
-      <button class="carousel-arrow" onclick="prevSlide()" aria-label="Anterior">‹</button>
-      <button class="carousel-arrow" onclick="nextSlide()" aria-label="Próxima">›</button>
-    </div>
-  </div>
-
-  <div class="gender-section">
-    <a class="gender-card" href="#" onclick="megaGoToSectionGender('dia-a-dia','feminino');return false;" style="background-image:url('./assets/para-mulher.jpg')" aria-label="Ver tudo em Essenciais — Para Ela">
-      <div class="gender-content">
-        <h3>Para Mulher</h3>
-        <span class="gender-cta">Descubra Mais</span>
-      </div>
-    </a>
-    <a class="gender-card" href="#" onclick="megaGoToSectionGender('dia-a-dia','masculino');return false;" style="background-image:url('./assets/para-homem.jpg')" aria-label="Ver tudo em Essenciais — Para Ele">
-      <div class="gender-content">
-        <h3>Para Homem</h3>
-        <span class="gender-cta">Descubra Mais</span>
-      </div>
-    </a>
-  </div>
-
-  <div class="features">
-    <div class="section-header reveal"><h2>Por que <span>Gold Crochet</span>?</h2><p>Acabamento refinado, atenção artesanal em cada ponto que sai das nossas mãos.</p></div>
-    <div class="features-grid">
-      <div class="feature-card reveal liquid-glass"><div class="feature-icon">🧵</div><h3>Fios Selecionados</h3><p>Trabalhamos com fios premium para um caimento macio e duradouro em cada peça.</p></div>
-      <div class="feature-card reveal liquid-glass"><div class="feature-icon">🎨</div><h3>Múltiplas Cores</h3><p>Diversas cores de fio disponíveis para personalizar sua peça do jeito que imagina.</p></div>
-      <div class="feature-card reveal liquid-glass"><div class="feature-icon">⏳</div><h3>Feito à Mão</h3><p>Cada ponto é trabalhado manualmente, com tempo e cuidado dedicados ao seu pedido.</p></div>
-      <div class="feature-card reveal liquid-glass"><div class="feature-icon">🧶</div><h3>Customização Total</h3><p>Traga sua ideia, cor e tamanho — transformamos em uma peça exclusiva.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="page" id="page-colecoes">
-  <div class="products-hero"><h1>Nossas Coleções</h1><p>Explore as coleções exclusivas da Gold Crochet.</p></div>
-  <div class="products-controls" style="justify-content:center; margin-top:20px;">
-    <div class="filter-pills" id="colecoesFilterPills">
-      <button class="filter-pill active" data-filter="todas" onclick="setColecaoFilter('todas')">Todas</button>
-      <button class="filter-pill" data-filter="Alta-Costura" onclick="setColecaoFilter('Alta-Costura')">Alta-Costura</button>
-      <button class="filter-pill" data-filter="Dia a Dia" onclick="setColecaoFilter('Dia a Dia')">Essenciais</button>
-    </div>
-  </div>
-  <div class="products-grid" id="colecoesGrid"></div>
-</section>
-
-<section class="page" id="page-produtos">
-  <div class="products-hero"><h1>Nosso Acervo</h1><p>Amigurumis, bolsas, mantas e peças personalizadas.</p></div>
-  <div class="products-mobile-bar" id="productsMobileBar">
-    <button class="products-mobile-btn" onclick="openFilterSheet()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
-      <span>Filtrar</span>
-    </button>
-    <span class="products-mobile-bar-info" id="productsMobileInfo"></span>
-  </div>
-  <div class="products-filter-header" id="productsFilterHeader" style="display:none">
-    <div class="products-filter-title" id="productsFilterTitle"></div>
-  </div>
-  <div class="products-count" id="productsCount"></div>
-  <div class="products-grid" id="productsGrid"></div>
-</section>
-
-<section class="page" id="page-produto">
-  <div class="product-page-wrap">
-    <div class="product-top-bar" id="productTopBar">
-      <button class="product-page-back-btn" onclick="goBackPage()" aria-label="Voltar para a lista">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        <span>Voltar</span>
-      </button>
-      <div class="product-drag-handle" id="productDragHandle" title="Puxe para fechar">
-        <span class="product-drag-pill"></span>
-        <span class="product-drag-label">Puxe para fechar</span>
-      </div>
-      <button class="product-page-close-btn" onclick="goBackPage()" aria-label="Fechar produto">✕</button>
-    </div>
-    <div class="product-page-inner">
-      <div class="product-page-top">
-        <div class="product-page-gallery" id="productPageGallery"></div>
-        <div class="product-page-info">
-          <h1 class="product-page-title" id="productPageTitle"></h1>
-          <div class="product-page-price-row" id="productPagePriceRow"></div>
-          <p class="product-page-desc" id="productPageDesc"></p>
-          <div id="productPageColors"></div>
-          <button class="product-page-add-btn" onclick="addToCartFromProductPage()">Adicionar à Sacola 🛍️</button>
-          <a id="productPageDedicatedLink" class="product-page-dedicated-btn" href="#" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px;border:1.5px solid #cda434;border-radius:50px;color:#a67c00;font-weight:700;text-decoration:none;font-size:0.88rem;margin-top:10px;background:#fdf9f0;transition:all 0.2s;">
-            <span>🔗 Ver Página Dedicada da Peça (HTML) ↗</span>
-          </a>
-
-          <div class="product-page-specs" id="productPageSpecs"></div>
-        </div>
-      </div>
-
-      <div class="product-page-related">
-        <h2>Você pode gostar</h2>
-        <div class="product-page-related-track-wrap">
-          <div class="product-page-related-track" id="productPageRelated"></div>
-        </div>
-      </div>
-
-      <div class="product-page-blocks">
-        <div class="product-page-block">
-          <h3>Cuidados Gold Crochet</h3>
-          <p>Nossas peças são feitas para durar. Lavar à mão com água fria, secar na sombra na horizontal e guardar dobradas — assim elas atravessam gerações.</p>
-          <a onclick="showPage('cuidados')">Saiba mais →</a>
-        </div>
-        <div class="product-page-block">
-          <h3>Embalagem para presente</h3>
-          <p>Cada pedido pode ser enviado com embalagem especial para presente, com fita de cetim e cartão personalizado. Perfeito para surpreender quem você ama.</p>
-          <a href="https://wa.me/5531984566047?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20embalagem%20para%20presente%20%F0%9F%8E%81" target="_blank" rel="noopener">Solicitar no WhatsApp →</a>
-        </div>
-        <div class="product-page-block">
-          <h3>Entrega & Devolução</h3>
-          <p>Enviamos para todo o Brasil com prazos que variam de 3 a 15 dias úteis. Aceitamos devoluções em até 7 dias após o recebimento, conforme o Código de Defesa do Consumidor.</p>
-          <a onclick="showPage('entregas')">Consultar política →</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="page" id="page-conta">
-  <div class="user-account-wrap">
-    <div class="user-account-header">
-      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
-        <h1 style="margin:0;">Minha <span>Conta</span></h1>
-        <button class="user-header-logout-btn" id="userHeaderLogoutBtn" onclick="logoutUser()" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,0.85);border:1px solid rgba(235,87,87,0.3);color:#d93025;padding:8px 16px;border-radius:var(--radius-pill);font-weight:700;font-size:0.85rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:all 0.2s ease;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          <span>Sair da conta</span>
-        </button>
-      </div>
-      <div class="user-account-tabs">
-        <button class="user-account-tab active" data-tab="pedidos" onclick="setUserTab('pedidos')">📦 Pedidos</button>
-        <button class="user-account-tab" data-tab="conta" onclick="setUserTab('conta')">👤 Conta</button>
-        <button class="user-account-tab" data-tab="config" onclick="setUserTab('config')">⚙️ Configurações</button>
-      </div>
-    </div>
-    <div class="user-account-content">
-      <div class="user-tab-panel active" id="userTabPedidos"></div>
-      <div class="user-tab-panel" id="userTabConta"></div>
-      <div class="user-tab-panel" id="userTabConfig"></div>
-    </div>
-  </div>
-</section>
-
-<section class="page" id="page-novidades">
-  <div class="products-hero">
-    <h1>Novidades</h1>
-    <p>As últimas notícias da Gold Crochet</p>
-  </div>
-  <div class="blog-grid" id="novidadesGrid"></div>
-</section>
-
-<section class="page" id="page-sobre">
-  <div style="background:linear-gradient(135deg,var(--gold-pale) 0%,var(--off-white) 100%);padding-top:20px">
-    <div class="about-hero">
-      <div class="about-text">
-        <h1>A História da <span>Gold Crochet</span></h1>
-        <p>Nascemos da paixão por criar. De um novelo de fio a uma marca, a Gold Crochet começou como um sonho de transformar o crochê artesanal em peças de alto padrão, elegantes e atemporais.</p>
-        <p>Cada peça que sai das nossas mãos foi feita com cuidado, atenção aos detalhes e muito amor pelo que fazemos. Acreditamos que o feito à mão carrega uma história — e é essa história que queremos compartilhar com você.</p>
-        <a href="#" class="btn-primary" onclick="showPage('produtos');return false;" style="display:inline-block;margin-top:8px;">Ver Peças</a>
-      </div>
-      <div class="about-visual">
-        <div class="about-logo-wrap"><img id="aboutLogoImg" src="./assets/logo.png" alt="Gold Crochet"></div>
-      </div>
-    </div>
-  </div>
-  <div class="about-stats">
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">500+</div><div class="stat-label">Peças Entregues</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">20+</div><div class="stat-label">Cores Disponíveis</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">98%</div><div class="stat-label">Clientes Satisfeitas</div></div>
-  </div>
-  <div class="about-story">
-    <div class="about-story-inner">
-      <h2>Nossa <span>Jornada</span></h2>
-      <p>Tudo começou com uma agulha, um novelo de fio e muita vontade de transformar um hobby em algo maior.</p>
-      <div class="timeline">
-        <div class="timeline-item reveal"><div class="timeline-year">Início</div><div class="timeline-text">Fundação da Gold Crochet, com as primeiras peças feitas artesanalmente em casa.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Expansão</div><div class="timeline-text">Novas técnicas, primeiros projetos personalizados e o reconhecimento de clientes fiéis.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Consolidação</div><div class="timeline-text">Entrada em fios premium e acabamentos exclusivos que definem nossa identidade.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Hoje</div><div class="timeline-text">Loja online oficial e centenas de peças entregues em todo o Brasil.</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="page" id="page-cuidados">
-  <div style="background:linear-gradient(135deg,var(--gold-pale) 0%,var(--off-white) 100%);padding-top:20px">
-    <div class="about-hero">
-      <div class="about-text">
-        <h1>Cuidados <span>Gold Crochet</span></h1>
-        <p>Suas peças de crochê são feitas para durar. Com alguns cuidados simples no dia a dia, elas mantêm o caimento, a cor e a maciez por muitos anos — e podem até passar de geração em geração.</p>
-        <p>Siga nossas recomendações de lavagem, secagem e armazenamento para preservar cada ponto feito à mão.</p>
-        <a href="#" class="btn-primary" onclick="showPage('produtos');return false;" style="display:inline-block;margin-top:8px;">Ver peças</a>
-      </div>
-      <div class="about-visual">
-        <div class="about-logo-wrap"><img src="./assets/logo.png" alt="Gold Crochet"></div>
-      </div>
-    </div>
-  </div>
-  <div class="about-stats">
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">💧</div><div class="stat-label">Lavar à Mão</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">🌤️</div><div class="stat-label">Secar na Sombra</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">🧺</div><div class="stat-label">Guardar Dobrada</div></div>
-  </div>
-  <div class="about-story">
-    <div class="about-story-inner">
-      <h2>Como <span>Cuidar</span></h2>
-      <p>Cada ponto foi feito à mão, com paciência. Trate sua peça com o mesmo cuidado.</p>
-      <div class="timeline">
-        <div class="timeline-item reveal"><div class="timeline-year">Lavagem</div><div class="timeline-text">Lave à mão com água fria e sabão neutro. Nunca use alvejante ou amaciante. Não torça a peça — pressione suavemente para retirar o excesso de água.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Secagem</div><div class="timeline-text">Seque na horizontal, à sombra, sobre uma toalha limpa. Evite pendurar molhada para não deformar o fio.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Armazenamento</div><div class="timeline-text">Guarde dobrada, em local seco e arejado. Para peças delicadas, use saquinhos de algodão.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Uso Diário</div><div class="timeline-text">Evite contato com superfícies ásperas e objetos que possam puxar o fio. Se aparecer uma laçada, puxe com cuidado para o lado interno.</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="page" id="page-entregas">
-  <div style="background:linear-gradient(135deg,var(--gold-pale) 0%,var(--off-white) 100%);padding-top:20px">
-    <div class="about-hero">
-      <div class="about-text">
-        <h1>Entrega & <span>Devolução</span></h1>
-        <p>Enviamos para todo o Brasil com cuidado e carinho. Cada pedido é embalado com proteção extra para que sua peça chegue impecável ao destino.</p>
-        <p>Consulte abaixo os prazos, formas de envio e nossa política de trocas e devoluções.</p>
-        <a href="https://wa.me/5531984566047?text=Ol%C3%A1!%20Tenho%20uma%20d%C3%BAvida%20sobre%20entrega%20%F0%9F%93%A6" target="_blank" rel="noopener" class="btn-primary" style="display:inline-block;margin-top:8px;">Falar no WhatsApp</a>
-      </div>
-      <div class="about-visual">
-        <div class="about-logo-wrap"><img src="./assets/logo.png" alt="Gold Crochet"></div>
-      </div>
-    </div>
-  </div>
-  <div class="about-stats">
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">3-15</div><div class="stat-label">Dias Úteis</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">7</div><div class="stat-label">Dias p/ Devolver</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">100%</div><div class="stat-label">Rastreável</div></div>
-  </div>
-  <div class="about-story">
-    <div class="about-story-inner">
-      <h2>Políticas de <span>Envio</span></h2>
-      <p>Cada peça é feita sob demanda e embalada individualmente com proteção extra.</p>
-      <div class="timeline">
-        <div class="timeline-item reveal"><div class="timeline-year">Prazo de Produção</div><div class="timeline-text">Peças sob medida levam de 3 a 10 dias úteis para ficarem prontas antes do envio.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Envio</div><div class="timeline-text">Enviamos por Correios (PAC/SEDEX) ou transportadora, com código de rastreio enviado por e-mail.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Recebimento</div><div class="timeline-text">Confira sua peça ao receber. Caso haja qualquer problema, entre em contato em até 48h.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Devolução</div><div class="timeline-text">Aceitamos devoluções em até 7 dias após o recebimento, desde que a peça esteja sem uso e na embalagem original.</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="page" id="page-sustentabilidade">
-  <div style="background:linear-gradient(135deg,var(--gold-pale) 0%,var(--off-white) 100%);padding-top:20px">
-    <div class="about-hero">
-      <div class="about-text">
-        <h1>Sustentabilidade & <span>Cuidado</span></h1>
-        <p>Na Gold Crochet, acreditamos que criar é um ato de responsabilidade. Cada peça é pensada para durar, para atravessar estações e ser passada adiante — e isso só é possível quando respeitamos o tempo, os materiais e as mãos que trabalham.</p>
-        <p>Escolhemos fios de fornecedores conscientes, evitamos excesso de produção e priorizamos o feito sob demanda, para que nada seja desperdiçado. Nosso compromisso é com um crochê que cuida do planeta tanto quanto cuida das pessoas.</p>
-        <a href="#" class="btn-primary" onclick="showPage('produtos');return false;" style="display:inline-block;margin-top:8px;">Conhecer peças</a>
-      </div>
-      <div class="about-visual">
-        <div class="about-logo-wrap"><img id="aboutLogoImgSust" src="./assets/logo.png" alt="Gold Crochet"></div>
-      </div>
-    </div>
-  </div>
-  <div class="about-stats">
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">100%</div><div class="stat-label">Feito à Mão</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">0%</div><div class="stat-label">Desperdício de Fio</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">∞</div><div class="stat-label">Anos de Durabilidade</div></div>
-  </div>
-  <div class="about-story">
-    <div class="about-story-inner">
-      <h2>Nossos <span>Princípios</span></h2>
-      <p>O crochê artesanal é, por natureza, uma prática sustentável: é lento, é local, é humano. Cada peça nasce sob demanda e carrega a história de quem a fez.</p>
-      <div class="timeline">
-        <div class="timeline-item reveal"><div class="timeline-year">Produção Consciente</div><div class="timeline-text">Não produzimos em massa. Cada peça é iniciada apenas quando existe uma pessoa esperando por ela.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Fios Selecionados</div><div class="timeline-text">Trabalhamos com fios que valorizam fibras naturais, tingimento consciente e durabilidade.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Sem Desperdício</div><div class="timeline-text">Restos de fio viram detalhes, amigurumis ou pequenos projetos — nada é descartado.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Para a Vida</div><div class="timeline-text">Acreditamos em peças que atravessam gerações e se tornam memórias afetivas.</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="page" id="page-periodo-atemporal">
-  <div style="background:linear-gradient(135deg,var(--gold-pale) 0%,var(--off-white) 100%);padding-top:20px">
-    <div class="about-hero">
-      <div class="about-text">
-        <h1>O <span>Período Atemporal</span></h1>
-        <p>O ouro nunca envelhece. Ele atravessa civilizações, permanece brilhando mesmo quando tudo ao redor muda. É essa mesma ideia de permanência que buscamos em cada peça da Gold Crochet: criar objetos que sobrevivem ao tempo, que carregam história e que se tornam parte da vida de quem os recebe.</p>
-        <p>A relação entre o ciclo do ouro — sua extração paciente, seu brilho duradouro, sua capacidade de ser transformado sem perder a essência — espelha o nosso fazer artesanal. Cada ponto, como cada pepita, é único. Cada peça, como o ouro, é feita para durar.</p>
-        <a href="#" class="btn-primary" onclick="showPage('produtos');return false;" style="display:inline-block;margin-top:8px;">Explorar peças</a>
-      </div>
-      <div class="about-visual">
-        <div class="about-logo-wrap"><img id="aboutLogoImgPeriodo" src="./assets/logo.png" alt="Gold Crochet"></div>
-      </div>
-    </div>
-  </div>
-  <div class="about-stats">
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">∞</div><div class="stat-label">Permanência</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">1</div><div class="stat-label">Peça, Uma História</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">♾</div><div class="stat-label">Gerações Conectadas</div></div>
-  </div>
-  <div class="about-story">
-    <div class="about-story-inner">
-      <h2>O Fio e o <span>Ouro</span></h2>
-      <p>Assim como o ouro, o crochê é fruto de paciência. Não há pressa no fio, assim como não há pressa na terra que guarda o metal precioso. Ambos só se revelam a quem espera.</p>
-      <div class="timeline">
-        <div class="timeline-item reveal"><div class="timeline-year">Origem</div><div class="timeline-text">O ouro nasce profundo, escondido, silencioso. O fio também — primeiro é fibra, depois é história.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Transformação</div><div class="timeline-text">O ouro é trabalhado, aquecido, moldado. O fio é torcido, laçado, transformado em ponto.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Permanência</div><div class="timeline-text">O ouro resiste. A peça também: feita para durar e ser passada adiante.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Eternidade</div><div class="timeline-text">Toda peça de crochê carrega um pedaço de quem a fez — como o ouro carrega a terra de onde veio.</div></div>
-      </div>
-      <p style="margin-top:24px">Convidamos você a fazer parte desse ciclo: escolher uma peça que não é apenas objeto, mas memória em construção.</p>
-    </div>
-  </div>
-</section>
-
-<section class="page" id="page-colaboracoes">
-  <div style="background:linear-gradient(135deg,var(--gold-pale) 0%,var(--off-white) 100%);padding-top:20px">
-    <div class="about-hero">
-      <div class="about-text">
-        <h1>Colaborações & <span>Artistas</span></h1>
-        <p>Na Gold Crochet, acreditamos que a arte se fortalece quando compartilhada. Nossas colaborações com artistas, designers e marcas parceiras trazem novas perspectivas, técnicas e inspirações para cada peça que criamos.</p>
-        <p>Cada parceria é um encontro de sensibilidades — o olhar do artista se entrelaça ao nosso fio, resultando em criações únicas e cheias de significado.</p>
-        <a href="mailto:rayssacrochet1404@gmail.com" class="btn-primary" style="display:inline-block;margin-top:8px;">Quero colaborar</a>
-      </div>
-      <div class="about-visual">
-        <div class="about-logo-wrap"><img id="aboutLogoImgColab" src="./assets/logo.png" alt="Gold Crochet"></div>
-      </div>
-    </div>
-  </div>
-  <div class="about-stats">
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">15+</div><div class="stat-label">Artistas Parceiros</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">30+</div><div class="stat-label">Projetos Colaborativos</div></div>
-    <div class="stat-box reveal liquid-glass"><div class="stat-number">∞</div><div class="stat-label">Inspirações Compartilhadas</div></div>
-  </div>
-  <div class="about-story">
-    <div class="about-story-inner">
-      <h2>A Influência dos <span>Artistas</span></h2>
-      <p>Cada artista que cruza nosso caminho deixa uma marca. Seja pela paleta de cores, pelas formas inusitadas ou pela narrativa por trás de cada obra, as colaborações moldam a identidade da Gold Crochet e expandem os limites do que o crochê pode ser.</p>
-      <p>Acreditamos que o feito à mão é, por natureza, uma forma de arte coletiva: passa de mão em mão, de geração em geração, e se reinventa a cada novo encontro criativo.</p>
-      <div class="timeline">
-        <div class="timeline-item reveal"><div class="timeline-year">Primeiras Parcerias</div><div class="timeline-text">Encontros com artistas locais que trouxeram novas técnicas e cores ao nosso atelier.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Edições Limitadas</div><div class="timeline-text">Coleções cápsula criadas em conjunto com designers convidados.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Projetos Sociais</div><div class="timeline-text">Iniciativas que unem arte, comunidade e sustentabilidade em torno do crochê.</div></div>
-        <div class="timeline-item reveal"><div class="timeline-year">Hoje</div><div class="timeline-text">Uma rede crescente de criadores que celebra o crochê como expressão artística.</div></div>
-      </div>
-      <p style="margin-top:24px">Tem uma ideia, marca ou projeto artístico em mente? Ficaremos honradas em conhecer. <a href="mailto:rayssacrochet1404@gmail.com" style="color:var(--gold-main);font-weight:700;">Fale conosco →</a></p>
-    </div>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  <!-- NEWSLETTER COMPONENT (CLUBE GOLD CROCHET) -->
-  <div class="footer-newsletter-wrap">
-    <div class="footer-newsletter-card">
-      <div class="footer-newsletter-content">
-        <span class="footer-newsletter-tag">✨ Clube Gold Crochet</span>
-        <h3 class="footer-newsletter-title">Receba Novidades & Coleções Exclusivas</h3>
-        <p class="footer-newsletter-desc">Cadastre seu e-mail para acompanhar em primeira mão os lançamentos de novas peças feitas à mão, criações sob medida e vantagens exclusivas.</p>
-      </div>
-      <form class="footer-newsletter-form" id="footerNewsletterForm" onsubmit="handleNewsletterSubmit(event)">
-        <div class="footer-newsletter-input-group">
-          <svg class="footer-newsletter-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          <input type="email" id="footerNewsletterEmail" placeholder="Digite seu melhor e-mail..." autocomplete="email" required aria-label="Seu e-mail para novidades" />
-          <button type="submit" class="footer-newsletter-btn" id="footerNewsletterBtn">
-            <span>Inscrever-se</span>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </button>
-        </div>
-        <div class="footer-newsletter-msg" id="footerNewsletterMsg" role="alert" aria-live="polite"></div>
-        <div class="footer-newsletter-note">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          <span>Privacidade garantida. Você pode cancelar sua inscrição a qualquer momento.</span>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="footer-grid">
-    <div class="footer-brand">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <div class="nav-logo-circle" style="width:46px;height:46px;">
-          <img src="./assets/icon.svg" alt="Gold Crochet" class="logo-round-img">
-        </div>
-        <div>
-          <div class="footer-brand-name" style="margin-bottom:2px;">Gold Crochet</div>
-          <span style="font-size:0.65rem;letter-spacing:0.2em;color:var(--gold-main);font-weight:700;text-transform:uppercase;">Alta Moda Brasileira</span>
-        </div>
-      </div>
-      <p>Crochê artesanal de alto padrão. Transformando fios nobres em peças exclusivas com alma brasileira, feitas ponto por ponto.</p>
-      <div class="footer-social">
-        <a href="https://www.instagram.com/goldcrochetbrasil?stkn=MWVqaTlqcTBseGNtcQ%3D%3D&utm_source=qr" target="_blank" rel="noopener" class="social-circle" aria-label="Instagram" title="Instagram">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="2.5" y="2.5" width="19" height="19" rx="5.4"></rect>
-            <circle cx="12" cy="12" r="4.2"></circle>
-            <circle cx="17.4" cy="6.6" r="1.15" fill="currentColor" stroke="none"></circle>
-          </svg>
-        </a>
-        <a href="mailto:rayssacrochet1404@gmail.com" class="social-circle" aria-label="E-mail" title="E-mail">✉</a>
-      </div>
-    </div>
-    <div class="footer-col">
-      <h4>Navegação</h4>
-      <ul>
-        <li><a onclick="showPage('inicio')">Início</a></li>
-        <li><a onclick="showPage('colecoes')">Coleções</a></li>
-        <li><a onclick="showPage('produtos')">Peças</a></li>
-        <li><a onclick="showPage('novidades')">Novidades</a></li>
-        <li><a onclick="showPage('sobre')">Casa Gold</a></li>
-        <li><a onclick="showPage('colaboracoes')">Colaborações</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Contato</h4>
-      <ul>
-        <li><a href="https://www.instagram.com/goldcrochetbrasil?stkn=MWVqaTlqcTBseGNtcQ%3D%3D&utm_source=qr" target="_blank" rel="noopener">Instagram</a></li>
-        <li><a href="mailto:rayssacrochet1404@gmail.com">E-mail</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>© 2026 Gold Crochet — Todos os direitos reservados.</p>
-    <div class="footer-bottom-links">
-      <a href="#">Cookies</a><a href="#">Privacidade</a><a href="#">Termos</a>
-    </div>
-  </div>
-</footer>
-
-<script type="module" src="./app.js?v=buzio2026_v9_nav_colecoes_pecas_novidades_casagold"></script>
+      if (window.GoldFav && window.GoldFav.updateUI) {
+        window.GoldFav.updateUI();
+      }
+    });
+  </script>
 </body>
-  </html>
+</html>
