@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gold Crochet — Redirecionando</title>
+  
+  <!-- Búzio Dourado Favicon -->
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg?v=buzio2026">
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/icon.png?v=buzio2026">
+  <link rel="shortcut icon" href="./favicon.ico?v=buzio2026">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icon.png?v=buzio2026">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0d0a06;
+      color: #cda434;
+      font-family: 'Outfit', sans-serif, system-ui;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+    h1 {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 1.8rem;
+      margin: 0 0 10px;
+      color: #f6e08c;
+    }
+    p {
+      color: #c9b686;
+      font-size: 0.95rem;
+      margin: 0 0 24px;
+    }
+    .btn {
+      display: inline-block;
+      background: #cda434;
+      color: #0d0a06;
+      padding: 12px 28px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      background: #f6e08c;
+      transform: translateY(-2px);
+    }
+  </style>
+
+  <script>
+    // GitHub Pages SPA & Slug Redirector
+    (function() {
+      var pathname = window.location.pathname;
+      var repoPrefix = '';
+      if (pathname.indexOf('/goldcrochet-shop') === 0) {
+        repoPrefix = '/goldcrochet-shop';
+      }
+      var clean = pathname.replace(/^\/goldcrochet-shop/, '').replace(/^\/+/, '').replace(/\/+$/, '');
+
+      // 1. Redirecionamento para o Admin (/admin -> /admin.html)
+      if (clean === 'admin' || clean === 'admin/') {
+        window.location.replace(window.location.origin + repoPrefix + '/admin.html' + window.location.search + window.location.hash);
+        return;
+      }
+
+      // 2. Redirecionamento de páginas de produtos limpas (ex: /regata-noronha -> /index.html#/produto/regata-noronha)
+      if (clean && !clean.includes('.') && clean !== 'index') {
+        var targetSlug = clean.replace(/^produtos\//, '');
+        window.location.replace(window.location.origin + repoPrefix + '/index.html#/produto/' + targetSlug);
+        return;
+      }
+
+      // 3. Fallback geral para o catálogo
+      window.location.replace(window.location.origin + repoPrefix + '/index.html#/catalogo');
+    })();
+  </script>
+</head>
+<body>
+  <img src="./assets/icon.svg" alt="Gold Crochet" class="logo">
+  <h1>Ateliê Gold Crochet</h1>
+  <p>Redirecionando você para a página solicitada...</p>
+  <a href="./index.html" class="btn">Ir para o Início</a>
+</body>
+</html>

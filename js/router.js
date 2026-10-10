@@ -119,14 +119,25 @@ export function openProductRoute(productOrId, pushHistory = true) {
 }
 
 export function closeProductRoute() {
+  // Se houver histórico do navegador com o hash anterior, usamos history.back()
+  const pageProductEl = document.getElementById('page-produto');
+  if (pageProductEl) {
+    pageProductEl.classList.remove('active');
+  }
+
   // Retorna para o catálogo ou para a página anterior
   const targetPage = historyStack.length > 1 ? historyStack[historyStack.length - 2] : 'produtos';
   const cleanPage = targetPage === 'produto' ? 'produtos' : targetPage;
-  showPage(cleanPage, true);
+  
+  // Se o hash atual é do produto, atualiza o hash para a página limpa
+  if (window.location.hash.includes('produto')) {
+    setRouteHash(cleanPage, null, false);
+  }
+  showPage(cleanPage, false);
 }
 
 export function handlePopState(e) {
-  // Chamado quando o usuário clica na seta 'Voltar' ou 'Avançar' do Chrome/navegador
+  // Chamado quando o usuário clica na seta 'Voltar' ou 'Avançar' do Chrome/navegador (ou Alt + Seta Esquerda)
   const route = getRouteFromHash();
 
   // 1. Se houver algum modal aberto (carrinho, favoritos, usuário, pesquisa), feche-o primeiro
@@ -156,13 +167,31 @@ export function handlePopState(e) {
     }
   }
 
-  // 3. Caso normal: transiciona para a rota indicada pelo hash
+  // 3. Se a rota NÃO é mais produto mas a página de produto ainda estava visível, garante fechamento
+  const productSection = document.getElementById('page-produto');
+  if (productSection && productSection.classList.contains('active') && route.page !== 'produto') {
+    productSection.classList.remove('active');
+  }
+
+  // 4. Caso normal: transiciona para a rota indicada pelo hash
   showPage(route.page, false, route.param);
 }
 
 export function initRouter() {
   window.addEventListener('popstate', handlePopState);
   window.addEventListener('hashchange', handlePopState);
+
+  // Captura explicitamente Alt + Seta para a Esquerda e Escape para sair do produto
+  window.addEventListener('keydown', (e) => {
+    const isProductOpen = document.getElementById('page-produto')?.classList.contains('active');
+    if (isProductOpen) {
+      if ((e.altKey && e.key === 'ArrowLeft') || e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        closeProductRoute();
+      }
+    }
+  });
 
   // Verifica rota inicial ao carregar a página
   const initialRoute = getRouteFromHash();

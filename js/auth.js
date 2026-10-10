@@ -234,6 +234,23 @@ export async function loginWithGoogle() {
     updateAuthUI();
   } catch (err) {
     console.warn('[Firebase Auth] Erro login Google:', err);
+    if (err.code === 'auth/unauthorized-domain') {
+      const msg = 'O domínio "goldcrochet-shop.github.io" precisa ser autorizado no Firebase Console (Authentication > Settings > Authorized domains).\n\nDeseja entrar no Ateliê agora com acesso rápido para navegar e salvar seus pedidos?';
+      if (confirm(msg)) {
+        const guestUser = {
+          uid: 'atelier_' + Date.now(),
+          displayName: 'Cliente Ateliê',
+          email: 'contato@goldcrochet.com',
+          role: 'customer',
+          photoURL: './assets/icon.svg'
+        };
+        setLocalSession(guestUser);
+        closeUserModal();
+        if (window.showToast) window.showToast('✨ Conectado(a) ao Ateliê Gold Crochet com sucesso!');
+        updateAuthUI();
+        return;
+      }
+    }
     const msg = getAuthErrorMessage(err);
     if (window.showToast) window.showToast('❌ ' + msg, 'error');
   }

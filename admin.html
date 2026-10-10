@@ -3368,39 +3368,7 @@ ${schemaJson}
       } catch(e) {}
     }
     updateCartBadge();
-  </script>
-
-<!-- MODAL DE CONFIGURAÇÃO DO TOKEN GITHUB -->
-<div class="modal" id="githubTokenModal" role="dialog" aria-modal="true" aria-labelledby="ghTokenModalTitle">
-  <div class="modal-box" style="max-width:540px;">
-    <div class="modal-header">
-      <h3 id="ghTokenModalTitle">🔑 Token Pessoal do GitHub</h3>
-      <button class="modal-close" onclick="closeTokenModal()" aria-label="Fechar">✕</button>
-    </div>
-    <div class="modal-body" style="display:flex;flex-direction:column;gap:16px;">
-      <p style="font-size:0.9rem;color:var(--text-mid);line-height:1.5;">
-        O painel administrativo usa o <strong>GitHub Personal Access Token (PAT)</strong> para criar os arquivos HTML individuais de cada produto, salvar o catálogo <code>data.json</code> e enviar fotos direto para o repositório, sem precisar de servidor localhost.
-      </p>
-
-      <div class="form-group">
-        <label for="ghTokenInput" style="font-weight:600;font-size:0.88rem;">Personal Access Token (com permissão <code>repo</code>):</label>
-        <input type="password" id="ghTokenInput" class="form-control" placeholder="ghp_... ou github_pat_..." style="font-family:var(--font-mono);font-size:0.9rem;">
-        <small style="color:var(--text-soft);font-size:0.75rem;margin-top:4px;">
-          Gere em: <em>GitHub > Settings > Developer Settings > Personal Access Tokens > Tokens (classic)</em> marcando a opção <strong>repo</strong>.
-        </small>
-      </div>
-
-      <div id="ghTokenTestResult"></div>
-
-      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
-        <button class="btn btn-ghost" onclick="testTokenLive(true)">🔍 Testar Conexão</button>
-        <button class="btn btn-danger" onclick="removeTokenModal()">🗑 Remover</button>
-        <button class="btn btn-primary" onclick="saveTokenFromModal()">💾 Salvar Token</button>
-      </div>
-    </div>
-  </div>
-</div>
-
+  <\/script>
 </body>
 </html>`;
 }
