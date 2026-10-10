@@ -1,0 +1,31 @@
+---
+description: Diretrizes oficiais de marca, paleta de cores, formas orgânicas e arquitetura de usuário da Gold Crochet
+globs: ["**/*"]
+---
+
+# Gold Crochet — Diretrizes de Marca, UX e Arquitetura
+
+## 1. Paleta Cromática Oficial Estrita
+Toda a interface deve seguir rigorosamente as 4 cores oficiais da marca:
+- **Cor Primária:** **Ouro Metálico** (`linear-gradient(135deg, #fff2b2, #d4af37, #a67c00, #f3d26b)` e `#cda434` / `#d4af37`).
+- **Cor Secundária:** **#fdf6d6** (Areia Suave / Marfim Quente aconchegante do ateliê).
+- **Cor Terciária:** **#ffffff** (Branco Puro para cartões e respiro).
+- **Cor Quaternária:** **#bad7e8** (Azul Celeste Suave / Brisa Marítima, inspirado em Fernando de Noronha e Arpoador).
+
+## 2. Formas Orgânicas, Pílulas e Círculos
+- Evitar formas duras e excessivamente geométricas retangulares.
+- Utilizar **pílulas (`border-radius: 999px`)** para botões de ação, filtros de catálogo, links e contêineres de interação.
+- Utilizar **círculos (`border-radius: 50%`)** para botões de ícone, badges de contagem e medidores.
+- Utilizar **curvas orgânicas suaves (`border-radius: 28px` a `36px`)** para cards e modais.
+- Utilizar o logotipo oficial da marca (`assets/logo.png`) no centro do headline e no rodapé, associado ao Búzio Dourado.
+
+## 3. Silhueta de Usuário & Separação de Papéis
+- O ícone da **Silhueta do Usuário** no cabeçalho é **exclusivamente a Área do Cliente** (Minha Conta, Firebase Auth, histórico de pedidos e Programa de Brindes).
+- O link do **Painel Admin NUNCA deve ser exposto na navegação pública**. O acesso ao Admin é restrito e só ocorre se a pessoa digitar manualmente `/admin` ou `/admin.html` na barra de endereços do navegador.
+
+## 4. Programa de Brindes do Ateliê
+- A cada 3 compras registradas, a cliente acumula progresso no medidor circular para resgatar um brinde exclusivo em crochê manual.
+- O Firebase (Auth e Firestore) é reservado para gerenciar contas de usuários e histórico de fidelidade, enquanto os dados de vitrine residem no catálogo estático.
+
+## 5. Arquitetura Multi-Página Tradicional (GitHub Pages)
+- Cada rota principal (`index.html`, `colecoes.html`, `pecas.html`, `novidades.html`, `casa-gold.html`) e cada produto (`produtos/<slug>.html`) é um arquivo HTML físico independente para garantir que o botão Voltar do navegador (`Alt + Seta Esquerda`) funcione com 100% de estabilidade nativa.
