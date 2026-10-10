@@ -61,12 +61,13 @@ export function setCatalogData(data) {
   }
   if (data.collections) catalogState.collections = data.collections;
   if (data.categories) catalogState.categories = data.categories;
+  if (data.blogPosts) catalogState.blogPosts = data.blogPosts;
 
   renderFilters();
   renderProducts();
-  renderCollections();
+  renderColecoes();
+  renderNovidades();
   renderSpotlight();
-  renderNewArrivals();
 }
 
 export function renderFilters() {
@@ -245,18 +246,82 @@ export function clearSearch() {
   renderProducts();
 }
 
-export function renderCollections() {
-  const container = document.getElementById('collectionsGrid');
+export const defaultBlogPosts = [
+  { id: 1, title: 'Nova Coleção Maré de Ouro', date: 'Março 2026', emoji: '🌊', tag: 'Lançamento', excerpt: 'Inspirada no balanço do mar e no brilho do ouro, nossa nova coleção chega com peças únicas em tons dourados e azuis.' },
+  { id: 2, title: 'Por trás dos pontos: o Atelier', date: 'Fevereiro 2026', emoji: '🧶', tag: 'Bastidores', excerpt: 'Um passeio pelo nosso atelier, onde cada peça nasce do cuidado, da paciência e do amor pelo crochê artesanal.' },
+  { id: 3, title: 'Colaboração com artistas locais', date: 'Janeiro 2026', emoji: '🎨', tag: 'Colaboração', excerpt: 'Convidamos artistas da nossa região para criar peças exclusivas que misturam tradição e contemporaneidade.' },
+  { id: 4, title: 'Guia de cuidados com o crochê', date: 'Dezembro 2025', emoji: '💛', tag: 'Dicas', excerpt: 'Aprenda a lavar, secar e guardar suas peças de crochê para que durem por muitos anos.' },
+  { id: 5, title: 'Fios premium: nossa seleção', date: 'Novembro 2025', emoji: '🧵', tag: 'Materiais', excerpt: 'Conheça os fios que escolhemos a dedo para garantir conforto, durabilidade e acabamento impecável.' },
+  { id: 6, title: 'Personalize sua peça dos sonhos', date: 'Outubro 2025', emoji: '✨', tag: 'Personalização', excerpt: 'Cores, tamanhos, detalhes... veja como criar uma peça sob medida com a Gold Crochet.' }
+];
+
+export function renderColecoes() {
+  const container = document.getElementById('colecoesGrid') || document.getElementById('collectionsGrid');
   if (!container || !catalogState.collections) return;
 
-  container.innerHTML = catalogState.collections.map(c => `
-    <div class="collection-card" onclick="window.setCollectionFilter('${c.filter || c.name}')" role="button" tabindex="0">
-      <div class="collection-card-icon">${c.emoji || '👑'}</div>
-      <h3>${c.name}</h3>
-      <p>${c.desc}</p>
-      <span class="collection-card-link">Explorar Coleção →</span>
+  let filtered = catalogState.collections;
+  if (catalogState.currentColecaoFilter && catalogState.currentColecaoFilter !== 'todas') {
+    filtered = catalogState.collections.filter(c => c.filter === catalogState.currentColecaoFilter || c.name === catalogState.currentColecaoFilter);
+  }
+
+  if (!filtered.length) {
+    container.innerHTML = '<div class="no-results" style="grid-column:1/-1;text-align:center;padding:50px 20px;"><span style="font-size:2.5rem;">✨</span><p style="color:var(--text-mid);margin-top:10px;">Nenhuma coleção disponível nesta categoria.</p></div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(c => `
+    <div class="collection-card" onclick="window.openCollection('${c.id}','${c.filter || c.name}')" role="button" tabindex="0">
+      <div class="collection-card-icon" style="font-size:3rem;margin-bottom:12px;">${c.emoji || '👑'}</div>
+      <h3 style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--text-dark);margin-bottom:8px;">${c.name}</h3>
+      <p style="color:var(--text-mid);font-size:0.9rem;line-height:1.5;margin-bottom:14px;">${c.desc}</p>
+      <span class="collection-card-link" style="color:var(--gold-main);font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">Explorar Peças →</span>
     </div>
   `).join('');
+}
+
+export const renderCollections = renderColecoes;
+
+export function setColecaoFilter(filter) {
+  catalogState.currentColecaoFilter = filter;
+  document.querySelectorAll('#colecoesFilterPills .filter-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.filter === filter);
+  });
+  renderColecoes();
+}
+
+export function openCollection(id, filterName) {
+  if (window.showPage) window.showPage('produtos');
+  setTimeout(() => {
+    if (filterName) setCollectionFilter(filterName);
+  }, 50);
+}
+
+export function renderNovidades() {
+  const container = document.getElementById('novidadesGrid') || document.getElementById('newArrivalsGrid');
+  if (!container) return;
+
+  const posts = (catalogState.blogPosts && catalogState.blogPosts.length) ? catalogState.blogPosts : defaultBlogPosts;
+
+  container.innerHTML = posts.map(post => `
+    <article class="blog-card" onclick="window.openBlogPost(${post.id})" role="button" tabindex="0">
+      <div class="blog-cover" style="font-size:2.5rem;padding:24px;background:var(--gold-pale);text-align:center;border-radius:12px 12px 0 0;">${post.emoji || '✨'}</div>
+      <div class="blog-body" style="padding:20px;">
+        <span class="blog-tag" style="display:inline-block;font-size:0.75rem;font-weight:700;color:var(--gold-deep);background:var(--gold-pale);padding:3px 10px;border-radius:20px;text-transform:uppercase;margin-bottom:8px;">${post.tag || 'Novidade'}</span>
+        <h3 style="font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--text-dark);margin-bottom:8px;">${post.title}</h3>
+        <p style="color:var(--text-mid);font-size:0.88rem;line-height:1.5;margin-bottom:14px;">${post.excerpt}</p>
+        <div class="blog-date" style="font-size:0.78rem;color:var(--text-soft);">${post.date}</div>
+        <span class="blog-read-more" style="display:inline-block;margin-top:8px;font-size:0.82rem;font-weight:700;color:var(--gold-main);">Ler mais →</span>
+      </div>
+    </article>
+  `).join('');
+}
+
+export function openBlogPost(id) {
+  const posts = (catalogState.blogPosts && catalogState.blogPosts.length) ? catalogState.blogPosts : defaultBlogPosts;
+  const post = posts.find(p => p.id === id);
+  if (post && window.showToast) {
+    window.showToast(`📰 ${post.title}`);
+  }
 }
 
 export function renderSpotlight() {
@@ -279,24 +344,7 @@ export function renderSpotlight() {
 }
 
 export function renderNewArrivals() {
-  const container = document.getElementById('newArrivalsGrid');
-  if (!container) return;
-
-  const news = catalogState.products.filter(p => p.badge === 'Novo' || p.discount).slice(0, 4);
-  const items = news.length ? news : catalogState.products.slice(0, 4);
-
-  container.innerHTML = items.map(p => {
-    const img = p.image || (p.gallery && p.gallery[0]) || '';
-    return `
-      <div class="new-arrival-item" onclick="window.openProductPage(${p.id})">
-        <img src="${img || './assets/logo.png'}" alt="${p.name}" loading="lazy">
-        <div class="new-arrival-info">
-          <h5>${p.name}</h5>
-          <span>${formatBRL(p.price)}</span>
-        </div>
-      </div>
-    `;
-  }).join('');
+  renderNovidades();
 }
 
 export function onSearchOverlay(query) {

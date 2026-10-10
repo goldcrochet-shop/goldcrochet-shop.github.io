@@ -13,13 +13,20 @@ export function getRouteFromHash() {
   const page = parts[0] || 'inicio';
   const param = parts.slice(1).join('/');
 
-  // Mapeamentos amigáveis
-  if (page === 'catalogo') return { page: 'produtos', param };
+  // Mapeamentos amigáveis das rotas solicitadas
+  if (page === 'catalogo' || page === 'pecas' || page === 'produtos') return { page: 'produtos', param };
+  if (page === 'casa-gold' || page === 'sobre') return { page: 'sobre', param };
+  if (page === 'colecoes' || page === 'colecao') return { page: 'colecoes', param };
+  if (page === 'novidades' || page === 'blog') return { page: 'novidades', param };
   return { page, param };
 }
 
 export function setRouteHash(page, param = null, replace = false) {
-  let newHash = `#/${page}`;
+  let friendlyPage = page;
+  if (page === 'produtos') friendlyPage = 'pecas';
+  if (page === 'sobre') friendlyPage = 'casa-gold';
+
+  let newHash = `#/${friendlyPage}`;
   if (param) newHash += `/${param}`;
 
   if (window.location.hash !== newHash) {
@@ -32,6 +39,10 @@ export function setRouteHash(page, param = null, replace = false) {
 }
 
 export function showPage(pageId, pushHistory = true, param = null) {
+  // Converte eventuais apelidos para o ID do elemento da página
+  if (pageId === 'pecas' || pageId === 'catalogo') pageId = 'produtos';
+  if (pageId === 'casa-gold') pageId = 'sobre';
+
   // Salva posição de scroll da página atual
   if (currentRoute && currentRoute.page) {
     savedScrollPositions[currentRoute.page] = window.scrollY;
@@ -55,13 +66,26 @@ export function showPage(pageId, pushHistory = true, param = null) {
     activeTarget.classList.add('active');
   }
 
+  // Renderizações dinâmicas automáticas
+  if (pageId === 'colecoes' && typeof window.renderColecoes === 'function') {
+    window.renderColecoes();
+  } else if (pageId === 'novidades' && typeof window.renderNovidades === 'function') {
+    window.renderNovidades();
+  } else if (pageId === 'produtos' && typeof window.renderProducts === 'function') {
+    window.renderProducts();
+  }
+
   // Atualiza tabs da navbar
-  document.querySelectorAll('#navLinks a, .mobile-bottom-nav a').forEach(a => {
+  document.querySelectorAll('#navLinks a, .mobile-bottom-nav a, .mobile-bottom-nav button').forEach(a => {
     a.classList.remove('active');
   });
   const navLink = document.getElementById(`nav-${pageId}`) || 
                   document.querySelector(`[onclick*="showPage('${pageId}')"]`);
   if (navLink) navLink.classList.add('active');
+
+  // Atualiza tabs móveis
+  const mobileBtn = document.querySelector(`.mobile-bottom-nav [data-page="${pageId}"]`);
+  if (mobileBtn) mobileBtn.classList.add('active');
 
   // Atualiza histórico interno
   if (currentRoute.page !== pageId) {

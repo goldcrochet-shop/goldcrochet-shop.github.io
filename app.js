@@ -17,9 +17,10 @@ import {
 import { 
   catalogState, setCatalogData, setFilter, setSectionFilter, 
   setSectionGenderFilter, setCollectionFilter, clearAllFilters, 
-  setColecaoFilter, onSearch, clearSearch, onSearchOverlay, 
-  clearSearchOverlayInput, renderFilters, renderProducts, 
-  renderCollections, renderSpotlight, renderNewArrivals, formatBRL
+  setColecaoFilter, openCollection, renderColecoes, renderNovidades, openBlogPost,
+  onSearch, clearSearch, onSearchOverlay, clearSearchOverlayInput, 
+  renderFilters, renderProducts, renderCollections, renderSpotlight, 
+  renderNewArrivals, formatBRL
 } from "./js/catalog.js";
 import { 
   openProductPage, closeProductPage, renderProductPageContent, 
@@ -135,12 +136,8 @@ function initMegaMenus() {
     link.addEventListener('click', (e) => {
       e.preventDefault(); 
       e.stopPropagation();
-      if (!isDesktop()) { 
-        showPage(menuId === 'megaMenuPecas' ? 'produtos' : 'sobre'); 
-        return; 
-      }
-      const m = $(menuId);
-      if (m && m.classList.contains('open')) closeMega(); else openMega(menuId);
+      closeMega();
+      showPage(menuId === 'megaMenuPecas' ? 'produtos' : 'sobre');
     });
   }
 
@@ -381,6 +378,10 @@ Object.assign(window, {
   setCollectionFilter,
   clearAllFilters,
   setColecaoFilter,
+  openCollection,
+  renderColecoes,
+  renderNovidades,
+  openBlogPost,
 
   // Carrinho de Compras
   cart,
