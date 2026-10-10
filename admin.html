@@ -3180,9 +3180,9 @@ function generateProductHtml(p, allProducts, cfg) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
-  <script type="application/ld+json">
+  <${'script'} type="application/ld+json">
 ${schemaJson}
-  <\/script>
+  <\/${'script'}>
   <style>
     .product-standalone { max-width: 1200px; margin: 100px auto 60px; padding: 0 24px; }
     .breadcrumbs { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #8b7a5a; margin-bottom: 24px; }
@@ -3323,7 +3323,7 @@ ${schemaJson}
     <p style="font-size:0.85rem;color:#c9b686;margin-bottom:16px;">Peças em crochê feitas à mão, com acabamento premium.</p>
     <p style="font-size:0.75rem;color:#8b7a5a;">&copy; 2026 Gold Crochet. Todos os direitos reservados.</p>
   </footer>
-  <script>
+  <${'script'}>
     let selectedColor = '${firstColor}';
     const productName = "${p.name.replace(/"/g, '\"')}";
     const productPrice = "${formattedPrice}";
@@ -3368,7 +3368,7 @@ ${schemaJson}
       } catch(e) {}
     }
     updateCartBadge();
-  <\/script>
+  <\/${'script'}>
 </body>
 </html>`;
 }
