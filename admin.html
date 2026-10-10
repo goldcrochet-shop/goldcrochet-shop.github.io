@@ -1282,9 +1282,15 @@ function formatDate(ts) {
 // ════════════════════════════════════════
 // TOKEN GITHUB
 // ════════════════════════════════════════
-function getGHToken() { return sessionStorage.getItem('gh_token') || ''; }
+function getGHToken() { return localStorage.getItem('gh_token') || sessionStorage.getItem('gh_token') || ''; }
 function setGHToken(token) {
-  sessionStorage.setItem('gh_token', (token || '').trim());
+  if (token) {
+    localStorage.setItem('gh_token', token.trim());
+    sessionStorage.setItem('gh_token', token.trim());
+  } else {
+    localStorage.removeItem('gh_token');
+    sessionStorage.removeItem('gh_token');
+  }
   updateTokenUI();
 }
 function updateTokenUI() {
