@@ -36,3 +36,11 @@ Toda a interface deve seguir rigorosamente as 4 cores oficiais da marca:
 - **Tolerância a Falhas em Módulos ESM:** O módulo central do Firebase (`js/firebase.js`) deve sempre fornecer aliases para métodos de uso comum (ex: `where` e `fsWhere`) para prevenir erros de resolução de módulo (`SyntaxError`) que impeçam a execução de `<script type="module">`.
 - **Degradação Elegante Offline:** Toda a experiência do cliente (medidas, pedidos recentes, cálculo de brindes) deve funcionar com persistência local caso o Firebase ou CDN fiquem temporariamente inacessíveis.
 
+## 7. Contato Oficial & Canal de Atendimento Único
+- **WhatsApp Comercial Exclusivo:** O único número autorizado para pedidos, encomendas e suporte é **+55 31 98456-6047** (`5531984566047`). Nenhum template, produto ou script deve utilizar números genéricos ou placeholders.
+
+## 8. Inicialização Limpa de Contas & Sincronização Firestore (Cliente ⇄ Admin)
+- **Zero Pedidos Simulados:** Toda nova conta criada por um cliente deve iniciar estritamente com `purchasesCount: 0` e `orders: []`. Não devem ser inseridos pedidos mocados ou pré-fabricados. Se o cliente não tiver pedidos, exibe-se um estado vazio elegante com botão para o catálogo.
+- **Sincronização Obrigatória no Firestore:** Toda ação do cliente (cadastro, login Google/Email, salvar medidas, salvar endereço de entrega ou somar compra de WhatsApp) deve salvar e mesclar os dados no documento `users/{uid}` no Firestore com `role: 'customer'`, permitindo que o painel `/admin` liste os clientes, visualize suas medidas e seus pedidos em tempo real.
+
+
