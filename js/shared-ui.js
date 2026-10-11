@@ -48,6 +48,7 @@
 
   function getActivePage() {
     const path = window.location.pathname.toLowerCase();
+    if (path.includes('cliente')) return 'cliente';
     if (path.includes('colecoes')) return 'colecoes';
     if (path.includes('pecas')) return 'pecas';
     if (path.includes('novidades')) return 'novidades';
@@ -88,12 +89,12 @@
         <!-- Ações do Cabeçalho: Silhueta do Usuário (Cliente), Favoritos, Carrinho -->
         <div class="gc-header-actions">
           <!-- Silhueta: Área do Cliente / Fidelidade (NÃO leva ao Admin!) -->
-          <button id="gcUserTrigger" class="gc-action-circle-btn" title="Minha Conta &amp; Brindes" aria-label="Minha Conta do Cliente">
+          <a href="${root}cliente.html" id="gcUserTrigger" class="gc-action-circle-btn ${activePage === 'cliente' ? 'active' : ''}" title="Minha Conta &amp; Brindes VIP" aria-label="Minha Conta do Cliente">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
-          </button>
+          </a>
 
           <button id="gcFavTrigger" class="gc-action-circle-btn" title="Favoritos" aria-label="Favoritos">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
@@ -145,10 +146,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line></svg>
         <span>Sacola</span>
       </button>
-      <button class="gc-mobile-tab-btn" onclick="window.GoldAccount.open()" style="background:none;border:none;cursor:pointer;">
+      <a href="${root}cliente.html" class="gc-mobile-tab-btn ${activePage === 'cliente' ? 'active' : ''}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         <span>Conta</span>
-      </button>
+      </a>
     `;
 
     document.body.appendChild(bar);
@@ -345,6 +346,10 @@
           </div>
         </div>
 
+        <a href="${root}cliente.html" class="gc-btn-pill-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:12px;padding:12px 20px">
+          💎 Acessar Portal Completo da Cliente
+        </a>
+
         <button class="gc-filter-pill" style="width:100%;border-color:rgba(229,62,62,0.3);color:#e53e3e" onclick="window.GoldAccount.logout()">
           Encerrar Sessão
         </button>
@@ -376,6 +381,10 @@
           <input type="email" id="gcInputEmail" class="gc-input-pill" placeholder="Seu e-mail" required>
           <button type="submit" class="gc-btn-pill-primary">Acessar Minha Conta</button>
         </form>
+
+        <a href="${root}cliente.html" class="gc-filter-pill" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:12px;font-size:0.85rem">
+          Abrir Portal Completo da Cliente &rarr;
+        </a>
       `;
     }
   }
@@ -673,11 +682,9 @@
 
   // Eventos Globais
   function setupEvents() {
-    const userTrigger = document.getElementById('gcUserTrigger');
     const modalClose = document.getElementById('gcModalClose');
     const modal = document.getElementById('gcUserModal');
 
-    if (userTrigger) userTrigger.addEventListener('click', openUserModal);
     if (modalClose) modalClose.addEventListener('click', closeUserModal);
     if (modal) {
       modal.addEventListener('click', (e) => {

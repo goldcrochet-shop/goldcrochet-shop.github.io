@@ -4,5 +4,23 @@
     "rules": "firestore.rules",
     "edition": "ENTERPRISE",
     "dataAccessMode": "FIRESTORE_NATIVE"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      { "source": "/admin", "destination": "/admin.html" },
+      { "source": "/cliente", "destination": "/cliente.html" },
+      { "source": "/conta", "destination": "/cliente.html" },
+      { "source": "/colecoes", "destination": "/colecoes.html" },
+      { "source": "/pecas", "destination": "/pecas.html" },
+      { "source": "/novidades", "destination": "/novidades.html" },
+      { "source": "/casa-gold", "destination": "/casa-gold.html" }
+    ],
+    "cleanUrls": true
   }
 }

@@ -96,6 +96,10 @@
         window.location.replace(window.location.origin + repoPrefix + '/casa-gold.html');
         return;
       }
+      if (clean === 'cliente' || clean === 'cliente/' || clean === 'conta' || clean === 'conta/' || clean === 'perfil' || clean === 'vip') {
+        window.location.replace(window.location.origin + repoPrefix + '/cliente.html');
+        return;
+      }
 
       // 3. Redirecionamento de páginas de produtos físicas (ex: /produtos/bolsa-dunas ou /bolsa-dunas -> /produtos/bolsa-dunas.html)
       if (clean && !clean.includes('.')) {

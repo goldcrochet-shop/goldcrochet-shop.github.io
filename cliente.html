@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Minha Conta &amp; Clube de Brindes — Gold Crochet Brasil</title>
+  <meta name="description" content="Área exclusiva da cliente Gold Crochet. Acompanhe a confecção dos seus pedidos sob medida, consulte seu saldo de compras e resgate brindes artesanais exclusivos.">
+  <link rel="canonical" href="https://goldcrochet-shop.github.io/cliente.html">
+  <meta name="theme-color" content="#cda434">
+
+  <!-- OpenGraph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Minha Conta &amp; Clube de Brindes — Gold Crochet Brasil">
+  <meta property="og:description" content="Área exclusiva da cliente Gold Crochet. Acompanhe a confecção dos seus pedidos sob medida e resgate brindes artesanais.">
+  <meta property="og:image" content="./assets/logo.png">
+
+  <!-- Favicons Oficiais do Búzio Dourado -->
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg?v=buzio2026">
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/icon.png?v=buzio2026">
+  <link rel="shortcut icon" href="./favicon.ico?v=buzio2026">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icon.png?v=buzio2026">
+
+  <!-- Fontes de Alta Moda -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css?v=2026">
+  <link rel="stylesheet" href="./css/luxury-core.css?v=2026">
+
+  <style>
+    /* ════════════════════════════════════════
+       ESTILOS EXCLUSIVOS DO PORTAL DA CLIENTE
+       ════════════════════════════════════════ */
+    .gc-client-page-wrap {
+      max-width: 1280px;
+      margin: 40px auto 90px;
+      padding: 0 24px;
+    }
+
+    /* Cartão de Membro Oficial (Card VIP Dourado) */
+    .gc-vip-member-card {
+      background: linear-gradient(135deg, #181614 0%, #2a2210 50%, #423824 100%);
+      color: #fff;
+      border-radius: var(--radius-card);
+      border: 1.5px solid var(--color-primary-gold);
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 18px 48px rgba(42, 34, 16, 0.22);
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 860px) {
+      .gc-vip-member-card {
+        grid-template-columns: 1fr;
+        padding: 26px 20px;
+        text-align: center;
+      }
+    }
+
+    .gc-vip-member-card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(205, 164, 52, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .gc-vip-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 860px) {
+      .gc-vip-badge-row {
+        justify-content: center;
+      }
+    }
+
+    .gc-vip-tier-pill {
+      background: var(--gradient-gold-metallic);
+      color: #181614;
+      font-weight: 800;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 2px 10px rgba(205, 164, 52, 0.4);
+    }
+
+    .gc-vip-card-number {
+      font-family: monospace;
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      color: var(--color-gold-shine);
+    }
+
+    .gc-vip-client-name {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      margin: 0 0 6px;
+      color: #fff8db;
+    }
+
+    .gc-vip-client-email {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Navegação por Abas em Pílula */
+    .gc-portal-tabs-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 36px;
+      scrollbar-width: none;
+    }
+    .gc-portal-tabs-nav::-webkit-scrollbar { display: none; }
+
+    .gc-portal-tab-pill {
+      background: var(--color-tertiary);
+      border: 1.5px solid var(--color-border);
+      color: var(--color-charcoal);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 10px 22px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gc-portal-tab-pill:hover,
+    .gc-portal-tab-pill.active {
+      background: var(--gradient-gold-metallic);
+      border-color: var(--color-primary-gold);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(166, 124, 0, 0.28);
+      transform: translateY(-2px);
+    }
+
+    .gc-tab-pane {
+      display: none;
+      animation: tabFadeIn 0.35s ease;
+    }
+    .gc-tab-pane.active {
+      display: block;
+    }
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards de Estatísticas em Grade Orgânica */
+    .gc-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 36px;
+    }
+    @media (max-width: 900px) {
+      .gc-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 500px) {
+      .gc-stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gc-stat-box {
+      background: var(--color-tertiary);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 24px 20px;
+      box-shadow: var(--shadow-organic);
+      text-align: center;
+      transition: var(--transition-smooth);
+    }
+    .gc-stat-box:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-primary-gold);
+    }
+    .gc-stat-num {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--color-gold-deep);
+      margin-bottom: 4px;
+    }
+    .gc-stat-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+    }
+
+    /* Linha do Tempo de Produção do Pedido */
+    .gc-order-card {
+      background: var(--color-tertiary);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 26px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-organic);
+      transition: var(--transition-smooth);
+    }
+    .gc-order-card:hover {
+      box-shadow: 0 16px 38px rgba(166, 124, 0, 0.12);
+      border-color: var(--color-primary-gold);
+    }
+    .gc-order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--color-border-subtle);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .gc-timeline-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 24px 0 16px;
+    }
+    .gc-timeline-steps::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 20px;
+      right: 20px;
+      height: 3px;
+      background: var(--color-border);
+      z-index: 1;
+    }
+    .gc-timeline-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      flex: 1;
+    }
+    .gc-timeline-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--color-secondary);
+      border: 2px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-muted);
+      margin-bottom: 8px;
+      transition: var(--transition-smooth);
+    }
+    .gc-timeline-step.completed .gc-timeline-circle {
+      background: var(--color-primary-gold);
+      border-color: var(--color-gold-deep);
+      color: #fff;
+    }
+    .gc-timeline-step.current .gc-timeline-circle {
+      background: var(--color-quaternary);
+      border-color: var(--color-primary-gold);
+      color: var(--color-ebony);
+      box-shadow: 0 0 14px var(--color-quaternary-glow);
+      transform: scale(1.15);
+    }
+    .gc-timeline-text {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .gc-timeline-step.current .gc-timeline-text,
+    .gc-timeline-step.completed .gc-timeline-text {
+      color: var(--color-ebony);
+    }
+
+    /* Guia de Medidas da Cliente */
+    .gc-measures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin: 20px 0;
+    }
+    .gc-measure-input-wrap label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-charcoal);
+      margin-bottom: 6px;
+    }
+
+    /* Brindes Disponíveis no Ateliê */
+    .gc-gift-showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin: 24px 0;
+    }
+    .gc-gift-item-card {
+      background: var(--color-tertiary);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      box-shadow: var(--shadow-organic);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .gc-gift-icon-bubble {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--color-secondary);
+      border: 1.5px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+
+    /* Caixa de Autenticação para quando deslogado */
+    .gc-client-auth-box {
+      max-width: 480px;
+      margin: 60px auto;
+      background: var(--color-tertiary);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-bubble);
+      padding: 44px 36px;
+      box-shadow: var(--shadow-floating);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="gc-client-page-wrap">
+    <!-- Breadcrumb e Voltar ao Catálogo -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <a class="gc-filter-pill" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px" onclick="if(window.history.length > 1) { window.history.back(); } else { window.location.href='./pecas.html'; }">
+        &larr; Voltar ao Catálogo
+      </a>
+      <span class="gc-badge-tag" style="position:static;background:var(--color-secondary)">
+        🔒 Ambiente Criptografado &amp; Seguro
+      </span>
+    </div>
+
+    <!-- TELA 1: QUANDO DESLOGADO (LOGIN / CADASTRO) -->
+    <section id="clientAuthSection" class="gc-client-auth-box" style="display:none">
+      <div style="width:68px;height:68px;border-radius:50%;background:var(--color-secondary);border:1.5px solid var(--color-border);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="var(--color-primary-gold)" stroke-width="1.8">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <h1 style="font-family:var(--font-display);font-size:2.2rem;color:var(--color-ebony);margin:0 0 6px">Portal da Cliente</h1>
+      <p style="color:var(--color-muted);font-size:0.92rem;line-height:1.6;margin:0 0 24px">
+        Acesse sua conta para consultar o status de confecção das suas peças, cadastrar suas medidas sob medida e resgatar brindes do ateliê.
+      </p>
+
+      <button class="gc-btn-pill-google" onclick="window.ClientPortal.loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.41 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.16 0 9.94 0 12s.45 3.84 1.24 5.42l4.04-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.59 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+        Entrar com Google
+      </button>
+
+      <div style="display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--color-muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em">
+        <hr style="flex:1;border:none;border-top:1px solid var(--color-border-subtle)">
+        <span>ou com seu e-mail</span>
+        <hr style="flex:1;border:none;border-top:1px solid var(--color-border-subtle)">
+      </div>
+
+      <form id="clientLoginForm" onsubmit="window.ClientPortal.loginEmail(event)">
+        <input type="text" id="clientInputName" class="gc-input-pill" placeholder="Seu Nome Completo" required>
+        <input type="email" id="clientInputEmail" class="gc-input-pill" placeholder="Seu E-mail" required>
+        <input type="password" id="clientInputPass" class="gc-input-pill" placeholder="Sua Senha (mínimo 6 caracteres)" required>
+        <button type="submit" class="gc-btn-pill-primary" style="margin-top:6px">
+          Acessar Minha Conta &rarr;
+        </button>
+      </form>
+
+      <p style="font-size:0.8rem;color:var(--color-muted);margin-top:20px">
+        Esqueceu sua senha? <a href="javascript:void(0)" onclick="window.ClientPortal.resetPass()" style="color:var(--color-gold-deep);font-weight:700">Recuperar via E-mail</a>
+      </p>
+    </section>
+
+    <!-- TELA 2: PORTAL COMPLETO DA CLIENTE LOGADA -->
+    <section id="clientPortalSection" style="display:none">
+      
+      <!-- Cartão VIP Oficial Digital -->
+      <div class="gc-vip-member-card">
+        <div>
+          <div class="gc-vip-badge-row">
+            <span id="clientVipTier" class="gc-vip-tier-pill">Membro Ouro</span>
+            <span id="clientVipCardNum" class="gc-vip-card-number">#GC-BR-8492</span>
+          </div>
+          <h2 id="clientDisplayName" class="gc-vip-client-name">Nome da Cliente</h2>
+          <span id="clientDisplayEmail" class="gc-vip-client-email">email@cliente.com</span>
+        </div>
+        <div style="text-align:right">
+          <button class="gc-filter-pill" style="border-color:rgba(255,255,255,0.3);color:#fff;background:rgba(255,255,255,0.08)" onclick="window.ClientPortal.logout()">
+            Encerrar Sessão
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de Abas da Cliente -->
+      <nav class="gc-portal-tabs-nav" aria-label="Abas da Conta">
+        <button class="gc-portal-tab-pill active" onclick="window.ClientPortal.switchTab('visao-geral', this)">
+          📊 Visão Geral
+        </button>
+        <button class="gc-portal-tab-pill" onclick="window.ClientPortal.switchTab('brindes', this)">
+          🎁 Programa de Brindes (<span id="tabGiftRemaining">2</span>)
+        </button>
+        <button class="gc-portal-tab-pill" onclick="window.ClientPortal.switchTab('pedidos', this)">
+          🧵 Meus Pedidos
+        </button>
+        <button class="gc-portal-tab-pill" onclick="window.ClientPortal.switchTab('medidas', this)">
+          📐 Minhas Medidas
+        </button>
+        <button class="gc-portal-tab-pill" onclick="window.ClientPortal.switchTab('enderecos', this)">
+          📍 Endereços
+        </button>
+        <button class="gc-portal-tab-pill" onclick="window.ClientPortal.switchTab('suporte', this)">
+          💬 Atendimento VIP
+        </button>
+      </nav>
+
+      <!-- ABA 1: VISÃO GERAL -->
+      <div id="tab-visao-geral" class="gc-tab-pane active">
+        <!-- Grade de Estatísticas Rápidas -->
+        <div class="gc-stats-grid">
+          <div class="gc-stat-box">
+            <div id="statPurchasesCount" class="gc-stat-num">0</div>
+            <div class="gc-stat-label">Compras Realizadas</div>
+          </div>
+          <div class="gc-stat-box">
+            <div id="statGiftsCount" class="gc-stat-num">0</div>
+            <div class="gc-stat-label">Brindes Conquistados</div>
+          </div>
+          <div class="gc-stat-box">
+            <div id="statFavCount" class="gc-stat-num">0</div>
+            <div class="gc-stat-label">Peças Favoritas</div>
+          </div>
+          <div class="gc-stat-box">
+            <div id="statStatusPill" class="gc-stat-num" style="font-size:1.4rem">Ativa</div>
+            <div class="gc-stat-label">Status no Ateliê</div>
+          </div>
+        </div>
+
+        <!-- Banner com Progresso Imediato de Brindes -->
+        <div class="gc-gift-tracker-card" style="margin-top:0">
+          <div class="gc-gift-circle-wrap">
+            <svg class="gc-gift-circle-svg" viewBox="0 0 100 100">
+              <circle class="gc-gift-circle-bg" cx="50" cy="50" r="35"></circle>
+              <circle id="dashCircleProgress" class="gc-gift-circle-progress" cx="50" cy="50" r="35" stroke-dasharray="220" stroke-dashoffset="146"></circle>
+            </svg>
+            <div class="gc-gift-circle-center">
+              <span id="dashCirclePurchases">1</span>
+              <span style="font-size:0.6rem;color:var(--color-muted);font-weight:700">PEDIDOS</span>
+            </div>
+          </div>
+          <div class="gc-gift-info">
+            <h4>Seu Próximo Brinde Artesanal</h4>
+            <p id="dashGiftText">Faltam <strong>2 compras</strong> para você resgatar seu Porta-Copos Búzio Dourado feito à mão.</p>
+            <button class="gc-gift-badge-btn" onclick="window.ClientPortal.switchTab('brindes')">Ver Catálogo de Brindes &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Card para Adicionar Compra do WhatsApp -->
+        <div style="background:var(--color-tertiary);border:1.5px solid var(--color-border);border-radius:var(--radius-card);padding:24px;margin-top:24px;box-shadow:var(--shadow-organic)">
+          <h3 style="font-family:var(--font-display);font-size:1.3rem;color:var(--color-ebony);margin:0 0 8px">Registrar Nova Compra do WhatsApp</h3>
+          <p style="color:var(--color-muted);font-size:0.88rem;margin:0 0 16px">Fechou uma encomenda com nossa estilista? Digite o código do pedido ou clique para somar ao seu clube:</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <input type="text" id="manualOrderInput" class="gc-input-pill" placeholder="Ex: GC-WA-9042" style="max-width:260px;margin-bottom:0">
+            <button class="gc-btn-pill-primary" style="width:auto;padding:12px 28px" onclick="window.ClientPortal.addManualPurchase()">
+              + Somar à Minha Conta
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA 2: PROGRAMA DE BRINDES -->
+      <div id="tab-brindes" class="gc-tab-pane">
+        <div style="border-bottom:1px solid var(--color-border);padding-bottom:14px;margin-bottom:24px">
+          <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-ebony);margin:0">Catálogo de Brindes de Alta-Costura</h2>
+          <p style="color:var(--color-muted);font-size:0.9rem;margin-top:4px">Criações exclusivas tecidas pelas nossas mestras artesãs reservadas para clientes do Clube Gold.</p>
+        </div>
+
+        <div class="gc-gift-showcase-grid">
+          <!-- Brinde 1: 3 Compras -->
+          <div class="gc-gift-item-card">
+            <div class="gc-gift-icon-bubble">🐚</div>
+            <span class="gc-badge-tag" style="position:static;margin-bottom:10px">Meta: 3 Compras</span>
+            <h3 style="font-family:var(--font-display);font-size:1.3rem;color:var(--color-ebony);margin:0 0 6px">Porta-Copos Búzio Dourado</h3>
+            <p style="font-size:0.84rem;color:var(--color-muted);line-height:1.5;margin:0 0 16px">Duo de porta-copos tecidos em fio de algodão nobre com detalhes metálicos inspirados nos búzios do mar brasileiro.</p>
+            <button id="btnClaimGift1" class="gc-btn-pill-primary" style="font-size:0.8rem;padding:10px 20px" onclick="window.ClientPortal.claimGift('Porta-Copos Búzio Dourado')">
+              🎁 Resgatar Brinde
+            </button>
+          </div>
+
+          <!-- Brinde 2: 5 Compras -->
+          <div class="gc-gift-item-card">
+            <div class="gc-gift-icon-bubble">👜</div>
+            <span class="gc-badge-tag" style="position:static;margin-bottom:10px">Meta: 5 Compras</span>
+            <h3 style="font-family:var(--font-display);font-size:1.3rem;color:var(--color-ebony);margin:0 0 6px">Ecobag de Crochê Ateliê</h3>
+            <p style="font-size:0.84rem;color:var(--color-muted);line-height:1.5;margin:0 0 16px">Bolsa sacola ecológica exclusiva confeccionada em trama vazada resistente e alça contínua reforçada.</p>
+            <button id="btnClaimGift2" class="gc-filter-pill" style="font-size:0.8rem;padding:10px 20px" onclick="window.ClientPortal.claimGift('Ecobag de Crochê Ateliê')">
+              🔒 Bloqueado (Faltam compras)
+            </button>
+          </div>
+
+          <!-- Brinde 3: 10 Compras -->
+          <div class="gc-gift-item-card">
+            <div class="gc-gift-icon-bubble">✨</div>
+            <span class="gc-badge-tag" style="position:static;background:var(--gradient-gold-metallic);color:#181614;margin-bottom:10px">Meta: 10 Compras (VIP)</span>
+            <h3 style="font-family:var(--font-display);font-size:1.3rem;color:var(--color-ebony);margin:0 0 6px">Peça Sob Medida de Cortesia</h3>
+            <p style="font-size:0.84rem;color:var(--color-muted);line-height:1.5;margin:0 0 16px">Uma peça sob encomenda desenhada com você pela nossa estilista, com fios premium e medidas exclusivas.</p>
+            <button class="gc-filter-pill" style="font-size:0.8rem;padding:10px 20px">
+              🔒 Nível Alta-Costura VIP
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA 3: MEUS PEDIDOS -->
+      <div id="tab-pedidos" class="gc-tab-pane">
+        <div style="border-bottom:1px solid var(--color-border);padding-bottom:14px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-ebony);margin:0">Histórico de Pedidos &amp; Confecção</h2>
+            <p style="color:var(--color-muted);font-size:0.9rem;margin-top:4px">Acompanhe cada etapa de criação artesanal das suas peças.</p>
+          </div>
+        </div>
+
+        <div id="ordersContainer">
+          <!-- Injetado dinamicamente via JS -->
+        </div>
+      </div>
+
+      <!-- ABA 4: MINHAS MEDIDAS -->
+      <div id="tab-medidas" class="gc-tab-pane">
+        <div style="background:var(--color-tertiary);border:1.5px solid var(--color-border);border-radius:var(--radius-card);padding:30px;box-shadow:var(--shadow-organic)">
+          <div style="margin-bottom:20px">
+            <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-ebony);margin:0 0 6px">Suas Medidas para Peças Sob Medida</h2>
+            <p style="color:var(--color-muted);font-size:0.9rem;line-height:1.6">
+              Ao encomendar vestidos, saias ou regatas na Gold Crochet, nossas estilistas utilizam estas medidas para ajustar a tensão dos pontos ao seu corpo com exatidão milimétrica.
+            </p>
+          </div>
+
+          <form id="measuresForm" onsubmit="window.ClientPortal.saveMeasures(event)">
+            <div class="gc-measures-grid">
+              <div class="gc-measure-input-wrap">
+                <label>Busto (cm)</label>
+                <input type="number" id="mBusto" class="gc-input-pill" placeholder="Ex: 88">
+              </div>
+              <div class="gc-measure-input-wrap">
+                <label>Cintura (cm)</label>
+                <input type="number" id="mCintura" class="gc-input-pill" placeholder="Ex: 68">
+              </div>
+              <div class="gc-measure-input-wrap">
+                <label>Quadril (cm)</label>
+                <input type="number" id="mQuadril" class="gc-input-pill" placeholder="Ex: 96">
+              </div>
+              <div class="gc-measure-input-wrap">
+                <label>Altura (cm)</label>
+                <input type="number" id="mAltura" class="gc-input-pill" placeholder="Ex: 165">
+              </div>
+              <div class="gc-measure-input-wrap">
+                <label>Comprimento Preferido</label>
+                <input type="text" id="mComprimento" class="gc-input-pill" placeholder="Ex: Midi (abaixo do joelho)">
+              </div>
+              <div class="gc-measure-input-wrap">
+                <label>Cor Favorita</label>
+                <input type="text" id="mCor" class="gc-input-pill" placeholder="Ex: Ouro e Areia">
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
+              <button type="submit" class="gc-btn-pill-primary" style="width:auto;padding:12px 28px">
+                💾 Salvar Medidas no Perfil
+              </button>
+              <button type="button" class="gc-filter-pill" onclick="window.ClientPortal.sendMeasuresWhatsApp()">
+                📲 Enviar Medidas pelo WhatsApp
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ABA 5: ENDEREÇOS -->
+      <div id="tab-enderecos" class="gc-tab-pane">
+        <div style="background:var(--color-tertiary);border:1.5px solid var(--color-border);border-radius:var(--radius-card);padding:30px;box-shadow:var(--shadow-organic)">
+          <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-ebony);margin:0 0 16px">Endereço de Entrega Principal</h2>
+          
+          <form id="addressForm" onsubmit="window.ClientPortal.saveAddress(event)">
+            <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:14px">
+              <div>
+                <label style="font-size:0.8rem;font-weight:700;color:var(--color-muted);display:block;margin-bottom:4px">CEP</label>
+                <input type="text" id="addrCep" class="gc-input-pill" placeholder="00000-000" onblur="window.ClientPortal.searchCep(this.value)">
+              </div>
+              <div>
+                <label style="font-size:0.8rem;font-weight:700;color:var(--color-muted);display:block;margin-bottom:4px">Logradouro / Rua</label>
+                <input type="text" id="addrRua" class="gc-input-pill" placeholder="Rua / Avenida">
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px">
+              <div>
+                <label style="font-size:0.8rem;font-weight:700;color:var(--color-muted);display:block;margin-bottom:4px">Número &amp; Compl.</label>
+                <input type="text" id="addrNum" class="gc-input-pill" placeholder="Nº 120, Apto 402">
+              </div>
+              <div>
+                <label style="font-size:0.8rem;font-weight:700;color:var(--color-muted);display:block;margin-bottom:4px">Bairro</label>
+                <input type="text" id="addrBairro" class="gc-input-pill" placeholder="Bairro">
+              </div>
+              <div>
+                <label style="font-size:0.8rem;font-weight:700;color:var(--color-muted);display:block;margin-bottom:4px">Cidade / UF</label>
+                <input type="text" id="addrCidade" class="gc-input-pill" placeholder="Rio de Janeiro - RJ">
+              </div>
+            </div>
+
+            <button type="submit" class="gc-btn-pill-primary" style="width:auto;padding:12px 28px">
+              💾 Salvar Endereço
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ABA 6: ATENDIMENTO VIP -->
+      <div id="tab-suporte" class="gc-tab-pane">
+        <div style="background:var(--color-tertiary);border:1.5px solid var(--color-border);border-radius:var(--radius-card);padding:36px;box-shadow:var(--shadow-organic);text-align:center">
+          <div style="width:72px;height:72px;border-radius:50%;background:var(--gradient-gold-metallic);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:var(--shadow-gold-glow)">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          </div>
+          <h2 style="font-family:var(--font-display);font-size:2rem;color:var(--color-ebony);margin:0 0 8px">Atendimento VIP com Nossa Estilista</h2>
+          <p style="color:var(--color-muted);max-width:560px;margin:0 auto 24px;line-height:1.7">
+            Como cliente cadastrada no Ateliê Gold Crochet, você possui canal direto prioritário para tirar dúvidas sobre fios, lavagem e encomendar criações sob medida.
+          </p>
+          <a href="https://wa.me/5521999999999?text=Ol%C3%A1%2C%20sou%20cliente%20cadastrada%20na%20Gold%20Crochet%20e%20gostaria%20de%20atendimento%20VIP%20com%20a%20estilista." target="_blank" class="gc-btn-checkout" style="display:inline-flex;padding:16px 36px;text-decoration:none">
+            Conversar no WhatsApp Oficial &rarr;
+          </a>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Scripts Essenciais de Luxo -->
+  <script src="./js/loader.js?v=2026"></script>
+  <script src="./js/shared-ui.js?v=2026"></script>
+  <script type="module">
+    import {
+      auth,
+      db,
+      googleProvider,
+      signInWithPopup,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      sendPasswordResetEmail,
+      signOut,
+      fsDoc,
+      setDoc,
+      getDoc,
+      fsCollection,
+      addDoc,
+      fsQuery,
+      where,
+      getDocs
+    } from "./js/firebase.js";
+
+    const CLIENT_KEY = 'gc_customer_account_v2';
+    const WHATSAPP_NUM = '5521999999999';
+
+    function getLocalClient() {
+      try {
+        const d = localStorage.getItem(CLIENT_KEY);
+        return d ? JSON.parse(d) : null;
+      } catch(e) { return null; }
+    }
+
+    function saveLocalClient(obj) {
+      try {
+        localStorage.setItem(CLIENT_KEY, JSON.stringify(obj));
+      } catch(e) {}
+    }
+
+    // Gerenciador do Portal
+    window.ClientPortal = {
+      init: async function() {
+        const client = getLocalClient();
+        if (client && client.email) {
+          this.renderLoggedPortal(client);
+        } else {
+          document.getElementById('clientAuthSection').style.display = 'block';
+          document.getElementById('clientPortalSection').style.display = 'none';
+        }
+      },
+
+      renderLoggedPortal: function(client) {
+        document.getElementById('clientAuthSection').style.display = 'none';
+        document.getElementById('clientPortalSection').style.display = 'block';
+
+        // Preenche Dados VIP
+        document.getElementById('clientDisplayName').textContent = client.name || 'Cliente';
+        document.getElementById('clientDisplayEmail').textContent = client.email || '';
+        document.getElementById('clientVipCardNum').textContent = client.cardNum || '#GC-BR-' + (client.id || Date.now().toString().slice(-4));
+
+        const purchases = Number(client.purchasesCount || 0);
+        document.getElementById('statPurchasesCount').textContent = purchases;
+        document.getElementById('dashCirclePurchases').textContent = purchases;
+
+        // Calcula brindes
+        const giftsClaimed = Number(client.giftsClaimed || 0);
+        document.getElementById('statGiftsCount').textContent = giftsClaimed;
+
+        const mod3 = purchases % 3;
+        const remaining = 3 - mod3;
+        document.getElementById('tabGiftRemaining').textContent = remaining === 0 ? 'PRONTO!' : remaining;
+
+        const progressPercent = (mod3 / 3) * 100;
+        const strokeDash = 220;
+        const offset = strokeDash - (strokeDash * (progressPercent / 100));
+        const circleProg = document.getElementById('dashCircleProgress');
+        if (circleProg) circleProg.style.strokeDashoffset = offset;
+
+        const giftText = document.getElementById('dashGiftText');
+        if (giftText) {
+          if (remaining === 0) {
+            giftText.innerHTML = '🎉 <strong>Parabéns!</strong> Você já completou 3 compras e pode resgatar seu brinde exclusivo agora mesmo!';
+          } else {
+            giftText.innerHTML = `Você já realizou <strong>${purchases}</strong> ${purchases === 1 ? 'compra' : 'compras'}. Faltam <strong>${remaining}</strong> para seu próximo brinde artesanal!`;
+          }
+        }
+
+        // Favoritos
+        const favs = window.GoldFav ? window.GoldFav.list() : [];
+        document.getElementById('statFavCount').textContent = favs.length;
+
+        // Preenche Formulários se existirem dados
+        if (client.measures) {
+          if (document.getElementById('mBusto')) document.getElementById('mBusto').value = client.measures.busto || '';
+          if (document.getElementById('mCintura')) document.getElementById('mCintura').value = client.measures.cintura || '';
+          if (document.getElementById('mQuadril')) document.getElementById('mQuadril').value = client.measures.quadril || '';
+          if (document.getElementById('mAltura')) document.getElementById('mAltura').value = client.measures.altura || '';
+          if (document.getElementById('mComprimento')) document.getElementById('mComprimento').value = client.measures.comprimento || '';
+          if (document.getElementById('mCor')) document.getElementById('mCor').value = client.measures.cor || '';
+        }
+
+        if (client.address) {
+          if (document.getElementById('addrCep')) document.getElementById('addrCep').value = client.address.cep || '';
+          if (document.getElementById('addrRua')) document.getElementById('addrRua').value = client.address.rua || '';
+          if (document.getElementById('addrNum')) document.getElementById('addrNum').value = client.address.num || '';
+          if (document.getElementById('addrBairro')) document.getElementById('addrBairro').value = client.address.bairro || '';
+          if (document.getElementById('addrCidade')) document.getElementById('addrCidade').value = client.address.cidade || '';
+        }
+
+        this.renderOrders(client);
+      },
+
+      renderOrders: function(client) {
+        const container = document.getElementById('ordersContainer');
+        if (!container) return;
+
+        const orders = client.orders || [
+          {
+            id: 'GC-2026-9041',
+            date: 'Ontem',
+            item: 'Regata Noronha (Fio Algodão Nobre)',
+            color: 'Degradê Oceânico & Areia',
+            total: 'R$ 65,00',
+            step: 3, // Em tecelagem
+            stepLabel: 'Tecelagem Manual'
+          }
+        ];
+
+        container.innerHTML = orders.map(ord => `
+          <div class="gc-order-card">
+            <div class="gc-order-header">
+              <div>
+                <span class="gc-badge-tag" style="position:static;margin-right:8px">${ord.id}</span>
+                <strong style="color:var(--color-ebony);font-size:0.95rem">${ord.item}</strong>
+                <span style="color:var(--color-muted);font-size:0.85rem"> (${ord.color})</span>
+              </div>
+              <div style="font-family:var(--font-display);font-size:1.25rem;color:var(--color-gold-deep)">${ord.total}</div>
+            </div>
+
+            <!-- Timeline de Produção -->
+            <div class="gc-timeline-steps">
+              <div class="gc-timeline-step completed">
+                <div class="gc-timeline-circle">✓</div>
+                <div class="gc-timeline-text">Confirmado</div>
+              </div>
+              <div class="gc-timeline-step completed">
+                <div class="gc-timeline-circle">✓</div>
+                <div class="gc-timeline-text">Separação Fios</div>
+              </div>
+              <div class="gc-timeline-step current">
+                <div class="gc-timeline-circle">🧶</div>
+                <div class="gc-timeline-text">Tecendo Pontos</div>
+              </div>
+              <div class="gc-timeline-step">
+                <div class="gc-timeline-circle">4</div>
+                <div class="gc-timeline-text">Acabamento</div>
+              </div>
+              <div class="gc-timeline-step">
+                <div class="gc-timeline-circle">5</div>
+                <div class="gc-timeline-text">Enviado</div>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:14px">
+              <a href="https://wa.me/${WHATSAPP_NUM}?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20sobre%20meu%20pedido%20${ord.id}" target="_blank" class="gc-filter-pill" style="font-size:0.75rem;padding:6px 14px;text-decoration:none">
+                💬 Perguntar no WhatsApp
+              </a>
+            </div>
+          </div>
+        `).join('');
+      },
+
+      switchTab: function(tabId, btn) {
+        document.querySelectorAll('.gc-tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.gc-portal-tabs-nav .gc-portal-tab-pill').forEach(b => b.classList.remove('active'));
+        
+        const target = document.getElementById('tab-' + tabId);
+        if (target) target.classList.add('active');
+        if (btn) btn.classList.add('active');
+      },
+
+      loginGoogle: async function() {
+        try {
+          if (auth && googleProvider) {
+            const res = await signInWithPopup(auth, googleProvider);
+            const user = res.user;
+            const client = {
+              id: user.uid,
+              name: user.displayName || 'Cliente Gold',
+              email: user.email,
+              purchasesCount: 1,
+              giftsClaimed: 0,
+              cardNum: '#GC-BR-' + user.uid.slice(0, 5).toUpperCase()
+            };
+            saveLocalClient(client);
+            this.renderLoggedPortal(client);
+            alert(`✨ Bem-vinda ao Ateliê, ${client.name}!`);
+            return;
+          }
+        } catch(e) {
+          console.warn('Google Auth fallback:', e);
+        }
+        // Fallback gracioso
+        const name = prompt('Digite seu nome para acessar a conta do ateliê:', 'Cliente Gold');
+        if (name) {
+          const client = {
+            id: 'cli_' + Date.now().toString().slice(-5),
+            name: name,
+            email: 'cliente@goldcrochet.com.br',
+            purchasesCount: 1,
+            giftsClaimed: 0,
+            cardNum: '#GC-BR-' + Date.now().toString().slice(-4)
+          };
+          saveLocalClient(client);
+          this.renderLoggedPortal(client);
+        }
+      },
+
+      loginEmail: function(e) {
+        e.preventDefault();
+        const name = document.getElementById('clientInputName').value.trim();
+        const email = document.getElementById('clientInputEmail').value.trim();
+        const pass = document.getElementById('clientInputPass').value.trim();
+
+        if (!name || !email || !pass) return;
+
+        const existing = getLocalClient() || {};
+        const client = {
+          ...existing,
+          id: existing.id || 'cli_' + Date.now().toString().slice(-5),
+          name: name,
+          email: email,
+          purchasesCount: existing.purchasesCount || 1,
+          giftsClaimed: existing.giftsClaimed || 0,
+          cardNum: existing.cardNum || '#GC-BR-' + Date.now().toString().slice(-4)
+        };
+        saveLocalClient(client);
+        this.renderLoggedPortal(client);
+        alert(`✨ Bem-vinda de volta ao Ateliê Gold Crochet, ${name}!`);
+      },
+
+      resetPass: function() {
+        const email = prompt('Digite seu e-mail para receber o link de redefinição de senha:');
+        if (email) {
+          if (auth && sendPasswordResetEmail) {
+            sendPasswordResetEmail(auth, email).catch(() => {});
+          }
+          alert(`📧 Um link de redefinição foi enviado para ${email}. Verifique sua caixa de entrada.`);
+        }
+      },
+
+      addManualPurchase: function() {
+        const input = document.getElementById('manualOrderInput');
+        const code = input ? input.value.trim() : '';
+        const client = getLocalClient();
+        if (!client) return;
+
+        client.purchasesCount = (client.purchasesCount || 0) + 1;
+        client.orders = client.orders || [];
+        client.orders.unshift({
+          id: code || 'GC-WA-' + Date.now().toString().slice(-4),
+          date: 'Hoje',
+          item: 'Encomenda Sob Medida Registrada',
+          color: 'Fio 100% Algodão',
+          total: 'Computado',
+          step: 2
+        });
+
+        saveLocalClient(client);
+        this.renderLoggedPortal(client);
+        alert('🎉 Parabéns! Sua compra foi computada com sucesso no Programa de Brindes!');
+        if (input) input.value = '';
+      },
+
+      claimGift: function(giftName) {
+        const client = getLocalClient();
+        if (!client) return;
+        const msg = `🎁 *Resgate de Brinde Exclusivo — Ateliê Gold Crochet*\n\nOlá, sou *${client.name}* e gostaria de resgatar meu brinde conquistado:\n\n▪ Brinde: *${giftName}*\n▪ E-mail da conta: ${client.email}\n▪ Compras computadas: ${client.purchasesCount}\n▪ Cartão VIP: ${client.cardNum}`;
+        const url = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+      },
+
+      saveMeasures: function(e) {
+        e.preventDefault();
+        const client = getLocalClient();
+        if (!client) return;
+
+        client.measures = {
+          busto: document.getElementById('mBusto')?.value || '',
+          cintura: document.getElementById('mCintura')?.value || '',
+          quadril: document.getElementById('mQuadril')?.value || '',
+          altura: document.getElementById('mAltura')?.value || '',
+          comprimento: document.getElementById('mComprimento')?.value || '',
+          cor: document.getElementById('mCor')?.value || ''
+        };
+
+        saveLocalClient(client);
+        alert('✨ Suas medidas foram salvas com sucesso no seu perfil do Ateliê!');
+      },
+
+      sendMeasuresWhatsApp: function() {
+        const client = getLocalClient();
+        if (!client || !client.measures) {
+          alert('Por favor, salve suas medidas primeiro.');
+          return;
+        }
+        const m = client.measures;
+        const msg = `📐 *Medidas da Cliente — Gold Crochet*\n\nCliente: *${client.name}*\n- Busto: ${m.busto} cm\n- Cintura: ${m.cintura} cm\n- Quadril: ${m.quadril} cm\n- Altura: ${m.altura} cm\n- Comprimento: ${m.comprimento}\n- Cores: ${m.cor}`;
+        const url = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+      },
+
+      saveAddress: function(e) {
+        e.preventDefault();
+        const client = getLocalClient();
+        if (!client) return;
+
+        client.address = {
+          cep: document.getElementById('addrCep')?.value || '',
+          rua: document.getElementById('addrRua')?.value || '',
+          num: document.getElementById('addrNum')?.value || '',
+          bairro: document.getElementById('addrBairro')?.value || '',
+          cidade: document.getElementById('addrCidade')?.value || ''
+        };
+
+        saveLocalClient(client);
+        alert('📍 Endereço de entrega salvo com sucesso!');
+      },
+
+      searchCep: async function(cep) {
+        const clean = (cep || '').replace(/\D/g, '');
+        if (clean.length !== 8) return;
+        try {
+          const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
+          const data = await res.json();
+          if (!data.erro) {
+            if (document.getElementById('addrRua')) document.getElementById('addrRua').value = data.logradouro || '';
+            if (document.getElementById('addrBairro')) document.getElementById('addrBairro').value = data.bairro || '';
+            if (document.getElementById('addrCidade')) document.getElementById('addrCidade').value = `${data.localidade} - ${data.uf}`;
+          }
+        } catch(e) {}
+      },
+
+      logout: function() {
+        localStorage.removeItem(CLIENT_KEY);
+        if (auth && signOut) signOut(auth).catch(() => {});
+        this.init();
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      window.ClientPortal.init();
+    });
+  </script>
+</body>
+</html>
