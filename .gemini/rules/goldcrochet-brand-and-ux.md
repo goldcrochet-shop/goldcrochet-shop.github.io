@@ -51,7 +51,7 @@ A navegação superior do site segue rigorosamente a ordem:
 1. **Logotipo Oficial** na extrema esquerda (`assets/logo-brasil-transparent.png`)
 2. **Início**
 3. **Coleções**
-4. **Peças** (com Mega-Menu suspenso de 6 colunas temáticas)
+4. **Peças** (sem qualquer setinha ou chevron indicador; ao abrir, a aba/mega-menu desce com animação fluida `gcMegaMenuSlideDown`)
 5. **Novidades**
 6. **Casa Gold**
 7. **Pesquisar** (ícone e texto)
@@ -66,9 +66,9 @@ A navegação superior do site segue rigorosamente a ordem:
 - **Portais das Linhas com Surgimento ao Rolar:** Os 4 cartões temáticos abaixo do hero surgem suavemente quando o usuário rola a página (via IntersectionObserver).
 
 ## 12. Carrossel de Criações em Destaque
-- Substitui grades estáticas por um **carrossel horizontal interativo** das peças com tag `destaque`.
+- Substitui grades estáticas por um **carrossel horizontal interativo** abastecido com produtos do catálogo de forma dinâmica e farta (mínimo de 12 itens embaralhados aleatoriamente).
 - Possui **setas de navegação** (Anterior e Próximo).
-- Suporta **arraste com o mouse** (com cursor grab / grabbing) no computador e **arraste por toque (swipe)** fluido no celular.
+- Suporta **arraste com o mouse** (com proteção contra clique acidental) e **arraste por toque (swipe)** fluido no celular.
 - O botão "Ver Todo o Acervo" não possui seta.
 
 ## 13. Experiência da Gaveta de Sacola (3 Estados Estritos)
