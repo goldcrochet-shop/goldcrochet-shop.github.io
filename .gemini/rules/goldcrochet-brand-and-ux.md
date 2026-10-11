@@ -29,3 +29,10 @@ Toda a interface deve seguir rigorosamente as 4 cores oficiais da marca:
 
 ## 5. Arquitetura Multi-Página Tradicional (GitHub Pages)
 - Cada rota principal (`index.html`, `colecoes.html`, `pecas.html`, `novidades.html`, `casa-gold.html`) e cada produto (`produtos/<slug>.html`) é um arquivo HTML físico independente para garantir que o botão Voltar do navegador (`Alt + Seta Esquerda`) funcione com 100% de estabilidade nativa.
+
+## 6. Resiliência de Interface & Prevenção de Tela em Branco (Zero-Blank State)
+- **HTML Primeiro (First Paint Resiliente):** Seções de formulário e autenticação padrão NUNCA devem ter `style="display: none"` inline rígido. A interface padrão (como formulário de login/cadastro) deve estar sempre visível no HTML de base, sendo ocultada apenas após confirmação ativa de sessão.
+- **Renderização Síncrona Anti-Flicker:** Telas que alternam entre visitante e usuário logado devem executar um script síncrono ultraleve antes de scripts modulares pesados para verificar `localStorage` e atualizar o estado visual sem travar em branco.
+- **Tolerância a Falhas em Módulos ESM:** O módulo central do Firebase (`js/firebase.js`) deve sempre fornecer aliases para métodos de uso comum (ex: `where` e `fsWhere`) para prevenir erros de resolução de módulo (`SyntaxError`) que impeçam a execução de `<script type="module">`.
+- **Degradação Elegante Offline:** Toda a experiência do cliente (medidas, pedidos recentes, cálculo de brindes) deve funcionar com persistência local caso o Firebase ou CDN fiquem temporariamente inacessíveis.
+
