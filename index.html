@@ -382,6 +382,17 @@
       scroll-snap-type: none;
     }
 
+    .gc-carousel-track img,
+    .gc-carousel-track .gc-product-card-img {
+      -webkit-user-drag: none;
+      -khtml-user-drag: none;
+      -moz-user-drag: none;
+      -o-user-drag: none;
+      user-drag: none;
+      user-select: none;
+      pointer-events: none;
+    }
+
     .gc-carousel-track .gc-product-card {
       flex: 0 0 310px;
       max-width: 310px;
@@ -645,40 +656,67 @@
           `;
         }).join('');
 
-        // Interação de Arraste com Mouse (Desktop) com prevenção de clique acidental
+        // Interação de Deslize com Mouse (Desktop) fluida com inércia / momentum
         let isDown = false;
-        let startX;
-        let scrollLeft;
+        let startX = 0;
+        let startScrollLeft = 0;
+        let lastX = 0;
+        let lastTime = 0;
+        let velocity = 0;
+        let hasMoved = false;
         window.__gcCarouselDragged = false;
 
         track.addEventListener('mousedown', (e) => {
+          if (e.target.closest('.gc-card-fav-btn')) return;
+
           isDown = true;
+          hasMoved = false;
           window.__gcCarouselDragged = false;
+          startX = e.pageX;
+          lastX = e.pageX;
+          startScrollLeft = track.scrollLeft;
+          lastTime = Date.now();
+          velocity = 0;
+
           track.classList.add('grabbing');
-          startX = e.pageX - track.offsetLeft;
-          scrollLeft = track.scrollLeft;
+          track.style.scrollBehavior = 'auto';
+          track.style.scrollSnapType = 'none';
+          e.preventDefault();
         });
 
-        track.addEventListener('mouseleave', () => {
-          isDown = false;
-          track.classList.remove('grabbing');
-        });
-
-        track.addEventListener('mouseup', () => {
-          isDown = false;
-          track.classList.remove('grabbing');
-          setTimeout(() => { window.__gcCarouselDragged = false; }, 120);
-        });
-
-        track.addEventListener('mousemove', (e) => {
+        window.addEventListener('mousemove', (e) => {
           if (!isDown) return;
-          const x = e.pageX - track.offsetLeft;
-          const walk = (x - startX) * 1.5;
-          if (Math.abs(walk) > 6) {
+          const currentX = e.pageX;
+          const dx = currentX - startX;
+          if (Math.abs(dx) > 6) {
+            hasMoved = true;
             window.__gcCarouselDragged = true;
           }
-          e.preventDefault();
-          track.scrollLeft = scrollLeft - walk;
+
+          const now = Date.now();
+          const dt = Math.max(now - lastTime, 16);
+          velocity = (currentX - lastX) / dt;
+          lastX = currentX;
+          lastTime = now;
+
+          track.scrollLeft = startScrollLeft - dx;
+        });
+
+        window.addEventListener('mouseup', () => {
+          if (!isDown) return;
+          isDown = false;
+          track.classList.remove('grabbing');
+          track.style.scrollBehavior = 'smooth';
+          track.style.scrollSnapType = 'x mandatory';
+
+          if (hasMoved) {
+            // Aplica impulso suave de deslize com inércia
+            const momentum = velocity * 260;
+            track.scrollBy({ left: -momentum, behavior: 'smooth' });
+            setTimeout(() => { window.__gcCarouselDragged = false; }, 140);
+          } else {
+            window.__gcCarouselDragged = false;
+          }
         });
 
         // Setas de Navegação do Carrossel
