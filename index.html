@@ -33,7 +33,7 @@
 
   <style>
     /* ════════════════════════════════════════
-       HERO EDITORIAL ORGÂNICO COM FUNDO TROPICAL & FILTRO TRANSLÚCIDO
+       HERO EDITORIAL ORGÂNICO COM FUNDO TROPICAL NÍTIDO & LOGO FLUTUANTE
        ════════════════════════════════════════ */
     .gc-hero-organic {
       position: relative;
@@ -41,9 +41,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.90) 0%, rgba(253, 246, 214, 0.85) 100%), url('./assets/hero-tropical-bg.jpg') center/cover no-repeat;
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.42) 0%, rgba(253, 246, 214, 0.32) 100%), url('./assets/hero-tropical-bg.jpg') center/cover no-repeat;
       padding: 70px 24px;
       overflow: hidden;
       border-bottom: 1.5px solid var(--color-border);
@@ -89,11 +87,27 @@
       animation: heroFadeUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
     }
 
+    .gc-hero-text-col {
+      background: rgba(255, 255, 255, 0.76);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1.5px solid rgba(255, 255, 255, 0.92);
+      border-radius: var(--radius-card);
+      padding: 42px 38px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    @media (max-width: 960px) {
+      .gc-hero-text-col {
+        padding: 30px 22px;
+      }
+    }
+
     .gc-hero-brand-badge {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
       border: 1.5px solid var(--color-border);
       padding: 6px 18px;
       border-radius: var(--radius-pill);
@@ -171,15 +185,16 @@
       box-shadow: 0 8px 20px rgba(166, 124, 0, 0.32);
     }
 
+    /* Emblema Oficial sem fundo branco */
     .gc-hero-official-card {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1.5px solid var(--color-border);
-      border-radius: var(--radius-bubble);
-      padding: 40px;
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
       text-align: center;
-      box-shadow: var(--shadow-organic);
+      box-shadow: none !important;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -188,9 +203,14 @@
     .gc-hero-logo-img {
       max-width: 100%;
       height: auto;
-      max-height: 160px;
+      max-height: 220px;
       object-fit: contain;
-      filter: drop-shadow(0 6px 16px rgba(166, 124, 0, 0.2));
+      filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.22)) drop-shadow(0 1px 4px rgba(255, 255, 255, 0.5));
+      transition: transform 0.4s ease;
+    }
+
+    .gc-hero-logo-img:hover {
+      transform: scale(1.05);
     }
 
     /* ════════════════════════════════════════
@@ -419,7 +439,7 @@
   <!-- Hero Editorial com Fundo Tropical & Letras com Entrada Animada -->
   <section class="gc-hero-organic">
     <div class="gc-hero-grid">
-      <div>
+      <div class="gc-hero-text-col">
         <div class="gc-hero-brand-badge gc-hero-anim-1">
           <span>✨ Ateliê de Alta-Costura Brasileira</span>
         </div>
