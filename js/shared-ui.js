@@ -143,9 +143,9 @@
                     </ul>
                   </div>
 
-                  <!-- Coluna 6: Card Oficial da Marca -->
+                  <!-- Coluna 6: Card Oficial da Marca com Logo Específica da Aba Peças -->
                   <div class="gc-mega-brand-card">
-                    <img src="${root}assets/logo-brasil-transparent.png" alt="Gold Crochet Oficial" class="gc-mega-brand-logo">
+                    <img src="${root}images/logo_pecas_dropdown.png" alt="Gold Crochet Oficial" class="gc-mega-brand-logo">
                   </div>
                 </div>
               </div>
@@ -980,10 +980,39 @@
       });
     }
 
-    // Interatividade do Mega-Menu ao Clicar em Peças
+    // Interatividade do Mega-Menu ao Clicar / Passar o mouse em Peças
     const megaToggle = document.getElementById('gcMegaMenuToggle');
     const megaMenu = document.getElementById('gcMegaMenuPecas');
-    if (megaToggle && megaMenu) {
+    const megaDropdownItem = megaToggle ? megaToggle.closest('.gc-nav-item-dropdown') : null;
+
+    if (megaToggle && megaMenu && megaDropdownItem) {
+      let closeTimer = null;
+
+      function openMega() {
+        if (window.innerWidth > 960) {
+          if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+          megaMenu.classList.add('open');
+          megaToggle.classList.add('mega-active');
+          megaToggle.setAttribute('aria-expanded', 'true');
+        }
+      }
+
+      function scheduleCloseMega() {
+        if (window.innerWidth > 960) {
+          if (closeTimer) clearTimeout(closeTimer);
+          closeTimer = setTimeout(() => {
+            megaMenu.classList.remove('open');
+            megaToggle.classList.remove('mega-active');
+            megaToggle.setAttribute('aria-expanded', 'false');
+          }, 320); // Janela confortável para transição do cursor
+        }
+      }
+
+      megaDropdownItem.addEventListener('mouseenter', openMega);
+      megaDropdownItem.addEventListener('mouseleave', scheduleCloseMega);
+      megaMenu.addEventListener('mouseenter', openMega);
+      megaMenu.addEventListener('mouseleave', scheduleCloseMega);
+
       megaToggle.addEventListener('click', (e) => {
         if (window.innerWidth > 960) {
           e.preventDefault();
@@ -1031,6 +1060,22 @@
         openCart();
       });
     }
+
+    // Efeito Dinâmico Schiaparelli no Cabeçalho:
+    // No topo (scrollY === 0) a logo fica maior e centralizada.
+    // Ao rolar, volta suavemente para a posição padrão no canto esquerdo.
+    function updateSchiaparelliHeader() {
+      const headerEl = document.querySelector('.gc-header');
+      if (!headerEl) return;
+      if (window.scrollY < 30) {
+        headerEl.classList.add('gc-header-top-at-crest');
+      } else {
+        headerEl.classList.remove('gc-header-top-at-crest');
+      }
+    }
+
+    window.addEventListener('scroll', updateSchiaparelliHeader, { passive: true });
+    updateSchiaparelliHeader();
 
     // Tecla ESC fecha gavetas e modais abertos
     document.addEventListener('keydown', (e) => {

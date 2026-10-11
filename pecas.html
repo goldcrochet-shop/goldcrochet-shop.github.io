@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Peças — Gold Crochet Alta-Costura</title>
-  <meta name="description" content="Catálogo completo de criações artesanais da Gold Crochet. Vestuário, bolsas, peças sob medida e mesa posta feitas à mão.">
+  <title>Peças — Gold Crochet Brasil</title>
+  <meta name="description" content="Catálogo completo de criações artesanais da Gold Crochet Brasil. Vestuário, bolsas, peças sob medida e mesa posta feitas à mão.">
   <link rel="canonical" href="https://goldcrochet-shop.github.io/pecas.html">
   <meta name="theme-color" content="#cda434">
 
   <!-- OpenGraph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Peças — Gold Crochet Alta-Costura">
-  <meta property="og:description" content="Catálogo completo de criações artesanais da Gold Crochet. Vestuário, bolsas, peças sob medida e mesa posta feitas à mão.">
+  <meta property="og:title" content="Peças — Gold Crochet Brasil">
+  <meta property="og:description" content="Catálogo completo de criações artesanais da Gold Crochet Brasil. Vestuário, bolsas, peças sob medida e mesa posta feitas à mão.">
   <meta property="og:image" content="./assets/logo.png">
   <meta property="og:url" content="https://goldcrochet-shop.github.io/pecas.html">
   <meta property="og:site_name" content="Gold Crochet Brasil">
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Peças — Gold Crochet Alta-Costura">
-  <meta name="twitter:description" content="Catálogo completo de criações artesanais da Gold Crochet. Vestuário, bolsas, peças sob medida e mesa posta feitas à mão.">
+  <meta name="twitter:title" content="Peças — Gold Crochet Brasil">
+  <meta name="twitter:description" content="Catálogo completo de criações artesanais da Gold Crochet Brasil. Vestuário, bolsas, peças sob medida e mesa posta feitas à mão.">
   <meta name="twitter:image" content="./assets/logo.png">
 
   <!-- Favicons -->
@@ -245,27 +245,47 @@
 
       grid.innerHTML = filtered.map(p => {
         const slug = p.slug || 'produto';
-        const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
         const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
-        const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '';
+        const hasDiscount = p.discount && Number(p.discount) > 0;
+        
+        let badgeHtml = '';
+        if (hasDiscount) {
+          badgeHtml = `<span class="gc-badge-discount-vertical">-${p.discount}% OFF</span>`;
+        } else if (p.badge) {
+          badgeHtml = `<span class="gc-badge-vertical">${p.badge}</span>`;
+        }
+
+        let priceHtml = '';
+        if (p.price) {
+          const originalPrice = Number(p.price);
+          if (hasDiscount) {
+            const salePrice = originalPrice * (1 - Number(p.discount) / 100);
+            priceHtml = `
+              <span class="gc-price-old">R$ ${originalPrice.toFixed(2).replace('.', ',')}</span>
+              <span class="gc-price-sale">R$ ${salePrice.toFixed(2).replace('.', ',')}</span>
+            `;
+          } else {
+            priceHtml = `<span class="gc-product-price">R$ ${originalPrice.toFixed(2).replace('.', ',')}</span>`;
+          }
+        } else {
+          priceHtml = `<span class="gc-product-price">Sob Consulta</span>`;
+        }
 
         return `
           <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
             <div class="gc-product-card-img-wrap">
-              ${badge}
+              ${badgeHtml}
               <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
               </button>
               <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
             </div>
             <div class="gc-product-card-body">
-              <span class="gc-product-category">${p.category || 'Ateliê'}</span>
               <h3 class="gc-product-title">${p.name}</h3>
-              <p class="gc-product-desc">${p.desc || ''}</p>
               <div class="gc-product-price-row">
-                <span class="gc-product-price">${priceStr}</span>
+                ${priceHtml}
               </div>
             </div>
           </div>

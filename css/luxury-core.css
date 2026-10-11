@@ -240,6 +240,44 @@ body.gc-scroll-locked {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  position: relative;
+  transition: padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Efeito Schiaparelli: No topo da página a logo se destaca no centro em escala ampliada */
+@media (min-width: 961px) {
+  .gc-header.gc-header-top-at-crest .gc-header-inner {
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+
+  .gc-header.gc-header-top-at-crest .gc-logo-brand {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) scale(1.22);
+    z-index: 10;
+  }
+
+  .gc-header.gc-header-top-at-crest .gc-logo-official-img {
+    height: 58px;
+  }
+
+  .gc-header.gc-header-top-at-crest .gc-header-nav {
+    margin-left: 0;
+    opacity: 0.95;
+  }
+
+  /* Ao rolar (quando remove .gc-header-top-at-crest), a logo transita suavemente para a esquerda */
+  .gc-logo-brand {
+    position: relative;
+    left: 0;
+    transform: translateX(0) scale(1);
+    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .gc-logo-official-img {
+    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 }
 
 .gc-header-menu-btn {
@@ -366,6 +404,17 @@ body.gc-scroll-locked {
   display: none;
   transform-origin: top center;
   z-index: 998;
+}
+
+/* Ponte invisível de hover para impedir que a aba feche ao movimentar o mouse */
+.gc-mega-menu::before {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: transparent;
 }
 
 .gc-mega-menu.open {
@@ -1140,36 +1189,39 @@ body.gc-scroll-locked {
 }
 
 /* ════════════════════════════════════════
-   CARDS DE PRODUTOS & FORMAS ORGÂNICAS
+   CARDS DE PRODUTOS ESTILO EDITORIAL DE ALTA-COSTURA
+   (Inspirado em referências minimalistas como Schiaparelli e alfaiataria de luxo)
    ════════════════════════════════════════ */
 .gc-product-card {
   position: relative;
-  background: var(--color-tertiary);
-  border-radius: 14px 14px 8px 8px;
-  border: 1.5px solid var(--color-border-subtle);
-  overflow: hidden;
+  background: transparent !important;
+  border-radius: 0;
+  border: none !important;
+  overflow: visible;
   display: flex;
   flex-direction: column;
-  transition: var(--transition-smooth);
-  box-shadow: var(--shadow-organic);
+  transition: transform 0.3s ease;
+  box-shadow: none !important;
   text-decoration: none;
   color: inherit;
 }
 
 .gc-product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 45px rgba(166, 124, 0, 0.14);
-  border-color: var(--color-primary-gold);
+  transform: translateY(-4px);
+  box-shadow: none !important;
+  border-color: transparent !important;
+  outline: none !important;
 }
 
 .gc-product-card-img-wrap {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5;
-  background: var(--color-secondary);
+  background: #f7f3e8;
   overflow: hidden;
-  border-bottom: 1px solid var(--color-border-subtle);
-  border-radius: 12px 12px 0 0;
+  border: none !important;
+  border-radius: 12px 12px 6px 6px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
 }
 
 .gc-product-card-img {
@@ -1180,105 +1232,149 @@ body.gc-scroll-locked {
 }
 
 .gc-product-card:hover .gc-product-card-img {
-  transform: scale(1.05);
+  transform: scale(1.04);
 }
 
-.gc-badge-tag {
+/* Badge na vertical do lado esquerdo */
+.gc-badge-tag,
+.gc-badge-vertical {
   position: absolute;
   top: 14px;
-  left: 14px;
-  background: rgba(253, 246, 214, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--color-border);
-  padding: 5px 14px;
-  border-radius: var(--radius-pill);
-  font-size: 0.72rem;
+  left: 10px;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--color-gold-deep);
+  color: #5c4e36;
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
   z-index: 2;
+  pointer-events: none;
 }
 
+/* Badge de desconto vertical */
+.gc-badge-discount-vertical {
+  position: absolute;
+  top: 14px;
+  left: 10px;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c5221f;
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Silhueta pura do coração (sem círculo, sem fundo, sem bolha) */
 .gc-card-fav-btn {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  background: var(--color-tertiary);
-  border: 1px solid var(--color-border);
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-circle);
+  top: 12px;
+  right: 12px;
+  background: transparent !important;
+  border: none !important;
+  width: 32px;
+  height: 32px;
+  border-radius: 0 !important;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--color-charcoal);
-  transition: var(--transition-smooth);
+  color: #1a1a1a;
+  transition: transform 0.2s ease, color 0.2s ease;
   z-index: 3;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: none !important;
+  padding: 0;
+}
+
+.gc-card-fav-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: #1a1a1a;
+  stroke-width: 1.4;
+  fill: none;
+  transition: transform 0.2s ease, stroke 0.2s ease, fill 0.2s ease;
 }
 
 .gc-card-fav-btn:hover {
-  color: #e53e3e;
-  transform: scale(1.12);
+  transform: scale(1.15);
+  color: #c5221f;
 }
 
-.gc-card-fav-btn.active {
-  color: #e53e3e;
+.gc-card-fav-btn:hover svg {
+  stroke: #c5221f;
 }
 
+.gc-card-fav-btn.active svg {
+  stroke: #c5221f;
+  fill: #c5221f;
+}
+
+/* Base do produto: "finge" que não é do card (sem linha, sem caixa) */
 .gc-product-card-body {
-  padding: 22px 20px;
+  padding: 14px 4px 4px 4px;
   display: flex;
   flex-direction: column;
-  flex: 1;
+  background: transparent !important;
+  border: none !important;
 }
 
 .gc-product-category {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--color-muted);
-  font-weight: 700;
-  margin-bottom: 6px;
+  display: none !important;
 }
 
 .gc-product-title {
-  font-family: var(--font-display);
-  font-size: 1.22rem;
-  color: var(--color-ebony);
-  margin-bottom: 8px;
-  line-height: 1.25;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #1a1a1a;
+  margin: 0 0 6px 0;
+  line-height: 1.35;
 }
 
 .gc-product-desc {
-  font-size: 0.84rem;
-  color: var(--color-muted);
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 16px;
-  flex: 1;
+  display: none;
 }
 
 .gc-product-price-row {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  padding-top: 14px;
-  border-top: 1px solid var(--color-border-subtle);
+  gap: 10px;
+  padding-top: 0;
+  border-top: none !important;
 }
 
+/* Preço padrão */
 .gc-product-price,
 .gc-price-val,
 .gc-cart-item-price {
   font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 1.18rem;
+  font-weight: 500;
+  font-size: 1.02rem;
   color: #000000 !important;
+}
+
+/* Preço antigo riscado e preço promocional em vermelho maior */
+.gc-price-old {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: #4a4a4a;
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+.gc-price-sale {
+  font-family: var(--font-body);
+  font-size: 1.14rem;
+  color: #c5221f !important;
+  font-weight: 700;
 }
 
 .gc-product-installments,
