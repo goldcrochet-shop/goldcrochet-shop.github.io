@@ -598,18 +598,32 @@
 
       const track = document.getElementById('gridHomeFeatured');
       if (track) {
-        // Filtra peças em destaque (ou prioritárias)
-        const destaques = products.filter(p => (p.badge && p.badge.toLowerCase().includes('destaque')) || p.featured);
-        const listToDisplay = destaques.length >= 3 ? destaques : products.slice(0, 8);
+        // Embaralha aleatoriamente os produtos do catálogo para preencher o carrossel de forma farta e dinâmica
+        const shuffled = [...products];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+
+        // Garante que o carrossel fique bem preenchido (mínimo de 12 itens para deslizar)
+        let listToDisplay = [...shuffled];
+        if (listToDisplay.length < 12 && shuffled.length > 0) {
+          while (listToDisplay.length < 12) {
+            const extra = [...shuffled].sort(() => 0.5 - Math.random());
+            listToDisplay = listToDisplay.concat(extra);
+          }
+          listToDisplay = listToDisplay.slice(0, 12);
+        }
 
         track.innerHTML = listToDisplay.map(p => {
           const slug = p.slug || 'produto';
           const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
           const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
-          const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '';
+          const badgeText = p.badge || (p.featured ? 'Destaque' : 'Destaque');
+          const badge = badgeText ? `<span class="gc-badge-tag">${badgeText}</span>` : '';
 
           return `
-            <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
+            <div class="gc-product-card" onclick="if(!window.__gcCarouselDragged) window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
               <div class="gc-product-card-img-wrap">
                 ${badge}
                 <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
@@ -631,13 +645,15 @@
           `;
         }).join('');
 
-        // Interação de Arraste com Mouse (Desktop)
+        // Interação de Arraste com Mouse (Desktop) com prevenção de clique acidental
         let isDown = false;
         let startX;
         let scrollLeft;
+        window.__gcCarouselDragged = false;
 
         track.addEventListener('mousedown', (e) => {
           isDown = true;
+          window.__gcCarouselDragged = false;
           track.classList.add('grabbing');
           startX = e.pageX - track.offsetLeft;
           scrollLeft = track.scrollLeft;
@@ -651,13 +667,17 @@
         track.addEventListener('mouseup', () => {
           isDown = false;
           track.classList.remove('grabbing');
+          setTimeout(() => { window.__gcCarouselDragged = false; }, 120);
         });
 
         track.addEventListener('mousemove', (e) => {
           if (!isDown) return;
-          e.preventDefault();
           const x = e.pageX - track.offsetLeft;
           const walk = (x - startX) * 1.5;
+          if (Math.abs(walk) > 6) {
+            window.__gcCarouselDragged = true;
+          }
+          e.preventDefault();
           track.scrollLeft = scrollLeft - walk;
         });
 
