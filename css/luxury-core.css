@@ -1235,9 +1235,24 @@ body.gc-scroll-locked {
   transform: scale(1.04);
 }
 
-/* Badge na vertical do lado esquerdo */
-.gc-badge-tag,
-.gc-badge-vertical {
+/* Badges padrão horizontais em outros lugares do site (rodapé, seções, etc.) */
+.gc-badge-tag {
+  background: rgba(253, 246, 214, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border);
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gold-deep);
+  display: inline-block;
+}
+
+/* APENAS E SOMENTE nos cartões de produtos a escrita fica na vertical do lado esquerdo */
+.gc-product-card-img-wrap .gc-badge-tag,
+.gc-product-card-img-wrap .gc-badge-vertical {
   position: absolute;
   top: 14px;
   left: 10px;
@@ -1256,8 +1271,8 @@ body.gc-scroll-locked {
   pointer-events: none;
 }
 
-/* Badge de desconto vertical */
-.gc-badge-discount-vertical {
+/* Badge de desconto vertical apenas nos cartões de produtos */
+.gc-product-card-img-wrap .gc-badge-discount-vertical {
   position: absolute;
   top: 14px;
   left: 10px;
