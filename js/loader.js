@@ -7,12 +7,11 @@
   const LOADER_HTML = `
     <div id="luxuryLoader" class="luxury-loader-overlay" aria-live="polite" aria-busy="true">
       <div class="luxury-loader-content">
-        <div class="luxury-loader-buzio">
-          <img src="${(window.location.pathname.includes('/produtos/') ? '../' : './')}assets/buzio-ouro.png" alt="Búzio Dourado Oficial" class="luxury-loader-buzio-img" width="72" height="100">
+        <div class="luxury-loader-logo-wrap">
+          <img src="${(window.location.pathname.includes('/produtos/') ? '../' : './')}assets/logo-brasil-transparent.png" alt="Gold Crochet Brasil" class="luxury-loader-brand-img">
         </div>
         <div class="luxury-loader-ring"></div>
         <div class="luxury-loader-brand">
-          <span class="luxury-loader-title">GOLD CROCHET</span>
           <span class="luxury-loader-sub" id="luxuryLoaderMessage">ALTA-COSTURA BRASILEIRA</span>
         </div>
       </div>

@@ -158,7 +158,6 @@
       function renderCard(p) {
         const slug = p.slug || 'produto';
         const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
-        const installments = p.price ? `3x de R$ ${(Number(p.price) / 3).toFixed(2).replace('.', ',')}` : 'Feito à mão';
         const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
         const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '';
 
@@ -179,7 +178,6 @@
               <p class="gc-product-desc">${p.desc || ''}</p>
               <div class="gc-product-price-row">
                 <span class="gc-product-price">${priceStr}</span>
-                <span class="gc-product-installments">${installments}</span>
               </div>
             </div>
           </div>

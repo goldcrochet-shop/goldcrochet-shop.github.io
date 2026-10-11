@@ -44,8 +44,13 @@
     header.className = 'gc-header';
     header.innerHTML = `
       <div class="gc-header-inner">
-        <!-- Navegação Desktop (Tipografia Elegante Title Case) -->
-        <nav aria-label="Navegação Principal">
+        <!-- 1. Logo Oficial na Extrema Esquerda -->
+        <a href="${root}index.html" class="gc-logo-brand" title="Gold Crochet Brasil — Início">
+          <img src="${root}assets/logo-brasil-transparent.png" alt="Gold Crochet Brasil" class="gc-logo-official-img">
+        </a>
+
+        <!-- 2. Navegação Principal: Início, Coleções, Peças, Novidades, Casa Gold -->
+        <nav class="gc-header-nav" aria-label="Navegação Principal">
           <ul class="gc-nav-links">
             <li><a href="${root}index.html" class="gc-nav-link ${activePage === 'inicio' ? 'active' : ''}">Início</a></li>
             <li><a href="${root}colecoes.html" class="gc-nav-link ${activePage === 'colecoes' ? 'active' : ''}">Coleções</a></li>
@@ -132,7 +137,7 @@
 
                   <!-- Coluna 6: Card Oficial da Marca -->
                   <div class="gc-mega-brand-card">
-                    <img src="${root}assets/logo-transparent.png" alt="Gold Crochet Oficial" class="gc-mega-brand-logo">
+                    <img src="${root}assets/logo-brasil-transparent.png" alt="Gold Crochet Oficial" class="gc-mega-brand-logo">
                   </div>
                 </div>
               </div>
@@ -142,29 +147,25 @@
           </ul>
         </nav>
 
-        <!-- Logo Oficial Central (Objeto Oficial Exato Sem Modificações) -->
-        <a href="${root}index.html" class="gc-logo-brand" title="Gold Crochet Brasil — Início">
-          <img src="${root}assets/logo-transparent.png" alt="Gold Crochet Brasil" class="gc-logo-official-img">
-        </a>
-
-        <!-- Ações do Cabeçalho: Pesquisa, Silhueta do Usuário, Favoritos, Sacola (Sem Bolha) -->
+        <!-- 3. Ações à Direita: Pesquisar, Silhueta Usuário, Silhueta Coração, Sacola -->
         <div class="gc-header-actions">
-          <a href="${root}pecas.html" class="gc-header-search-btn" title="Pesquisa no Ateliê">
+          <a href="${root}pecas.html" class="gc-header-search-btn" title="Pesquisar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <span>Pesquisa</span>
+            <span>Pesquisar</span>
           </a>
 
-          <!-- Silhueta: Área do Cliente / Fidelidade -->
-          <a href="${root}cliente.html" id="gcUserTrigger" class="gc-action-circle-btn ${activePage === 'cliente' ? 'active' : ''}" title="Minha Conta &amp; Brindes VIP" aria-label="Minha Conta do Cliente">
+          <!-- Silhueta: Área do Cliente -->
+          <a href="${root}cliente.html" id="gcUserTrigger" class="gc-action-circle-btn ${activePage === 'cliente' ? 'active' : ''}" title="Minha Conta" aria-label="Minha Conta">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </a>
 
+          <!-- Silhueta: Coração (Favoritos) -->
           <button id="gcFavTrigger" class="gc-action-circle-btn" title="Favoritos" aria-label="Favoritos">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -172,6 +173,7 @@
             <span id="gcFavCount" class="gc-badge-count hidden">0</span>
           </button>
 
+          <!-- Sacola de Compras -->
           <button id="gcCartTrigger" class="gc-action-circle-btn" title="Sacola de Compras" aria-label="Sacola de Compras">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -277,14 +279,18 @@
         <div id="gcCartBody" class="gc-cart-body" style="padding:0;"></div>
         <div id="gcCartFooter" class="gc-cart-footer">
           <div class="gc-cart-total-row">
-            <span class="gc-cart-total-label">Total Estimado</span>
+            <span class="gc-cart-total-label">Total</span>
             <span id="gcCartTotalVal" class="gc-cart-total-value">R$ 0,00</span>
           </div>
-          <button id="gcCheckoutBtn" class="gc-btn-checkout">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          <div id="gcCartUserPill" class="gc-cart-user-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            Finalizar no WhatsApp
+            <span id="gcCartUserPillText">Conectado como <strong>Cliente</strong></span>
+          </div>
+          <button id="gcCheckoutBtn" class="gc-btn-checkout">
+            Finalizar pelo WhatsApp
           </button>
         </div>
       </div>
@@ -306,7 +312,7 @@
       <div class="gc-footer-inner">
         <div class="gc-footer-col">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-            <img src="${root}assets/logo-transparent.png" alt="Gold Crochet Brasil" style="height:44px;width:auto;">
+            <img src="${root}assets/logo-brasil-transparent.png" alt="Gold Crochet Brasil" style="height:44px;width:auto;">
           </div>
           <p>Alta-costura artesanal brasileira. Cada ponto tecido à mão com fios nobres e acabamento impecável de ateliê.</p>
           <div style="margin-top:14px;display:flex;gap:10px">
@@ -328,7 +334,7 @@
           <h4>Atendimento</h4>
           <ul class="gc-footer-links">
             <li><a href="https://wa.me/${WHATSAPP_PHONE}" target="_blank" rel="noopener">WhatsApp Ateliê</a></li>
-            <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram Oficial</a></li>
+            <li><a href="https://www.instagram.com/goldcrochetbrasil?stkn=Mm5ndmt2cTJzNXRo" target="_blank" rel="noopener">Instagram Oficial</a></li>
             <li><a href="javascript:void(0)" onclick="window.GoldAccount.open()">Área do Cliente</a></li>
           </ul>
         </div>
@@ -610,6 +616,7 @@
 
   function updateCartUI() {
     const cart = getCart();
+    const customer = getCustomer();
     const badge = document.getElementById('gcCartCount');
     const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
@@ -624,31 +631,64 @@
     if (!body || !totalValEl) return;
 
     const footerEl = document.getElementById('gcCartFooter');
+    const bagSvg = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="gc-cart-empty-bag-svg" width="60" height="60">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+    `;
+
     if (cart.length === 0) {
       if (footerEl) footerEl.style.display = 'none';
       body.style.padding = '0';
-      body.innerHTML = `
-        <div class="gc-cart-empty-view">
-          <div class="gc-cart-empty-top">
-            <img src="${root}assets/yarn-ball.png" alt="Novelo de Crochê" class="gc-cart-yarn-illustration">
-            <h3 class="gc-cart-empty-heading">Sua sacola está vazia.</h3>
-            <a href="${root}pecas.html" class="gc-cart-explore-link">Explore nossas peças!</a>
+
+      if (customer && customer.name) {
+        // Usuário Conectado & Sacola Vazia: mostra apenas "Sua sacola está vazia" (sem convite de login)
+        body.innerHTML = `
+          <div class="gc-cart-empty-view" style="justify-content:center;min-height:360px;">
+            <div class="gc-cart-empty-top">
+              <div class="gc-cart-bag-icon-wrap">${bagSvg}</div>
+              <h3 class="gc-cart-empty-heading">Sua sacola está vazia.</h3>
+              <a href="${root}pecas.html" class="gc-cart-explore-link">Explore nossas peças!</a>
+            </div>
           </div>
-          <div class="gc-cart-empty-bottom">
-            <h4 class="gc-cart-account-title">Pegue sua bolsa</h4>
-            <p class="gc-cart-account-desc">Faça login na Minha Conta para acessar sua sacola em todos os seus dispositivos.</p>
-            <button class="gc-btn-solid-gold gc-cart-login-action-btn" onclick="window.GoldAccount.open()">
-              Entrar na Minha Conta
-            </button>
+        `;
+      } else {
+        // Sem Login & Sacola Vazia: mostra a mensagem e convite para conectar
+        body.innerHTML = `
+          <div class="gc-cart-empty-view">
+            <div class="gc-cart-empty-top">
+              <div class="gc-cart-bag-icon-wrap">${bagSvg}</div>
+              <h3 class="gc-cart-empty-heading">Sua sacola está vazia.</h3>
+              <a href="${root}pecas.html" class="gc-cart-explore-link">Explore nossas peças!</a>
+            </div>
+            <div class="gc-cart-empty-bottom">
+              <h4 class="gc-cart-account-title">Pegue sua bolsa</h4>
+              <p class="gc-cart-account-desc">Faça login na Minha Conta para acessar sua sacola em todos os seus dispositivos.</p>
+              <button class="gc-btn-solid-gold gc-cart-login-action-btn" onclick="window.GoldAccount.open()">
+                Entrar na Minha Conta
+              </button>
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      }
       totalValEl.textContent = 'R$ 0,00';
       return;
     }
 
     if (footerEl) footerEl.style.display = 'flex';
     body.style.padding = '24px';
+
+    // Atualiza o pill de usuário conectado no rodapé da sacola
+    const userPill = document.getElementById('gcCartUserPillText');
+    if (userPill) {
+      if (customer && customer.name) {
+        userPill.innerHTML = `Conectado como <strong>${customer.name}</strong>`;
+      } else {
+        userPill.innerHTML = `Conectado como <strong>Visitante</strong>`;
+      }
+    }
 
     let total = 0;
     body.innerHTML = cart.map((item, idx) => {
