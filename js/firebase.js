@@ -135,6 +135,7 @@ export {
   addDoc,
   fsQuery,
   fsWhere,
+  fsWhere as where,
   getDocs,
   serverTimestamp
 };

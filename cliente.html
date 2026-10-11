@@ -377,7 +377,7 @@
     </div>
 
     <!-- TELA 1: QUANDO DESLOGADO (LOGIN / CADASTRO) -->
-    <section id="clientAuthSection" class="gc-client-auth-box" style="display:none">
+    <section id="clientAuthSection" class="gc-client-auth-box">
       <div style="width:68px;height:68px;border-radius:50%;background:var(--color-secondary);border:1.5px solid var(--color-border);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
         <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="var(--color-primary-gold)" stroke-width="1.8">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -678,6 +678,29 @@
   <!-- Scripts Essenciais de Luxo -->
   <script src="./js/loader.js?v=2026"></script>
   <script src="./js/shared-ui.js?v=2026"></script>
+
+  <script>
+    // Renderização Instantânea Anti-Flicker & Resiliente
+    (function() {
+      try {
+        var d = localStorage.getItem('gc_customer_account_v2');
+        if (d) {
+          var client = JSON.parse(d);
+          if (client && client.email) {
+            var authBox = document.getElementById('clientAuthSection');
+            var portalBox = document.getElementById('clientPortalSection');
+            if (authBox) authBox.style.display = 'none';
+            if (portalBox) portalBox.style.display = 'block';
+            var nameEl = document.getElementById('clientDisplayName');
+            var emailEl = document.getElementById('clientDisplayEmail');
+            if (nameEl) nameEl.textContent = client.name || 'Cliente';
+            if (emailEl) emailEl.textContent = client.email || '';
+          }
+        }
+      } catch(e) {}
+    })();
+  </script>
+
   <script type="module">
     import {
       auth,
@@ -694,7 +717,8 @@
       fsCollection,
       addDoc,
       fsQuery,
-      where,
+      fsWhere,
+      fsWhere as where,
       getDocs
     } from "./js/firebase.js";
 
