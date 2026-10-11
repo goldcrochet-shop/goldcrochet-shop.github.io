@@ -57,7 +57,6 @@
             <li class="gc-nav-item-dropdown">
               <a href="${root}pecas.html" id="gcMegaMenuToggle" class="gc-nav-link ${activePage === 'pecas' ? 'active' : ''}" role="button" aria-expanded="false">
                 Peças
-                <svg class="gc-nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </a>
               <!-- MEGA-MENU SUSPENSO IDÊNTICO À REFERÊNCIA DO ATELIÊ -->
               <div class="gc-mega-menu" id="gcMegaMenuPecas">

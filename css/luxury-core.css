@@ -286,17 +286,6 @@ body {
   margin-top: 4px;
 }
 
-.gc-nav-chevron {
-  display: inline-block;
-  margin-left: 4px;
-  transition: transform 0.25s ease;
-}
-
-.gc-nav-item-dropdown:hover .gc-nav-chevron,
-.gc-nav-link.mega-active .gc-nav-chevron {
-  transform: rotate(180deg);
-}
-
 /* ════════════════════════════════════════
    MEGA-MENU "PEÇAS" (EXATO À IMAGEM DO ATELIÊ)
    ════════════════════════════════════════ */
@@ -309,26 +298,33 @@ body {
   background: #faf6ee;
   border-top: 1px solid rgba(205, 164, 52, 0.18);
   border-bottom: 1.5px solid rgba(205, 164, 52, 0.22);
-  box-shadow: 0 20px 48px rgba(42, 34, 16, 0.12);
+  box-shadow: 0 24px 52px rgba(42, 34, 16, 0.14);
   padding: 36px 48px 40px;
   display: none;
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity 0.28s ease, transform 0.28s ease;
+  transform-origin: top center;
   z-index: 998;
 }
 
 .gc-mega-menu.open {
   display: block;
-  opacity: 1;
-  transform: translateY(0);
+  animation: gcMegaMenuSlideDown 0.36s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @media (min-width: 961px) {
   .gc-nav-item-dropdown:hover .gc-mega-menu {
     display: block;
+    animation: gcMegaMenuSlideDown 0.36s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes gcMegaMenuSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px) scaleY(0.95);
+  }
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scaleY(1);
   }
 }
 
