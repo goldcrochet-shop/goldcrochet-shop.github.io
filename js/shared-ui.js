@@ -18,33 +18,8 @@
 
   const root = getRootPath();
 
-  // Búzio Dourado Inline SVG de Alta Definição
-  const BUZIO_SVG = `
-    <svg class="gc-logo-buzio" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="hdrGoldShine" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#fff8db"/>
-          <stop offset="25%" stop-color="#f8dc7e"/>
-          <stop offset="50%" stop-color="#d9a832"/>
-          <stop offset="75%" stop-color="#b88318"/>
-          <stop offset="100%" stop-color="#805608"/>
-        </linearGradient>
-        <linearGradient id="hdrGoldBase" x1="20%" y1="0%" x2="80%" y2="100%">
-          <stop offset="0%" stop-color="#f6e08c"/>
-          <stop offset="40%" stop-color="#d4a32c"/>
-          <stop offset="80%" stop-color="#a77717"/>
-          <stop offset="100%" stop-color="#694605"/>
-        </linearGradient>
-      </defs>
-      <g>
-        <path d="M 244 88 C 230 86, 218 96, 204 116 C 176 156, 150 216, 150 274 C 150 336, 178 392, 210 416 C 226 428, 238 428, 246 422 C 249 420, 249 414, 247 406 C 241 386, 239 366, 240 334 C 241 300, 243 250, 242 208 C 241 164, 242 128, 249 98 C 250 90, 247 88, 244 88 Z" fill="url(#hdrGoldBase)" stroke="#744d06" stroke-width="2"/>
-        <path d="M 244 88 C 230 86, 218 96, 204 116 C 176 156, 150 216, 150 274 C 150 336, 178 392, 210 416 C 226 428, 238 428, 246 422 C 249 420, 249 414, 247 406 C 241 386, 239 366, 240 334 C 241 300, 243 250, 242 208 C 241 164, 242 128, 249 98 C 250 90, 247 88, 244 88 Z" fill="url(#hdrGoldShine)" opacity="0.85"/>
-        <path d="M 264 88 C 272 88, 282 98, 296 118 C 328 162, 358 224, 358 280 C 358 338, 332 394, 302 418 C 288 428, 276 428, 268 422 C 265 420, 265 414, 267 404 C 273 382, 275 358, 273 328 C 271 292, 267 246, 268 206 C 269 164, 272 126, 266 98 C 264 90, 263 88, 264 88 Z" fill="url(#hdrGoldBase)" stroke="#744d06" stroke-width="2"/>
-        <path d="M 264 88 C 272 88, 282 98, 296 118 C 328 162, 358 224, 358 280 C 358 338, 332 394, 302 418 C 288 428, 276 428, 268 422 C 265 420, 265 414, 267 404 C 273 382, 275 358, 273 328 C 271 292, 267 246, 268 206 C 269 164, 272 126, 266 98 C 264 90, 263 88, 264 88 Z" fill="url(#hdrGoldShine)" opacity="0.85"/>
-        <path d="M 248 94 C 246 140, 245 200, 246 260 C 247 320, 248 370, 249 414 L 264 414 C 266 370, 267 320, 267 260 C 267 200, 266 140, 264 94 Z" fill="#3b2602" opacity="0.45"/>
-      </g>
-    </svg>
-  `;
+  // Búzio Dourado Oficial Autêntico
+  const BUZIO_IMG = `<img src="${root}assets/buzio-ouro.png" class="gc-logo-buzio" alt="Búzio Dourado Oficial">`;
 
   function getActivePage() {
     const path = window.location.pathname.toLowerCase();

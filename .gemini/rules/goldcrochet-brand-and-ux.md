@@ -43,8 +43,9 @@ Toda a interface deve seguir rigorosamente as 4 cores oficiais da marca:
 - **Zero Pedidos Simulados:** Toda nova conta criada por um cliente deve iniciar estritamente com `purchasesCount: 0` e `orders: []`. Não devem ser inseridos pedidos mocados ou pré-fabricados. Se o cliente não tiver pedidos, exibe-se um estado vazio elegante com botão para o catálogo.
 - **Sincronização Obrigatória no Firestore:** Toda ação do cliente (cadastro, login Google/Email, salvar medidas, salvar endereço de entrega ou somar compra de WhatsApp) deve salvar e mesclar os dados no documento `users/{uid}` no Firestore com `role: 'customer'`, permitindo que o painel `/admin` liste os clientes, visualize suas medidas e seus pedidos em tempo real.
 
-## 9. Logotipo Oficial Imutável & Remoção de Objetos 3D
+## 9. Logotipo Oficial Imutável & Representação do Búzio Dourado
 - **Logotipo Autêntico:** O logotipo oficial consiste estritamente na caligrafia nobre "Gold" unida ao Búzio Dourado artesanal (`assets/logo-transparent.png` e `assets/buzio-oficial.png`). É proibido modificá-lo, estilizá-lo com sombras artificiais ou substituí-lo por vetores SVG aproximados.
+- **Representação Universal do Búzio Dourado:** Em todos os locais onde o Búzio Dourado é representado — incluindo a tela de carregamento (loading screen via `assets/buzio-ouro.png`), a Peça Personalizada (`assets/peca-personalizada.png`), favicons (`assets/icon.png`), cards de login e emblemas — deve-se utilizar estritamente o ativo autêntico oficial fornecido, com textura de ouro folheado e recorte impecável, sendo vedada qualquer representação por SVG sintético ou ícone genérico.
 - **Sem Canvas 3D:** Não utilizar esculturas 3D ou Three.js na vitrine pública. A identidade é representada com nitidez e leveza através do ativo visual oficial fornecido.
 
 ## 10. Tipografia Suave & Padronizada (Poppins / Title Case Sem Uppercase Agressivo)
