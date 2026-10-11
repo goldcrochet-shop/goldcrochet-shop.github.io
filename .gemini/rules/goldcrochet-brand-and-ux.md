@@ -43,4 +43,36 @@ Toda a interface deve seguir rigorosamente as 4 cores oficiais da marca:
 - **Zero Pedidos Simulados:** Toda nova conta criada por um cliente deve iniciar estritamente com `purchasesCount: 0` e `orders: []`. Não devem ser inseridos pedidos mocados ou pré-fabricados. Se o cliente não tiver pedidos, exibe-se um estado vazio elegante com botão para o catálogo.
 - **Sincronização Obrigatória no Firestore:** Toda ação do cliente (cadastro, login Google/Email, salvar medidas, salvar endereço de entrega ou somar compra de WhatsApp) deve salvar e mesclar os dados no documento `users/{uid}` no Firestore com `role: 'customer'`, permitindo que o painel `/admin` liste os clientes, visualize suas medidas e seus pedidos em tempo real.
 
+## 9. Logotipo Oficial Imutável & Remoção de Objetos 3D
+- **Logotipo Autêntico:** O logotipo oficial consiste estritamente na caligrafia nobre "Gold" unida ao Búzio Dourado artesanal (`assets/logo-transparent.png` e `assets/buzio-oficial.png`). É proibido modificá-lo, estilizá-lo com sombras artificiais ou substituí-lo por vetores SVG aproximados.
+- **Sem Canvas 3D:** Não utilizar esculturas 3D ou Three.js na vitrine pública. A identidade é representada com nitidez e leveza através do ativo visual oficial fornecido.
+
+## 10. Tipografia Suave & Padronizada (Poppins / Title Case Sem Uppercase Agressivo)
+- **Fonte Padrão do Ateliê:** Utilizar `Poppins` (com fallback `Plus Jakarta Sans`) para todos os textos e navegação, garantindo um desenho elegante, contemporâneo e suave, eliminando tipografias pesadas ou "brutas".
+- **Navegação em Title Case:** Os links de menu devem ser apresentados em Title Case (`Início`, `Coleções`, `Peças`, `Novidades`, `Casa Gold`). O item ativo recebe cor dourada (`#cda434`) com traço inferior horizontal em pílula (`width: 28px; height: 3px; background: #cda434`).
+- **Sem Uppercase Agressivo:** Evitar `text-transform: uppercase` indiscriminado em botões e gavetas, preservando uma leitura fluida e acolhedora.
+
+## 11. Botões Padronizados com Cor Sólida Oficial (Sem Efeito Cromático)
+- **Ouro Sólido:** Todos os botões primários de ação (`.gc-btn-pill-primary`, `.gc-btn-checkout`, `.gc-btn-solid-gold`, `.gc-card-btn-buy`) devem utilizar estritamente cor sólida ouro oficial (`#cda434`, hover `#b8860b`) com tipografia nítida em branco (`#ffffff`).
+- **Eliminação de Efeitos Cromáticos:** É proibido aplicar gradientes multicoloridos, metálicos espelhados ou bordas cromáticas psicodélicas nos botões.
+
+## 12. Mega-Menu Suspenso de "Peças"
+- Clicar ou pairar sobre "Peças" aciona um mega-menu horizontal em tela cheia dividido em 6 colunas temáticas:
+  1. *ESSENCIAIS* (Para Ela / Para Ele)
+  2. *PEQUENINOS*
+  3. *ACESSÓRIOS*
+  4. *BIJUTERIAS*
+  5. *ARTIGOS PARA CASA*
+  6. *Card Oficial da Marca* com fundo marfim suave e o logotipo oficial centralizado.
+  Todos os blocos devem possuir links de rodapé "Ver tudo" sublinhados.
+
+## 13. Experiência da Gaveta de Sacola Vazia
+- Quando a sacola de compras estiver vazia, deve renderizar a composição oficial:
+  - **Parte Superior (Branca):** Ilustração artesanal do novelo de crochê azul com agulhas (`assets/yarn-ball.png`), título "Sua sacola está vazia." e link "Explore nossas peças!".
+  - **Parte Inferior (Areia Suave):** Card editorial "Pegue sua bolsa", texto "Faça login na Minha Conta para acessar sua sacola em todos os seus dispositivos." e botão sólido de ouro "Entrar na Minha Conta".
+
+## 14. Ações de Cabeçalho Despojadas de Bolhas
+- Os botões do cabeçalho (Pesquisa, Silhueta do Usuário, Favoritos e Sacola) devem ser ícones limpos, transparentes e sem bordas, sem fundos em círculo nem sombras de bolha.
+
+
 

@@ -25,7 +25,7 @@
   <!-- Fontes de Alta Moda -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
 
   <!-- Estilos com Cache-Busting -->
   <link rel="stylesheet" href="./style.css?v=2026">
@@ -317,14 +317,10 @@
         </div>
       </div>
 
-      <!-- Escultura 3D da Trama Dourada Interativa (Touch / Drag) -->
-      <div class="gc-hero-3d-wrap">
-        <div id="hero3DCanvasContainer">
-          <!-- Canvas 3D renderizado pelo interactive-3d.js -->
-        </div>
-        <div class="gc-hero-3d-hint">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-          Gire em 3D
+      <!-- Emblema Oficial da Marca de Alta-Costura -->
+      <div class="gc-hero-badge-wrap">
+        <div class="gc-hero-official-card">
+          <img src="./assets/logo-transparent.png" alt="Gold Crochet Brasil" class="gc-hero-logo-img">
         </div>
       </div>
     </div>
@@ -401,7 +397,6 @@
   <!-- Scripts Essenciais de Alta-Costura -->
   <script src="./js/loader.js?v=2026"></script>
   <script src="./js/shared-ui.js?v=2026"></script>
-  <script src="./js/interactive-3d.js?v=2026"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       const products = await window.fetchCatalog();

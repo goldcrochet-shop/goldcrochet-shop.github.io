@@ -59,7 +59,7 @@
   const activePage = getActivePage();
 
   // ════════════════════════════════════════
-  // 1. RENDER DO HEADER HAUTE COUTURE (COM LOGO OFICIAL E SEM ADMIN)
+  // 1. RENDER DO HEADER HAUTE COUTURE (COM LOGO OFICIAL E MEGA-MENU)
   // ════════════════════════════════════════
   function renderHeader() {
     const existingHeader = document.querySelector('.gc-header');
@@ -69,42 +69,136 @@
     header.className = 'gc-header';
     header.innerHTML = `
       <div class="gc-header-inner">
-        <!-- Navegação Desktop (Pílulas) -->
+        <!-- Navegação Desktop (Tipografia Elegante Title Case) -->
         <nav aria-label="Navegação Principal">
           <ul class="gc-nav-links">
             <li><a href="${root}index.html" class="gc-nav-link ${activePage === 'inicio' ? 'active' : ''}">Início</a></li>
             <li><a href="${root}colecoes.html" class="gc-nav-link ${activePage === 'colecoes' ? 'active' : ''}">Coleções</a></li>
-            <li><a href="${root}pecas.html" class="gc-nav-link ${activePage === 'pecas' ? 'active' : ''}">Peças</a></li>
+            <li class="gc-nav-item-dropdown">
+              <a href="${root}pecas.html" id="gcMegaMenuToggle" class="gc-nav-link ${activePage === 'pecas' ? 'active' : ''}" role="button" aria-expanded="false">
+                Peças
+                <svg class="gc-nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </a>
+              <!-- MEGA-MENU SUSPENSO IDÊNTICO À REFERÊNCIA DO ATELIÊ -->
+              <div class="gc-mega-menu" id="gcMegaMenuPecas">
+                <div class="gc-mega-menu-inner">
+                  <!-- Coluna 1: ESSENCIAIS -->
+                  <div class="gc-mega-col">
+                    <h4 class="gc-mega-heading">ESSENCIAIS</h4>
+                    <div class="gc-mega-subcol-group">
+                      <div class="gc-mega-subcol">
+                        <h5 class="gc-mega-subheading">PARA ELA</h5>
+                        <ul class="gc-mega-list">
+                          <li><a href="${root}pecas.html?cat=noite-ela">Roupas para noite</a></li>
+                          <li><a href="${root}pecas.html?cat=saias-vestidos">Saias e vestidos</a></li>
+                          <li><a href="${root}pecas.html?cat=jaquetas-casacos">Jaquetas e casacos</a></li>
+                          <li><a href="${root}pecas.html?cat=tops">Tops</a></li>
+                          <li><a href="${root}pecas.html?cat=calcas">Calças</a></li>
+                          <li><a href="${root}pecas.html?cat=ela" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                        </ul>
+                      </div>
+                      <div class="gc-mega-subcol">
+                        <h5 class="gc-mega-subheading">PARA ELE</h5>
+                        <ul class="gc-mega-list">
+                          <li><a href="${root}pecas.html?cat=noite-ele">Roupas para noite</a></li>
+                          <li><a href="${root}pecas.html?cat=jaquetas-ele">Jaquetas e casacos</a></li>
+                          <li><a href="${root}pecas.html?cat=calcas-ele">Calças</a></li>
+                          <li><a href="${root}pecas.html?cat=ele" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Coluna 2: PEQUENINOS -->
+                  <div class="gc-mega-col">
+                    <h4 class="gc-mega-heading">PEQUENINOS</h4>
+                    <ul class="gc-mega-list">
+                      <li><a href="${root}pecas.html?cat=bebe">Bebê</a></li>
+                      <li><a href="${root}pecas.html?cat=garotas">Garotas</a></li>
+                      <li><a href="${root}pecas.html?cat=garotos">Garotos</a></li>
+                      <li><a href="${root}pecas.html?cat=presentes">Presentes</a></li>
+                      <li><a href="${root}pecas.html?cat=pequeninos" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                    </ul>
+                  </div>
+
+                  <!-- Coluna 3: ACESSÓRIOS -->
+                  <div class="gc-mega-col">
+                    <h4 class="gc-mega-heading">ACESSÓRIOS</h4>
+                    <ul class="gc-mega-list">
+                      <li><a href="${root}pecas.html?cat=bolsas">Bolsas</a></li>
+                      <li><a href="${root}pecas.html?cat=charms">Charms</a></li>
+                      <li><a href="${root}pecas.html?cat=acessorios" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                    </ul>
+                  </div>
+
+                  <!-- Coluna 4: BIJUTERIAS -->
+                  <div class="gc-mega-col">
+                    <h4 class="gc-mega-heading">BIJUTERIAS</h4>
+                    <ul class="gc-mega-list">
+                      <li><a href="${root}pecas.html?cat=brincos">Brincos</a></li>
+                      <li><a href="${root}pecas.html?cat=colares">Colares</a></li>
+                      <li><a href="${root}pecas.html?cat=broches">Broches</a></li>
+                      <li><a href="${root}pecas.html?cat=braceletes">Braceletes</a></li>
+                      <li><a href="${root}pecas.html?cat=aneis">Anéis</a></li>
+                      <li><a href="${root}pecas.html?cat=bijuterias" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                    </ul>
+                  </div>
+
+                  <!-- Coluna 5: ARTIGOS PARA CASA -->
+                  <div class="gc-mega-col">
+                    <h4 class="gc-mega-heading">ARTIGOS PARA CASA</h4>
+                    <ul class="gc-mega-list">
+                      <li><a href="${root}casa-gold.html">Decorações</a></li>
+                      <li><a href="${root}casa-gold.html">Mantas &amp; Cobertores</a></li>
+                      <li><a href="${root}casa-gold.html">Amigurumis</a></li>
+                      <li><a href="${root}casa-gold.html" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                    </ul>
+                  </div>
+
+                  <!-- Coluna 6: Card Oficial da Marca -->
+                  <div class="gc-mega-brand-card">
+                    <img src="${root}assets/logo-transparent.png" alt="Gold Crochet Oficial" class="gc-mega-brand-logo">
+                  </div>
+                </div>
+              </div>
+            </li>
             <li><a href="${root}novidades.html" class="gc-nav-link ${activePage === 'novidades' ? 'active' : ''}">Novidades</a></li>
             <li><a href="${root}casa-gold.html" class="gc-nav-link ${activePage === 'casa-gold' ? 'active' : ''}">Casa Gold</a></li>
           </ul>
         </nav>
 
-        <!-- Logo Oficial Central (Búzio + Tipografia Oficial Gold Crochet Brasil) -->
+        <!-- Logo Oficial Central (Objeto Oficial Exato Sem Modificações) -->
         <a href="${root}index.html" class="gc-logo-brand" title="Gold Crochet Brasil — Início">
-          ${BUZIO_SVG}
-          <img src="${root}assets/logo.png" alt="Gold Crochet Brasil" class="gc-logo-official-img" onerror="this.style.display='none'">
+          <img src="${root}assets/logo-transparent.png" alt="Gold Crochet Brasil" class="gc-logo-official-img">
         </a>
 
-        <!-- Ações do Cabeçalho: Silhueta do Usuário (Cliente), Favoritos, Carrinho -->
+        <!-- Ações do Cabeçalho: Pesquisa, Silhueta do Usuário, Favoritos, Sacola (Sem Bolha) -->
         <div class="gc-header-actions">
-          <!-- Silhueta: Área do Cliente / Fidelidade (NÃO leva ao Admin!) -->
+          <a href="${root}pecas.html" class="gc-header-search-btn" title="Pesquisa no Ateliê">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Pesquisa</span>
+          </a>
+
+          <!-- Silhueta: Área do Cliente / Fidelidade -->
           <a href="${root}cliente.html" id="gcUserTrigger" class="gc-action-circle-btn ${activePage === 'cliente' ? 'active' : ''}" title="Minha Conta &amp; Brindes VIP" aria-label="Minha Conta do Cliente">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </a>
 
           <button id="gcFavTrigger" class="gc-action-circle-btn" title="Favoritos" aria-label="Favoritos">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
             <span id="gcFavCount" class="gc-badge-count hidden">0</span>
           </button>
 
           <button id="gcCartTrigger" class="gc-action-circle-btn" title="Sacola de Compras" aria-label="Sacola de Compras">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <path d="M16 10a4 4 0 0 1-8 0"></path>
@@ -168,7 +262,7 @@
       <div class="gc-user-modal-box">
         <button id="gcModalClose" class="gc-modal-close-btn" aria-label="Fechar">&times;</button>
         <div id="gcUserModalContent">
-          <!-- Conteúdo dinâmico injetado via JS (Perfil / Brindes ou Formulário de Login) -->
+          <!-- Conteúdo dinâmico injetado via JS -->
         </div>
       </div>
     `;
@@ -177,7 +271,7 @@
   }
 
   // ════════════════════════════════════════
-  // 4. GAVETA DE SACOLA DE COMPRAS
+  // 4. GAVETA DE SACOLA DE COMPRAS (IDÊNTICA À REFERÊNCIA DO ATELIÊ)
   // ════════════════════════════════════════
   function renderCartDrawer() {
     if (document.getElementById('gcCartDrawer')) return;
@@ -188,11 +282,25 @@
     drawer.innerHTML = `
       <div class="gc-cart-drawer-box">
         <div class="gc-cart-header">
-          <h3 class="gc-cart-title">Sacola de Compras</h3>
+          <div class="gc-cart-header-actions">
+            <a href="${root}pecas.html" class="gc-drawer-head-btn" title="Pesquisa">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Pesquisa</span>
+            </a>
+            <a href="${root}cliente.html" class="gc-drawer-head-btn" title="Minha Conta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </a>
+            <button class="gc-drawer-head-btn" id="gcDrawerFavBtn" title="Favoritos">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
+            <button class="gc-drawer-head-btn active" title="Sacola">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            </button>
+          </div>
           <button id="gcCartClose" class="gc-cart-close" aria-label="Fechar">&times;</button>
         </div>
-        <div id="gcCartBody" class="gc-cart-body"></div>
-        <div class="gc-cart-footer">
+        <div id="gcCartBody" class="gc-cart-body" style="padding:0;"></div>
+        <div id="gcCartFooter" class="gc-cart-footer">
           <div class="gc-cart-total-row">
             <span class="gc-cart-total-label">Total Estimado</span>
             <span id="gcCartTotalVal" class="gc-cart-total-value">R$ 0,00</span>
@@ -223,7 +331,7 @@
       <div class="gc-footer-inner">
         <div class="gc-footer-col">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-            <img src="${root}assets/logo.png" alt="Gold Crochet Brasil" style="height:38px;width:auto;">
+            <img src="${root}assets/logo-transparent.png" alt="Gold Crochet Brasil" style="height:44px;width:auto;">
           </div>
           <p>Alta-costura artesanal brasileira. Cada ponto tecido à mão com fios nobres e acabamento impecável de ateliê.</p>
           <div style="margin-top:14px;display:flex;gap:10px">
@@ -257,7 +365,6 @@
       </div>
       <div class="gc-footer-bottom">
         <span>&copy; ${new Date().getFullYear()} Gold Crochet Brasil. Todos os direitos reservados. Feito à mão no Brasil.</span>
-        <span>Símbolo Sagrado: Búzio Dourado</span>
       </div>
     `;
 
@@ -359,7 +466,7 @@
       container.innerHTML = `
         <div style="text-align:center;margin-bottom:24px">
           <div style="width:56px;height:56px;border-radius:50%;background:var(--color-secondary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:1px solid var(--color-border)">
-            ${BUZIO_SVG}
+            <img src="${root}assets/buzio-oficial.png" alt="Búzio Dourado Oficial" style="width:36px;height:auto;object-fit:contain;">
           </div>
           <h3 style="font-family:var(--font-display);font-size:1.45rem;color:var(--color-ebony);margin:0 0 4px">Ateliê Gold Crochet</h3>
           <p style="font-size:0.85rem;color:var(--color-muted);margin:0">Entre em sua conta para acompanhar seus pedidos e acumular compras para ganhar brindes.</p>
@@ -541,21 +648,32 @@
     const totalValEl = document.getElementById('gcCartTotalVal');
     if (!body || !totalValEl) return;
 
+    const footerEl = document.getElementById('gcCartFooter');
     if (cart.length === 0) {
+      if (footerEl) footerEl.style.display = 'none';
+      body.style.padding = '0';
       body.innerHTML = `
-        <div class="gc-cart-empty">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-gold)" stroke-width="1.6">
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <path d="M16 10a4 4 0 0 1-8 0"></path>
-          </svg>
-          <p style="color:var(--color-muted);font-size:0.95rem">Sua sacola de compras está vazia.</p>
-          <a href="${root}pecas.html" class="gc-filter-pill" style="text-decoration:none">Explorar Peças</a>
+        <div class="gc-cart-empty-view">
+          <div class="gc-cart-empty-top">
+            <img src="${root}assets/yarn-ball.png" alt="Novelo de Crochê" class="gc-cart-yarn-illustration">
+            <h3 class="gc-cart-empty-heading">Sua sacola está vazia.</h3>
+            <a href="${root}pecas.html" class="gc-cart-explore-link">Explore nossas peças!</a>
+          </div>
+          <div class="gc-cart-empty-bottom">
+            <h4 class="gc-cart-account-title">Pegue sua bolsa</h4>
+            <p class="gc-cart-account-desc">Faça login na Minha Conta para acessar sua sacola em todos os seus dispositivos.</p>
+            <button class="gc-btn-solid-gold gc-cart-login-action-btn" onclick="window.GoldAccount.open()">
+              Entrar na Minha Conta
+            </button>
+          </div>
         </div>
       `;
       totalValEl.textContent = 'R$ 0,00';
       return;
     }
+
+    if (footerEl) footerEl.style.display = 'flex';
+    body.style.padding = '24px';
 
     let total = 0;
     body.innerHTML = cart.map((item, idx) => {
@@ -710,6 +828,36 @@
     if (favTrigger) {
       favTrigger.addEventListener('click', () => {
         window.location.href = `${root}pecas.html?filtro=favoritos`;
+      });
+    }
+
+    const drawerFavBtn = document.getElementById('gcDrawerFavBtn');
+    if (drawerFavBtn) {
+      drawerFavBtn.addEventListener('click', () => {
+        closeCart();
+        window.location.href = `${root}pecas.html?filtro=favoritos`;
+      });
+    }
+
+    // Interatividade do Mega-Menu ao Clicar em Peças
+    const megaToggle = document.getElementById('gcMegaMenuToggle');
+    const megaMenu = document.getElementById('gcMegaMenuPecas');
+    if (megaToggle && megaMenu) {
+      megaToggle.addEventListener('click', (e) => {
+        if (window.innerWidth > 960) {
+          e.preventDefault();
+          const isOpen = megaMenu.classList.toggle('open');
+          megaToggle.classList.toggle('mega-active', isOpen);
+          megaToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!megaMenu.contains(e.target) && !megaToggle.contains(e.target)) {
+          megaMenu.classList.remove('open');
+          megaToggle.classList.remove('mega-active');
+          megaToggle.setAttribute('aria-expanded', 'false');
+        }
       });
     }
 

@@ -8,14 +8,17 @@
    Estruturas: Formas orgânicas fluidas, pílulas (999px) e círculos.
    ══════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
 
 :root {
-  --font-display: 'DM Serif Display', Georgia, serif;
-  --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'DM Serif Display', 'Playfair Display', Georgia, serif;
+  --font-body: 'Poppins', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-menu: 'Poppins', 'Plus Jakarta Sans', sans-serif;
 
   /* PALETA OFICIAL EXATA */
   --color-primary-gold: #cda434;
+  --color-btn-gold: #cda434;
+  --color-btn-gold-hover: #b8860b;
   --color-gold-deep: #a67c00;
   --color-gold-shine: #fff2b2;
   --gradient-gold-metallic: linear-gradient(135deg, #fff2b2 0%, #d4af37 32%, #a67c00 68%, #f3d26b 100%);
@@ -202,7 +205,7 @@ body {
 .gc-nav-links {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 28px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -214,34 +217,204 @@ body {
   }
 }
 
-.gc-nav-link {
-  font-family: var(--font-body);
-  font-size: 0.88rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-charcoal);
-  text-decoration: none;
-  position: relative;
-  padding: 8px 16px;
-  border-radius: var(--radius-pill);
-  transition: var(--transition-smooth);
+.gc-nav-item-dropdown {
+  position: static;
 }
 
-.gc-nav-link:hover,
+.gc-nav-link {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none; /* Tipografia elegante e suave em Title Case idêntica à referência */
+  color: #4a3e2e;
+  text-decoration: none;
+  position: relative;
+  padding: 6px 4px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  transition: color 0.25s ease;
+  background: transparent !important;
+  border-radius: 0;
+}
+
+.gc-nav-link:hover {
+  color: var(--color-primary-gold);
+}
+
 .gc-nav-link.active {
-  color: var(--color-gold-deep);
-  background: rgba(205, 164, 52, 0.12);
+  color: var(--color-primary-gold);
+  font-weight: 600;
+}
+
+.gc-nav-link.active::after {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 3px;
+  background-color: var(--color-primary-gold);
+  border-radius: 999px;
+  margin-top: 4px;
+}
+
+.gc-nav-chevron {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform 0.25s ease;
+}
+
+.gc-nav-item-dropdown:hover .gc-nav-chevron,
+.gc-nav-link.mega-active .gc-nav-chevron {
+  transform: rotate(180deg);
+}
+
+/* ════════════════════════════════════════
+   MEGA-MENU "PEÇAS" (EXATO À IMAGEM DO ATELIÊ)
+   ════════════════════════════════════════ */
+.gc-mega-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #faf6ee;
+  border-top: 1px solid rgba(205, 164, 52, 0.18);
+  border-bottom: 1.5px solid rgba(205, 164, 52, 0.22);
+  box-shadow: 0 20px 48px rgba(42, 34, 16, 0.12);
+  padding: 36px 48px 40px;
+  display: none;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+  z-index: 998;
+}
+
+.gc-mega-menu.open {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (min-width: 961px) {
+  .gc-nav-item-dropdown:hover .gc-mega-menu {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gc-mega-menu-inner {
+  max-width: 1340px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1.1fr 1.3fr 1.5fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.gc-mega-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gc-mega-heading {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #7d6328;
+  text-transform: uppercase;
+  margin: 0 0 14px 0;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid rgba(205, 164, 52, 0.25);
+}
+
+.gc-mega-subcol-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.gc-mega-subheading {
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #b8860b;
+  text-transform: uppercase;
+  margin: 0 0 10px 0;
+}
+
+.gc-mega-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gc-mega-list li a {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #3b301e;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.gc-mega-list li a:hover {
+  color: #b8860b;
+  transform: translateX(3px);
+}
+
+.gc-mega-ver-tudo {
+  font-weight: 700 !important;
+  color: #b8860b !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px;
+  margin-top: 4px;
+}
+
+.gc-mega-ver-tudo:hover {
+  color: #8c6505 !important;
+}
+
+/* Card da Marca no Mega-Menu (Lado direito) */
+.gc-mega-brand-card {
+  background: #fdfae8;
+  border: 1px dashed rgba(205, 164, 52, 0.45);
+  border-radius: 20px;
+  min-height: 230px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-shadow: inset 0 0 20px rgba(205, 164, 52, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gc-mega-brand-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 24px rgba(166, 124, 0, 0.15);
+}
+
+.gc-mega-brand-logo {
+  max-width: 120px;
+  max-height: 170px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(166, 124, 0, 0.18));
 }
 
 /* LOGO OFICIAL NO CENTRO */
 .gc-logo-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
   text-decoration: none;
   padding: 4px 12px;
-  border-radius: var(--radius-pill);
   transition: var(--transition-smooth);
 }
 
@@ -258,17 +431,17 @@ body {
 }
 
 .gc-logo-official-img {
-  height: 44px;
+  height: 48px;
   width: auto;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
 
 .gc-logo-brand:hover .gc-logo-official-img {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 
-/* AÇÕES DO CABEÇALHO (SILHUETA DO USUÁRIO, FAVORITOS, SACOLA) */
+/* AÇÕES DO CABEÇALHO (SILHUETA DO USUÁRIO, FAVORITOS, SACOLA - SEM BOLHA) */
 .gc-header-actions {
   display: flex;
   align-items: center;
@@ -276,50 +449,76 @@ body {
   gap: 12px;
 }
 
+.gc-header-search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+  color: #3d3324;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.gc-header-search-btn:hover {
+  color: var(--color-primary-gold);
+  background: rgba(205, 164, 52, 0.08);
+}
+
 .gc-action-circle-btn {
-  background: var(--color-tertiary);
-  border: 1px solid var(--color-border);
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-circle);
+  background: transparent !important;
+  border: none !important;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-charcoal);
+  color: var(--color-ebony);
   transition: var(--transition-smooth);
   position: relative;
-  box-shadow: 0 4px 12px rgba(166, 124, 0, 0.08);
+  box-shadow: none !important;
+  border-radius: var(--radius-pill);
+  padding: 0;
 }
 
 .gc-action-circle-btn:hover {
-  background: var(--color-gold-shine);
-  border-color: var(--color-primary-gold);
-  color: var(--color-gold-deep);
+  background: rgba(205, 164, 52, 0.12) !important;
+  color: var(--color-gold-deep) !important;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-gold-glow);
+  box-shadow: none !important;
 }
 
 .gc-action-circle-btn.user-active {
-  border-color: var(--color-quaternary);
-  background: var(--color-quaternary-glow);
+  color: var(--color-gold-deep);
 }
 
 .gc-action-circle-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 23px;
+  height: 23px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  transition: transform 0.25s ease, stroke 0.25s ease;
+}
+
+.gc-action-circle-btn:hover svg {
+  transform: scale(1.12);
+  stroke: var(--color-gold-deep);
 }
 
 .gc-badge-count {
   position: absolute;
-  top: -3px;
-  right: -3px;
-  background: var(--gradient-gold-metallic);
+  top: 2px;
+  right: 2px;
+  background: var(--color-primary-gold);
   color: white;
-  font-size: 0.68rem;
-  font-weight: 800;
-  width: 20px;
-  height: 20px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
   border-radius: var(--radius-circle);
   display: flex;
   align-items: center;
@@ -569,26 +768,35 @@ body {
   box-shadow: 0 0 16px rgba(205, 164, 52, 0.25);
 }
 
-.gc-btn-pill-primary {
+/* BOTÕES PADRONIZADOS COM COR SÓLIDA OFICIAL (SEM EFEITO CROMÁTICO) */
+.gc-btn-pill-primary,
+.gc-btn-solid-gold {
   width: 100%;
-  background: var(--gradient-gold-metallic);
-  color: white;
+  background: var(--color-btn-gold) !important;
+  color: #ffffff !important;
   border: none;
   padding: 14px 24px;
   border-radius: var(--radius-pill);
   font-family: var(--font-body);
   font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none; /* Tipografia elegante e limpa sem uppercase agressivo */
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(166, 124, 0, 0.35);
-  transition: var(--transition-smooth);
+  box-shadow: 0 4px 14px rgba(166, 124, 0, 0.22);
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.gc-btn-pill-primary:hover {
+.gc-btn-pill-primary:hover,
+.gc-btn-solid-gold:hover {
+  background: var(--color-btn-gold-hover) !important;
+  color: #ffffff !important;
   transform: translateY(-2px);
-  box-shadow: 0 10px 26px rgba(166, 124, 0, 0.45);
+  box-shadow: 0 8px 20px rgba(166, 124, 0, 0.32);
 }
 
 .gc-btn-pill-google {
@@ -833,13 +1041,157 @@ body {
   gap: 16px;
 }
 
-.gc-cart-empty {
-  text-align: center;
-  padding: 48px 16px;
+/* SACOLA DE COMPRAS VAZIA — DESIGN IDÊNTICO À REFERÊNCIA DO ATELIÊ */
+.gc-cart-drawer-box {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(440px, 94vw);
+  background: #fbf8f2;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.18);
+}
+
+.gc-cart-header {
+  padding: 18px 24px;
+  background: #fbf8f2;
+  border-bottom: 1px solid rgba(205, 164, 52, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gc-cart-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.gc-drawer-head-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #3b301e;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.gc-drawer-head-btn:hover,
+.gc-drawer-head-btn.active {
+  color: var(--color-primary-gold);
+}
+
+.gc-drawer-head-btn svg {
+  stroke-width: 1.8;
+}
+
+.gc-cart-empty-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.gc-cart-empty-top {
+  flex: 1;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
+  padding: 50px 24px;
+  text-align: center;
+}
+
+.gc-cart-yarn-illustration {
+  width: 70px;
+  height: auto;
+  margin-bottom: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(42, 34, 16, 0.08));
+}
+
+.gc-cart-empty-heading {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #3c3222;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.01em;
+}
+
+.gc-cart-explore-link {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #4a3e2e;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.gc-cart-explore-link:hover {
+  color: var(--color-primary-gold);
+  text-decoration: underline;
+}
+
+.gc-cart-empty-bottom {
+  background: #faf6ee;
+  border-top: 1px solid rgba(205, 164, 52, 0.2);
+  padding: 32px 24px 28px;
+  text-align: center;
+}
+
+.gc-cart-account-title {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1f190e;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.01em;
+}
+
+.gc-cart-account-desc {
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  font-weight: 400;
+  color: #5c4d3c;
+  line-height: 1.48;
+  max-width: 290px;
+  margin: 0 auto 22px;
+}
+
+.gc-cart-login-action-btn {
+  width: 100%;
+  background: var(--color-btn-gold) !important;
+  color: #ffffff !important;
+  border: none;
+  padding: 15px 24px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 0.96rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(166, 124, 0, 0.28);
+  transition: all 0.25s ease;
+}
+
+.gc-cart-login-action-btn:hover {
+  background: var(--color-btn-gold-hover) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(166, 124, 0, 0.38);
 }
 
 .gc-cart-item {
@@ -933,28 +1285,29 @@ body {
 }
 
 .gc-btn-checkout {
-  background: var(--gradient-gold-metallic);
-  color: white;
+  background: var(--color-btn-gold) !important;
+  color: #ffffff !important;
   border: none;
   padding: 16px;
   border-radius: var(--radius-pill);
   font-family: var(--font-body);
-  font-size: 0.94rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none; /* Sem letras maiúsculas forçadas */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 8px 24px rgba(166, 124, 0, 0.35);
+  box-shadow: 0 6px 20px rgba(166, 124, 0, 0.28);
   transition: var(--transition-smooth);
 }
 
 .gc-btn-checkout:hover {
+  background: var(--color-btn-gold-hover) !important;
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(166, 124, 0, 0.45);
+  box-shadow: 0 10px 24px rgba(166, 124, 0, 0.38);
 }
 
 /* ════════════════════════════════════════
@@ -1119,9 +1472,41 @@ body {
 
 .gc-filter-pill:hover,
 .gc-filter-pill.active {
-  background: var(--gradient-gold-metallic);
-  border-color: var(--color-primary-gold);
-  color: white;
-  box-shadow: 0 6px 18px rgba(166, 124, 0, 0.3);
+  background: var(--color-btn-gold) !important;
+  border-color: var(--color-btn-gold) !important;
+  color: white !important;
+  box-shadow: 0 4px 14px rgba(166, 124, 0, 0.22);
   transform: translateY(-2px);
 }
+
+/* ════════════════════════════════════════
+   PADRONIZAÇÃO UNIVERSAL DE BOTÕES — COR SÓLIDA OFICIAL DO ATELIÊ (SEM CROMÁTICA)
+   ════════════════════════════════════════ */
+.btn-primary,
+.cta-btn,
+.btn-gold,
+.gc-card-btn-buy,
+button.btn-primary,
+a.btn-primary {
+  background: var(--color-btn-gold) !important;
+  color: #ffffff !important;
+  border: none !important;
+  text-transform: none !important;
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(166, 124, 0, 0.22) !important;
+  transition: all 0.25s ease !important;
+}
+
+.btn-primary:hover,
+.cta-btn:hover,
+.btn-gold:hover,
+.gc-card-btn-buy:hover,
+button.btn-primary:hover,
+a.btn-primary:hover {
+  background: var(--color-btn-gold-hover) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(166, 124, 0, 0.32) !important;
+}
+
