@@ -666,7 +666,7 @@
           <p style="color:var(--color-muted);max-width:560px;margin:0 auto 24px;line-height:1.7">
             Como cliente cadastrada no Ateliê Gold Crochet, você possui canal direto prioritário para tirar dúvidas sobre fios, lavagem e encomendar criações sob medida.
           </p>
-          <a href="https://wa.me/5521999999999?text=Ol%C3%A1%2C%20sou%20cliente%20cadastrada%20na%20Gold%20Crochet%20e%20gostaria%20de%20atendimento%20VIP%20com%20a%20estilista." target="_blank" class="gc-btn-checkout" style="display:inline-flex;padding:16px 36px;text-decoration:none">
+          <a href="https://wa.me/5531984566047?text=Ol%C3%A1%2C%20sou%20cliente%20cadastrada%20na%20Gold%20Crochet%20e%20gostaria%20de%20atendimento%20VIP%20com%20a%20estilista." target="_blank" class="gc-btn-checkout" style="display:inline-flex;padding:16px 36px;text-decoration:none">
             Conversar no WhatsApp Oficial &rarr;
           </a>
         </div>
@@ -723,7 +723,7 @@
     } from "./js/firebase.js";
 
     const CLIENT_KEY = 'gc_customer_account_v2';
-    const WHATSAPP_NUM = '5521999999999';
+    const WHATSAPP_NUM = '5531984566047';
 
     function getLocalClient() {
       try {
@@ -740,9 +740,53 @@
 
     // Gerenciador do Portal
     window.ClientPortal = {
+      syncWithFirestore: async function(client) {
+        if (!client || !client.id) return client;
+        try {
+          if (db && fsDoc && setDoc) {
+            const userRef = fsDoc(db, 'users', client.id);
+            const docSnap = await getDoc(userRef).catch(() => null);
+            if (docSnap && docSnap.exists()) {
+              const remote = docSnap.data();
+              client.name = remote.name || client.name;
+              client.purchasesCount = remote.purchasesCount !== undefined ? Number(remote.purchasesCount) : Number(client.purchasesCount || 0);
+              client.giftsClaimed = remote.giftsClaimed !== undefined ? Number(remote.giftsClaimed) : Number(client.giftsClaimed || 0);
+              client.orders = Array.isArray(remote.orders) ? remote.orders : (client.orders || []);
+              client.measures = remote.measures || client.measures || {};
+              client.address = remote.address || client.address || {};
+              client.cardNum = remote.cardNum || client.cardNum;
+              
+              await setDoc(userRef, { lastLogin: new Date() }, { merge: true }).catch(console.warn);
+            } else {
+              const newPayload = {
+                id: client.id,
+                uid: client.id,
+                name: client.name || 'Cliente Gold',
+                email: client.email,
+                role: 'customer',
+                purchasesCount: Number(client.purchasesCount || 0),
+                giftsClaimed: Number(client.giftsClaimed || 0),
+                cardNum: client.cardNum,
+                orders: client.orders || [],
+                measures: client.measures || {},
+                address: client.address || {},
+                createdAt: new Date(),
+                lastLogin: new Date()
+              };
+              await setDoc(userRef, newPayload, { merge: true }).catch(console.warn);
+            }
+            saveLocalClient(client);
+          }
+        } catch(err) {
+          console.warn('[Cliente] Erro na sincronização com Firestore:', err);
+        }
+        return client;
+      },
+
       init: async function() {
-        const client = getLocalClient();
+        let client = getLocalClient();
         if (client && client.email) {
+          client = await this.syncWithFirestore(client);
           this.renderLoggedPortal(client);
         } else {
           document.getElementById('clientAuthSection').style.display = 'block';
@@ -769,7 +813,7 @@
 
         const mod3 = purchases % 3;
         const remaining = 3 - mod3;
-        document.getElementById('tabGiftRemaining').textContent = remaining === 0 ? 'PRONTO!' : remaining;
+        document.getElementById('tabGiftRemaining').textContent = (purchases > 0 && remaining === 3) ? 'PRONTO!' : remaining;
 
         const progressPercent = (mod3 / 3) * 100;
         const strokeDash = 220;
@@ -779,10 +823,10 @@
 
         const giftText = document.getElementById('dashGiftText');
         if (giftText) {
-          if (remaining === 0) {
-            giftText.innerHTML = '🎉 <strong>Parabéns!</strong> Você já completou 3 compras e pode resgatar seu brinde exclusivo agora mesmo!';
+          if (purchases > 0 && remaining === 3) {
+            giftText.innerHTML = '🎉 <strong>Parabéns!</strong> Você atingiu a meta para resgatar seu brinde exclusivo de crochê!';
           } else {
-            giftText.innerHTML = `Você já realizou <strong>${purchases}</strong> ${purchases === 1 ? 'compra' : 'compras'}. Faltam <strong>${remaining}</strong> para seu próximo brinde artesanal!`;
+            giftText.innerHTML = `Você já realizou <strong>${purchases}</strong> ${purchases === 1 ? 'compra' : 'compras'}. Faltam <strong>${remaining}</strong> para o próximo brinde artesanal!`;
           }
         }
 
@@ -815,17 +859,25 @@
         const container = document.getElementById('ordersContainer');
         if (!container) return;
 
-        const orders = client.orders || [
-          {
-            id: 'GC-2026-9041',
-            date: 'Ontem',
-            item: 'Regata Noronha (Fio Algodão Nobre)',
-            color: 'Degradê Oceânico & Areia',
-            total: 'R$ 65,00',
-            step: 3, // Em tecelagem
-            stepLabel: 'Tecelagem Manual'
-          }
-        ];
+        const orders = (client && Array.isArray(client.orders)) ? client.orders : [];
+
+        if (!orders.length) {
+          container.innerHTML = `
+            <div style="background:var(--color-tertiary);border:1.5px solid var(--color-border);border-radius:var(--radius-card);padding:44px 20px;text-align:center;box-shadow:var(--shadow-organic)">
+              <div style="width:64px;height:64px;border-radius:50%;background:var(--color-secondary);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.8rem">
+                🧶
+              </div>
+              <h3 style="font-family:var(--font-display);font-size:1.45rem;color:var(--color-ebony);margin:0 0 8px">Nenhum pedido realizado ainda</h3>
+              <p style="color:var(--color-muted);max-width:440px;margin:0 auto 20px;font-size:0.9rem;line-height:1.6">
+                Suas encomendas sob medida e pedidos feitos com a estilista no WhatsApp aparecerão aqui para você acompanhar a confecção ponto a ponto.
+              </p>
+              <a href="./pecas.html" class="gc-btn-pill-primary" style="display:inline-flex;width:auto;padding:12px 28px;text-decoration:none">
+                Ver Coleções do Ateliê &rarr;
+              </a>
+            </div>
+          `;
+          return;
+        }
 
         container.innerHTML = orders.map(ord => `
           <div class="gc-order-card">
@@ -833,37 +885,37 @@
               <div>
                 <span class="gc-badge-tag" style="position:static;margin-right:8px">${ord.id}</span>
                 <strong style="color:var(--color-ebony);font-size:0.95rem">${ord.item}</strong>
-                <span style="color:var(--color-muted);font-size:0.85rem"> (${ord.color})</span>
+                <span style="color:var(--color-muted);font-size:0.85rem"> (${ord.color || 'Sob medida'})</span>
               </div>
-              <div style="font-family:var(--font-display);font-size:1.25rem;color:var(--color-gold-deep)">${ord.total}</div>
+              <div style="font-family:var(--font-display);font-size:1.25rem;color:var(--color-gold-deep)">${ord.total || 'Em confecção'}</div>
             </div>
 
             <!-- Timeline de Produção -->
             <div class="gc-timeline-steps">
-              <div class="gc-timeline-step completed">
-                <div class="gc-timeline-circle">✓</div>
+              <div class="gc-timeline-step ${ord.step >= 1 ? 'completed' : ''}">
+                <div class="gc-timeline-circle">${ord.step > 1 ? '✓' : '1'}</div>
                 <div class="gc-timeline-text">Confirmado</div>
               </div>
-              <div class="gc-timeline-step completed">
-                <div class="gc-timeline-circle">✓</div>
+              <div class="gc-timeline-step ${ord.step >= 2 ? (ord.step > 2 ? 'completed' : 'current') : ''}">
+                <div class="gc-timeline-circle">${ord.step > 2 ? '✓' : '🧶'}</div>
                 <div class="gc-timeline-text">Separação Fios</div>
               </div>
-              <div class="gc-timeline-step current">
-                <div class="gc-timeline-circle">🧶</div>
+              <div class="gc-timeline-step ${ord.step >= 3 ? (ord.step > 3 ? 'completed' : 'current') : ''}">
+                <div class="gc-timeline-circle">${ord.step > 3 ? '✓' : '3'}</div>
                 <div class="gc-timeline-text">Tecendo Pontos</div>
               </div>
-              <div class="gc-timeline-step">
-                <div class="gc-timeline-circle">4</div>
+              <div class="gc-timeline-step ${ord.step >= 4 ? (ord.step > 4 ? 'completed' : 'current') : ''}">
+                <div class="gc-timeline-circle">${ord.step > 4 ? '✓' : '4'}</div>
                 <div class="gc-timeline-text">Acabamento</div>
               </div>
-              <div class="gc-timeline-step">
+              <div class="gc-timeline-step ${ord.step >= 5 ? 'completed' : ''}">
                 <div class="gc-timeline-circle">5</div>
                 <div class="gc-timeline-text">Enviado</div>
               </div>
             </div>
 
             <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:14px">
-              <a href="https://wa.me/${WHATSAPP_NUM}?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20sobre%20meu%20pedido%20${ord.id}" target="_blank" class="gc-filter-pill" style="font-size:0.75rem;padding:6px 14px;text-decoration:none">
+              <a href="https://wa.me/${WHATSAPP_NUM}?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20sobre%20meu%20pedido%20${encodeURIComponent(ord.id)}" target="_blank" class="gc-filter-pill" style="font-size:0.75rem;padding:6px 14px;text-decoration:none">
                 💬 Perguntar no WhatsApp
               </a>
             </div>
@@ -885,39 +937,51 @@
           if (auth && googleProvider) {
             const res = await signInWithPopup(auth, googleProvider);
             const user = res.user;
-            const client = {
+            let client = {
               id: user.uid,
               name: user.displayName || 'Cliente Gold',
               email: user.email,
-              purchasesCount: 1,
+              role: 'customer',
+              purchasesCount: 0,
               giftsClaimed: 0,
-              cardNum: '#GC-BR-' + user.uid.slice(0, 5).toUpperCase()
+              cardNum: '#GC-BR-' + user.uid.slice(0, 5).toUpperCase(),
+              orders: [],
+              measures: {},
+              address: {}
             };
+            client = await this.syncWithFirestore(client);
             saveLocalClient(client);
             this.renderLoggedPortal(client);
-            alert(`✨ Bem-vinda ao Ateliê, ${client.name}!`);
+            alert(`✨ Bem-vinda ao Ateliê, ${client.name}! Sua conta foi conectada.`);
             return;
           }
         } catch(e) {
           console.warn('Google Auth fallback:', e);
+          alert('Aviso na autenticação Google: ' + (e.message || 'Tentando fallback local...'));
         }
         // Fallback gracioso
         const name = prompt('Digite seu nome para acessar a conta do ateliê:', 'Cliente Gold');
         if (name) {
-          const client = {
-            id: 'cli_' + Date.now().toString().slice(-5),
+          const id = 'cli_' + Date.now().toString().slice(-5);
+          let client = {
+            id: id,
             name: name,
             email: 'cliente@goldcrochet.com.br',
-            purchasesCount: 1,
+            role: 'customer',
+            purchasesCount: 0,
             giftsClaimed: 0,
-            cardNum: '#GC-BR-' + Date.now().toString().slice(-4)
+            cardNum: '#GC-BR-' + id.slice(-4),
+            orders: [],
+            measures: {},
+            address: {}
           };
+          client = await this.syncWithFirestore(client);
           saveLocalClient(client);
           this.renderLoggedPortal(client);
         }
       },
 
-      loginEmail: function(e) {
+      loginEmail: async function(e) {
         e.preventDefault();
         const name = document.getElementById('clientInputName').value.trim();
         const email = document.getElementById('clientInputEmail').value.trim();
@@ -925,19 +989,52 @@
 
         if (!name || !email || !pass) return;
 
-        const existing = getLocalClient() || {};
-        const client = {
-          ...existing,
-          id: existing.id || 'cli_' + Date.now().toString().slice(-5),
-          name: name,
+        let userUid = null;
+        let displayName = name;
+
+        try {
+          if (auth) {
+            try {
+              const res = await signInWithEmailAndPassword(auth, email, pass);
+              userUid = res.user.uid;
+              displayName = res.user.displayName || name;
+            } catch(signInErr) {
+              if (signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-credential' || signInErr.code === 'auth/wrong-password') {
+                try {
+                  const res = await createUserWithEmailAndPassword(auth, email, pass);
+                  userUid = res.user.uid;
+                  displayName = name;
+                } catch(createErr) {
+                  console.warn('Create user error:', createErr);
+                  throw createErr;
+                }
+              } else {
+                throw signInErr;
+              }
+            }
+          }
+        } catch(authErr) {
+          console.warn('Firebase Auth email err:', authErr);
+        }
+
+        const id = userUid || ('cli_' + Date.now().toString().slice(-5));
+        let client = {
+          id: id,
+          name: displayName,
           email: email,
-          purchasesCount: existing.purchasesCount || 1,
-          giftsClaimed: existing.giftsClaimed || 0,
-          cardNum: existing.cardNum || '#GC-BR-' + Date.now().toString().slice(-4)
+          role: 'customer',
+          purchasesCount: 0,
+          giftsClaimed: 0,
+          cardNum: '#GC-BR-' + id.slice(0, 5).toUpperCase(),
+          orders: [],
+          measures: {},
+          address: {}
         };
+
+        client = await this.syncWithFirestore(client);
         saveLocalClient(client);
         this.renderLoggedPortal(client);
-        alert(`✨ Bem-vinda de volta ao Ateliê Gold Crochet, ${name}!`);
+        alert(`✨ Bem-vinda ao Ateliê Gold Crochet, ${displayName}! Sua conta foi conectada.`);
       },
 
       resetPass: function() {
@@ -950,26 +1047,54 @@
         }
       },
 
-      addManualPurchase: function() {
+      addManualPurchase: async function() {
         const input = document.getElementById('manualOrderInput');
         const code = input ? input.value.trim() : '';
         const client = getLocalClient();
         if (!client) return;
 
-        client.purchasesCount = (client.purchasesCount || 0) + 1;
-        client.orders = client.orders || [];
-        client.orders.unshift({
+        client.purchasesCount = (Number(client.purchasesCount) || 0) + 1;
+        client.orders = Array.isArray(client.orders) ? client.orders : [];
+        const newOrder = {
           id: code || 'GC-WA-' + Date.now().toString().slice(-4),
           date: 'Hoje',
           item: 'Encomenda Sob Medida Registrada',
-          color: 'Fio 100% Algodão',
-          total: 'Computado',
+          color: 'Fio 100% Algodão Nobre',
+          total: 'Computado no Ateliê',
           step: 2
-        });
+        };
+        client.orders.unshift(newOrder);
 
         saveLocalClient(client);
         this.renderLoggedPortal(client);
-        alert('🎉 Parabéns! Sua compra foi computada com sucesso no Programa de Brindes!');
+
+        if (db && client.id) {
+          try {
+            await setDoc(fsDoc(db, 'users', client.id), {
+              id: client.id,
+              email: client.email,
+              role: 'customer',
+              purchasesCount: client.purchasesCount,
+              orders: client.orders
+            }, { merge: true });
+
+            if (fsCollection && addDoc) {
+              await addDoc(fsCollection(db, 'orders'), {
+                userId: client.id,
+                userName: client.name,
+                userEmail: client.email,
+                total: 0,
+                items: [{ name: 'Encomenda WhatsApp (' + (code || 'Sob Medida') + ')', qty: 1 }],
+                status: 'producao',
+                createdAt: new Date()
+              }).catch(console.warn);
+            }
+          } catch(err) {
+            console.warn('[Cliente] Erro ao sincronizar compra com Firestore:', err);
+          }
+        }
+
+        alert('🎉 Parabéns! Sua compra foi computada com sucesso no Programa de Brindes e sincronizada com o Ateliê!');
         if (input) input.value = '';
       },
 
@@ -981,7 +1106,7 @@
         window.open(url, '_blank');
       },
 
-      saveMeasures: function(e) {
+      saveMeasures: async function(e) {
         e.preventDefault();
         const client = getLocalClient();
         if (!client) return;
@@ -996,7 +1121,17 @@
         };
 
         saveLocalClient(client);
-        alert('✨ Suas medidas foram salvas com sucesso no seu perfil do Ateliê!');
+
+        if (db && fsDoc && setDoc && client.id) {
+          await setDoc(fsDoc(db, 'users', client.id), {
+            id: client.id,
+            email: client.email,
+            role: 'customer',
+            measures: client.measures
+          }, { merge: true }).catch(console.warn);
+        }
+
+        alert('✨ Suas medidas foram salvas com sucesso no seu perfil e sincronizadas com o ateliê!');
       },
 
       sendMeasuresWhatsApp: function() {
@@ -1011,7 +1146,7 @@
         window.open(url, '_blank');
       },
 
-      saveAddress: function(e) {
+      saveAddress: async function(e) {
         e.preventDefault();
         const client = getLocalClient();
         if (!client) return;
@@ -1025,7 +1160,17 @@
         };
 
         saveLocalClient(client);
-        alert('📍 Endereço de entrega salvo com sucesso!');
+
+        if (db && fsDoc && setDoc && client.id) {
+          await setDoc(fsDoc(db, 'users', client.id), {
+            id: client.id,
+            email: client.email,
+            role: 'customer',
+            address: client.address
+          }, { merge: true }).catch(console.warn);
+        }
+
+        alert('📍 Endereço de entrega salvo com sucesso e sincronizado!');
       },
 
       searchCep: async function(cep) {

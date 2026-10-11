@@ -2235,7 +2235,13 @@ async function renderClients() {
 
   list.innerHTML = '<p style="color:var(--text-soft);text-align:center;padding:30px;font-style:italic;">Carregando clientes...</p>';
   try {
-    const snapshot = await db.collection('users').orderBy('createdAt', 'desc').limit(500).get();
+    let snapshot;
+    try {
+      snapshot = await db.collection('users').orderBy('createdAt', 'desc').limit(500).get();
+    } catch(errOrder) {
+      console.warn('[Admin] Fallback consulta users sem index/ordenação:', errOrder);
+      snapshot = await db.collection('users').limit(500).get();
+    }
     if (snapshot.empty) {
       list.innerHTML = `<div class="empty-state"><span class="icon">👥</span><h4>Nenhum cliente ainda</h4><p>Quando alguém criar conta no site, aparecerá aqui.</p></div>`;
       firestoreUsers = [];
@@ -2354,6 +2360,26 @@ async function openCustomerDetail(uid) {
         <div style="margin-bottom:6px;">📅 <strong>Cadastro:</strong> ${user.createdAt ? formatDate(user.createdAt) : '—'}</div>
         <div>🔑 <strong>Último acesso:</strong> ${user.lastLogin ? formatDate(user.lastLogin) : '—'}</div>
       </div>
+
+      ${user.measures ? `
+      <div style="background:var(--off-white);padding:14px 18px;border-radius:10px;margin-bottom:20px;font-size:0.85rem;color:var(--text-mid);">
+        <strong style="color:var(--text-dark);display:block;margin-bottom:8px;">📐 Medidas da Cliente:</strong>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;">
+          <div>Busto: <strong>${escapeHtml(user.measures.busto || '-')} cm</strong></div>
+          <div>Cintura: <strong>${escapeHtml(user.measures.cintura || '-')} cm</strong></div>
+          <div>Quadril: <strong>${escapeHtml(user.measures.quadril || '-')} cm</strong></div>
+          <div>Altura: <strong>${escapeHtml(user.measures.altura || '-')} cm</strong></div>
+          <div>Comp.: <strong>${escapeHtml(user.measures.comprimento || '-')}</strong></div>
+          <div>Cor: <strong>${escapeHtml(user.measures.cor || '-')}</strong></div>
+        </div>
+      </div>` : ''}
+
+      ${user.address ? `
+      <div style="background:var(--off-white);padding:14px 18px;border-radius:10px;margin-bottom:20px;font-size:0.85rem;color:var(--text-mid);">
+        <strong style="color:var(--text-dark);display:block;margin-bottom:6px;">📍 Endereço de Entrega:</strong>
+        <div>${escapeHtml(user.address.rua || '')}, ${escapeHtml(user.address.num || '')} — ${escapeHtml(user.address.bairro || '')}</div>
+        <div>${escapeHtml(user.address.cidade || '')} (CEP: ${escapeHtml(user.address.cep || '-')})</div>
+      </div>` : ''}
 
       <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">📦 Histórico de pedidos</h3>
       ${orders.length ? orders.map(o => {
@@ -3107,7 +3133,7 @@ function generateProductHtml(p, allProducts, cfg) {
   const slug = p.slug || slugify(p.name);
   const siteUrl = 'https://goldcrochet-shop.github.io';
   const pageUrl = `${siteUrl}/produtos/${slug}.html`;
-  const whatsappNumber = (cfg && cfg.whatsapp) || '5521999999999';
+  const whatsappNumber = (cfg && cfg.whatsapp) || '5531984566047';
   
   const formattedPrice = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
   const parcelPrice = p.price ? `3x de R$ ${(Number(p.price) / 3).toFixed(2).replace('.', ',')} sem juros` : '';

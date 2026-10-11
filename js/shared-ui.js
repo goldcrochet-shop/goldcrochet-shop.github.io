@@ -8,7 +8,7 @@
   const CART_KEY = 'gc_cart_items_v2';
   const FAV_KEY = 'gc_fav_items_v2';
   const USER_KEY = 'gc_customer_account_v2';
-  const WHATSAPP_PHONE = '5521999999999';
+  const WHATSAPP_PHONE = '5531984566047';
 
   function getRootPath() {
     const path = window.location.pathname;
@@ -424,7 +424,7 @@
       const cust = {
         name: fallbackName,
         email: 'cliente@goldcrochet.com.br',
-        purchasesCount: 1,
+        purchasesCount: 0,
         giftsClaimed: 0
       };
       saveCustomer(cust);
@@ -445,7 +445,7 @@
     const cust = {
       name: name,
       email: email,
-      purchasesCount: existing.purchasesCount || 1,
+      purchasesCount: existing.purchasesCount !== undefined ? existing.purchasesCount : 0,
       giftsClaimed: existing.giftsClaimed || 0
     };
     saveCustomer(cust);

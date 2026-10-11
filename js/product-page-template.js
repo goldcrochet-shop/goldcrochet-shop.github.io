@@ -8,7 +8,7 @@ export function generateProductHtml(product, allProducts = [], config = {}) {
   const slug = p.slug || 'produto-' + p.id;
   const siteUrl = 'https://goldcrochet-shop.github.io/goldcrochet-shop';
   const pageUrl = `${siteUrl}/produtos/${slug}.html`;
-  const whatsappNumber = config.whatsapp || '5521999999999'; // número comercial
+  const whatsappNumber = config.whatsapp || '5531984566047'; // número comercial
   
   const formattedPrice = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
   const parcelPrice = p.price ? `3x de R$ ${(Number(p.price) / 3).toFixed(2).replace('.', ',')} sem juros` : '';
