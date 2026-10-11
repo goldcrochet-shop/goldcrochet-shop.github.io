@@ -244,39 +244,82 @@ body.gc-scroll-locked {
   transition: padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Efeito Schiaparelli: No topo da página a logo se destaca no centro em escala ampliada */
+/* ════════════════════════════════════════
+   EFEITO SCHIAPARELLI AUTÊNTICO NO CABEÇALHO (2 LINHAS NO TOPO, 1 LINHA AO ROLAR)
+   ════════════════════════════════════════ */
 @media (min-width: 961px) {
+  .gc-header {
+    transition: background 0.3s ease, border-color 0.3s ease, padding 0.35s ease;
+  }
+
+  /* NO TOPO (Página lá em cima):
+     Linha 1: Logo centralizada e ampla no meio; Search e ações à direita
+     Linha 2: Menus de navegação centralizados logo abaixo */
   .gc-header.gc-header-top-at-crest .gc-header-inner {
-    padding-top: 18px;
-    padding-bottom: 18px;
+    display: grid;
+    grid-template-areas:
+      "left-space logo actions"
+      "nav nav nav";
+    grid-template-columns: 1fr auto 1fr;
+    row-gap: 16px;
+    padding: 20px 40px 14px;
+    align-items: center;
   }
 
   .gc-header.gc-header-top-at-crest .gc-logo-brand {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%) scale(1.22);
-    z-index: 10;
+    grid-area: logo;
+    justify-self: center;
+    position: static;
+    transform: none;
   }
 
   .gc-header.gc-header-top-at-crest .gc-logo-official-img {
-    height: 58px;
+    height: 54px;
   }
 
   .gc-header.gc-header-top-at-crest .gc-header-nav {
-    margin-left: 0;
-    opacity: 0.95;
+    grid-area: nav;
+    justify-self: center;
+    margin: 0;
   }
 
-  /* Ao rolar (quando remove .gc-header-top-at-crest), a logo transita suavemente para a esquerda */
-  .gc-logo-brand {
-    position: relative;
-    left: 0;
-    transform: translateX(0) scale(1);
-    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  .gc-header.gc-header-top-at-crest .gc-nav-links {
+    justify-content: center;
+    gap: 32px;
   }
 
-  .gc-logo-official-img {
-    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  .gc-header.gc-header-top-at-crest .gc-header-actions {
+    grid-area: actions;
+    justify-self: end;
+  }
+
+  /* AO ROLAR (Página descendo):
+     Cabeçalho compacto em 1 linha única:
+     Logo no canto esquerdo | Menus no meio | Ações à direita */
+  .gc-header:not(.gc-header-top-at-crest) .gc-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 32px;
+    gap: 24px;
+  }
+
+  .gc-header:not(.gc-header-top-at-crest) .gc-logo-brand {
+    position: static;
+    transform: none;
+  }
+
+  .gc-header:not(.gc-header-top-at-crest) .gc-logo-official-img {
+    height: 40px;
+  }
+
+  .gc-header:not(.gc-header-top-at-crest) .gc-header-nav {
+    flex: 1;
+    margin-left: 20px;
+  }
+
+  .gc-header:not(.gc-header-top-at-crest) .gc-nav-links {
+    gap: 24px;
   }
 }
 
