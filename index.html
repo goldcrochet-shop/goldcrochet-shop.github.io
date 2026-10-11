@@ -16,6 +16,12 @@
   <meta property="og:url" content="https://goldcrochet-shop.github.io/">
   <meta property="og:site_name" content="Gold Crochet Brasil">
 
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Gold Crochet Brasil — Alta-Costura em Crochê Artesanal">
+  <meta name="twitter:description" content="Ateliê de alta-costura brasileira especializado em crochê manual com fios nobres. Vestuário contemporâneo, bolsas estruturadas e mesa posta exclusiva.">
+  <meta name="twitter:image" content="./assets/logo.png">
+
   <!-- Favicons Oficiais do Búzio Dourado -->
   <link rel="icon" type="image/svg+xml" href="./assets/icon.svg?v=buzio2026">
   <link rel="icon" type="image/png" sizes="64x64" href="./assets/icon.png?v=buzio2026">
@@ -122,7 +128,7 @@
 
     .gc-hero-title {
       font-family: var(--font-display);
-      font-size: clamp(2.8rem, 6vw, 4.8rem);
+      font-size: clamp(1.85rem, 4.5vw, 3.8rem);
       line-height: 1.08;
       color: var(--color-ebony);
       margin: 0 0 20px;
@@ -162,6 +168,7 @@
     }
 
     /* Pílula menor de Explorar Peças sem seta */
+    .gc-btn-hero,
     .gc-hero-pill-btn {
       background: var(--color-btn-gold) !important;
       color: #ffffff !important;
@@ -169,16 +176,26 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 10px 24px !important;
-      font-size: 0.88rem !important;
+      padding: 12px 28px !important;
+      min-height: 48px !important;
+      min-width: 150px !important;
+      font-size: 0.92rem !important;
       font-weight: 700;
       letter-spacing: 0.03em;
-      border-radius: var(--radius-pill);
+      border-radius: 999px !important;
       box-shadow: 0 4px 14px rgba(166, 124, 0, 0.22);
       transition: var(--transition-smooth);
       border: none;
     }
 
+    @media (max-height: 500px) {
+      .gc-hero-organic {
+        padding: 24px 16px !important;
+        max-height: 560px !important;
+      }
+    }
+
+    .gc-btn-hero:hover,
     .gc-hero-pill-btn:hover {
       background: var(--color-btn-gold-hover) !important;
       transform: translateY(-2px);
@@ -461,7 +478,7 @@
           Fios 100% nobres tecidos ponto a ponto com caimento orgânico impecável, celebrando as curvas, o calor e a bossa do litoral brasileiro.
         </p>
         <div class="gc-hero-cta-row gc-hero-anim-3">
-          <a href="./pecas.html" class="gc-hero-pill-btn">
+          <a href="./pecas.html" class="gc-btn-hero gc-hero-pill-btn btn-primary">
             Explorar Peças
           </a>
         </div>
@@ -548,15 +565,15 @@
         <p style="color:var(--color-muted);line-height:1.7;max-width:620px;margin:0 0 18px">
           A cada 3 compras registradas na sua conta, você recebe um brinde exclusivo em crochê feito à mão (como nosso porta-copos ou uma ecobag sob medida). Ao se cadastrar, você também passa a receber o <strong>Jornal do Ateliê (Newsletter Semanal)</strong> com bastidores, novas peças e privilégios de ateliê.
         </p>
-        <form id="homeNewsletterForm" onsubmit="handleNewsletterSubmit(event)" style="display:flex;gap:10px;flex-wrap:wrap;max-width:500px">
-          <input type="email" id="homeNewsletterEmail" class="gc-input-pill" placeholder="Seu e-mail para o Jornal do Ateliê..." required style="flex:1;min-width:220px;margin-bottom:0">
-          <button type="submit" class="gc-btn-pill-primary" style="width:auto;padding:12px 24px;white-space:nowrap;font-size:0.86rem">
+        <form id="homeNewsletterForm" onsubmit="handleNewsletterSubmit(event)" style="display:flex;gap:10px;flex-wrap:wrap;max-width:500px;width:100%;box-sizing:border-box">
+          <input type="email" id="homeNewsletterEmail" class="gc-input-pill" placeholder="Seu e-mail para o Jornal do Ateliê..." required style="flex:1;min-width:0;width:100%;box-sizing:border-box;margin-bottom:0">
+          <button type="submit" class="gc-btn-pill-primary" style="width:auto;padding:12px 24px;box-sizing:border-box;font-size:0.86rem">
             Inscrever no Jornal
           </button>
         </form>
       </div>
       <div>
-        <button class="gc-btn-pill-primary" onclick="window.GoldAccount.open()" style="padding:16px 28px;white-space:nowrap">
+        <button class="gc-btn-pill-primary" onclick="window.GoldAccount.open()" style="padding:16px 24px;width:100%;max-width:100%;box-sizing:border-box;text-align:center">
           Acessar Minha Conta &amp; Brindes
         </button>
       </div>

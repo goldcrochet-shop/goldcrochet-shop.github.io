@@ -25,7 +25,7 @@
     const path = window.location.pathname.toLowerCase();
     if (path.includes('cliente')) return 'cliente';
     if (path.includes('colecoes')) return 'colecoes';
-    if (path.includes('pecas')) return 'pecas';
+    if (path.includes('pecas') || path.includes('/produtos/')) return 'pecas';
     if (path.includes('novidades')) return 'novidades';
     if (path.includes('casa-gold')) return 'casa-gold';
     return 'inicio';
@@ -44,7 +44,16 @@
     header.className = 'gc-header';
     header.innerHTML = `
       <div class="gc-header-inner">
-        <!-- 1. Logo Oficial na Extrema Esquerda -->
+        <!-- 0. Menu Hambúrguer Mobile (44x44px target) -->
+        <button id="gcMobileNavToggle" class="gc-header-menu-btn" aria-label="Menu" title="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24" aria-hidden="true">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- 1. Logo Oficial Centralizada no Mobile -->
         <a href="${root}index.html" class="gc-logo-brand" title="Gold Crochet Brasil — Início">
           <img src="${root}assets/logo-brasil-transparent.png" alt="Gold Crochet Brasil" class="gc-logo-official-img">
         </a>
@@ -55,7 +64,7 @@
             <li><a href="${root}index.html" class="gc-nav-link ${activePage === 'inicio' ? 'active' : ''}">Início</a></li>
             <li><a href="${root}colecoes.html" class="gc-nav-link ${activePage === 'colecoes' ? 'active' : ''}">Coleções</a></li>
             <li class="gc-nav-item-dropdown">
-              <a href="${root}pecas.html" id="gcMegaMenuToggle" class="gc-nav-link ${activePage === 'pecas' ? 'active' : ''}" role="button" aria-expanded="false">
+              <a href="#pecas" id="gcMegaMenuToggle" class="gc-nav-link ${activePage === 'pecas' ? 'active' : ''}" role="button" aria-expanded="false">
                 Peças
               </a>
               <!-- MEGA-MENU SUSPENSO IDÊNTICO À REFERÊNCIA DO ATELIÊ -->
@@ -149,7 +158,7 @@
         <!-- 3. Ações à Direita: Pesquisar, Silhueta Usuário, Silhueta Coração, Sacola -->
         <div class="gc-header-actions">
           <a href="${root}pecas.html" class="gc-header-search-btn" title="Pesquisar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18" aria-hidden="true">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
@@ -158,7 +167,7 @@
 
           <!-- Silhueta: Área do Cliente -->
           <a href="${root}cliente.html" id="gcUserTrigger" class="gc-action-circle-btn ${activePage === 'cliente' ? 'active' : ''}" title="Minha Conta" aria-label="Minha Conta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
@@ -166,7 +175,7 @@
 
           <!-- Silhueta: Coração (Favoritos) -->
           <button id="gcFavTrigger" class="gc-action-circle-btn" title="Favoritos" aria-label="Favoritos">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
             <span id="gcFavCount" class="gc-badge-count hidden">0</span>
@@ -174,7 +183,7 @@
 
           <!-- Sacola de Compras -->
           <button id="gcCartTrigger" class="gc-action-circle-btn" title="Sacola de Compras" aria-label="Sacola de Compras">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <path d="M16 10a4 4 0 0 1-8 0"></path>
@@ -200,29 +209,109 @@
     bar.className = 'gc-mobile-bottom-bar';
     bar.setAttribute('aria-label', 'Navegação Rápida Mobile');
     bar.innerHTML = `
-      <a href="${root}index.html" class="gc-mobile-tab-btn ${activePage === 'inicio' ? 'active' : ''}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      <a href="${root}index.html" class="gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ${activePage === 'inicio' ? 'active' : ''}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
         <span>Início</span>
       </a>
-      <a href="${root}colecoes.html" class="gc-mobile-tab-btn ${activePage === 'colecoes' ? 'active' : ''}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+      <a href="${root}colecoes.html" class="gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ${activePage === 'colecoes' ? 'active' : ''}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
         <span>Coleções</span>
       </a>
-      <a href="${root}pecas.html" class="gc-mobile-tab-btn ${activePage === 'pecas' ? 'active' : ''}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <a href="${root}pecas.html" class="gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ${activePage === 'pecas' ? 'active' : ''}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <span>Peças</span>
       </a>
-      <button class="gc-mobile-tab-btn" onclick="window.GoldCart.open()" style="background:none;border:none;cursor:pointer;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line></svg>
+      <button class="gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab" onclick="window.GoldCart.open()" style="background:none;border:none;cursor:pointer;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line></svg>
         <span>Sacola</span>
       </button>
-      <a href="${root}cliente.html" class="gc-mobile-tab-btn ${activePage === 'cliente' ? 'active' : ''}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      <a href="${root}cliente.html" class="gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ${activePage === 'cliente' ? 'active' : ''}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         <span>Conta</span>
       </a>
     `;
 
     document.body.appendChild(bar);
+  }
+
+  // ════════════════════════════════════════
+  // 2.5. MENU DRAWER LATERAL RESPONSIVO MOBILE
+  // ════════════════════════════════════════
+  function renderMobileNavDrawer() {
+    if (document.getElementById('gcMobileNavDrawer')) return;
+
+    let backdrop = document.getElementById('gcMobileNavBackdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'gcMobileNavBackdrop';
+      backdrop.className = 'gc-drawer-backdrop';
+      document.body.appendChild(backdrop);
+    }
+
+    const drawer = document.createElement('div');
+    drawer.id = 'gcMobileNavDrawer';
+    drawer.className = 'gc-mobile-nav-drawer gc-drawer-panel gc-drawer-content';
+    drawer.setAttribute('role', 'dialog');
+    drawer.setAttribute('aria-modal', 'true');
+    drawer.setAttribute('aria-label', 'Menu Principal de Navegação');
+
+    drawer.innerHTML = `
+      <div class="gc-mobile-nav-box" id="gcMobileNavBox">
+        <div class="gc-mobile-nav-header">
+          <a href="${root}index.html" class="gc-mobile-nav-logo-link" title="Gold Crochet — Início">
+            <img src="${root}assets/logo-brasil-transparent.png" alt="Gold Crochet Brasil">
+          </a>
+          <button id="gcMobileNavClose" class="gc-mobile-nav-close" aria-label="Fechar menu">&times;</button>
+        </div>
+
+        <ul class="gc-mobile-nav-links">
+          <li><a href="${root}index.html" class="gc-mobile-nav-link ${activePage === 'inicio' ? 'active' : ''}">Início</a></li>
+          <li><a href="${root}colecoes.html" class="gc-mobile-nav-link ${activePage === 'colecoes' ? 'active' : ''}">Coleções</a></li>
+          <li><a href="${root}pecas.html" class="gc-mobile-nav-link ${activePage === 'pecas' ? 'active' : ''}">Peças</a></li>
+          <li><a href="${root}novidades.html" class="gc-mobile-nav-link ${activePage === 'novidades' ? 'active' : ''}">Novidades</a></li>
+          <li><a href="${root}casa-gold.html" class="gc-mobile-nav-link ${activePage === 'casa-gold' ? 'active' : ''}">Casa Gold</a></li>
+          <li><a href="${root}cliente.html" class="gc-mobile-nav-link ${activePage === 'cliente' ? 'active' : ''}">Minha Conta</a></li>
+          <li><a href="javascript:void(0)" id="gcMobileNavCartLink" class="gc-mobile-nav-link">Sacola</a></li>
+        </ul>
+
+        <div class="gc-mobile-nav-footer">
+          <a href="https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Olá! Gostaria de falar com o concierge do ateliê Gold Crochet.')}" target="_blank" rel="noopener noreferrer" class="gc-mobile-nav-wpp">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.634.072-1.802-.411-.973-.404-1.603-1.393-1.651-1.458-.048-.065-.398-.53-.398-1.011 0-.482.253-.719.343-.817.09-.098.196-.123.262-.123.065 0 .131.002.188.005.06.003.14-.023.219.167.081.194.277.674.301.724.024.05.04.108.007.174-.033.065-.05.105-.098.163-.049.058-.103.13-.147.174-.05.048-.102.101-.044.201.058.099.257.424.551.687.378.337.697.441.796.491.098.05.156.042.214-.025.058-.066.246-.288.311-.387.066-.099.132-.082.222-.049.09.033.573.27.671.319.098.049.164.074.188.115.025.041.025.241-.119.646z"></path></svg>
+            <span>WhatsApp Ateliê</span>
+          </a>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(drawer);
+  }
+
+  function openMobileNav() {
+    const drawer = document.getElementById('gcMobileNavDrawer');
+    const backdrop = document.getElementById('gcMobileNavBackdrop');
+    if (drawer) {
+      drawer.classList.add('open');
+      drawer.classList.add('active');
+    }
+    if (backdrop) {
+      backdrop.classList.add('open');
+      backdrop.classList.add('active');
+    }
+    document.body.classList.add('gc-scroll-locked');
+  }
+
+  function closeMobileNav() {
+    const drawer = document.getElementById('gcMobileNavDrawer');
+    const backdrop = document.getElementById('gcMobileNavBackdrop');
+    if (drawer) {
+      drawer.classList.remove('open');
+      drawer.classList.remove('active');
+    }
+    if (backdrop) {
+      backdrop.classList.remove('open');
+      backdrop.classList.remove('active');
+    }
+    document.body.classList.remove('gc-scroll-locked');
   }
 
   // ════════════════════════════════════════
@@ -252,9 +341,17 @@
   function renderCartDrawer() {
     if (document.getElementById('gcCartDrawer')) return;
 
+    let backdrop = document.getElementById('gcCartBackdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'gcCartBackdrop';
+      backdrop.className = 'gc-drawer-backdrop';
+      document.body.appendChild(backdrop);
+    }
+
     const drawer = document.createElement('div');
     drawer.id = 'gcCartDrawer';
-    drawer.className = 'gc-cart-drawer';
+    drawer.className = 'gc-cart-drawer gc-drawer-panel';
     drawer.innerHTML = `
       <div class="gc-cart-drawer-box">
         <div class="gc-cart-header">
@@ -279,7 +376,7 @@
         <div id="gcCartFooter" class="gc-cart-footer">
           <div class="gc-cart-total-row">
             <span class="gc-cart-total-label">Total</span>
-            <span id="gcCartTotalVal" class="gc-cart-total-value">R$ 0,00</span>
+            <span id="gcCartTotalVal" class="gc-cart-total-value gc-cart-total-val cart-total">R$ 0,00</span>
           </div>
           <div id="gcCartUserPill" class="gc-cart-user-pill">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
@@ -288,9 +385,9 @@
             </svg>
             <span id="gcCartUserPillText">Conectado como <strong>Cliente</strong></span>
           </div>
-          <button id="gcCheckoutBtn" class="gc-btn-checkout">
+          <a id="gcCartCheckoutBtn" href="https://wa.me/${WHATSAPP_PHONE}" target="_blank" rel="noopener noreferrer" class="gc-btn-checkout" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">
             Finalizar pelo WhatsApp
-          </button>
+          </a>
         </div>
       </div>
     `;
@@ -496,12 +593,16 @@
     if (modal) {
       renderUserModalContent();
       modal.classList.add('open');
+      document.body.classList.add('gc-scroll-locked');
     }
   }
 
   function closeUserModal() {
     const modal = document.getElementById('gcUserModal');
-    if (modal) modal.classList.remove('open');
+    if (modal) {
+      modal.classList.remove('open');
+      document.body.classList.remove('gc-scroll-locked');
+    }
   }
 
   function loginWithGoogle() {
@@ -696,7 +797,7 @@
       const formattedPrice = item.price ? `R$ ${(item.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
 
       return `
-        <div class="gc-cart-item">
+        <div class="gc-cart-item cart-item">
           <img src="${item.image || root + 'assets/icon.svg'}" alt="${item.name}" class="gc-cart-item-img" onerror="this.src='${root}assets/icon.svg'">
           <div class="gc-cart-item-info">
             <h4>${item.name}</h4>
@@ -704,28 +805,49 @@
             <div class="gc-cart-item-price">${formattedPrice}</div>
           </div>
           <div class="gc-cart-item-qty">
-            <button class="gc-qty-btn" onclick="window.GoldCart.changeQty(${idx}, -1)">-</button>
+            <button class="gc-qty-btn gc-cart-qty-dec btn-dec" onclick="window.GoldCart.changeQty(${idx}, -1)">-</button>
             <span style="font-size:0.85rem;font-weight:700">${item.qty}</span>
-            <button class="gc-qty-btn" onclick="window.GoldCart.changeQty(${idx}, 1)">+</button>
+            <button class="gc-qty-btn gc-cart-qty-inc btn-inc" onclick="window.GoldCart.changeQty(${idx}, 1)">+</button>
           </div>
         </div>
       `;
     }).join('');
 
     totalValEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+
+    const checkoutBtn = document.getElementById('gcCartCheckoutBtn') || document.getElementById('gcCheckoutBtn');
+    if (checkoutBtn) {
+      let msg = `✨ *Pedido Gold Crochet Brasil — Alta-Costura*\n\n`;
+      if (customer && customer.name) msg += `👤 Cliente: *${customer.name}*\n\n`;
+      msg += `Gostaria de encomendar os seguintes itens:\n\n`;
+      cart.forEach(item => {
+        const pStr = item.price ? `R$ ${(item.price).toFixed(2).replace('.', ',')}` : 'Sob consulta';
+        msg += `▪ ${item.qty}x *${item.name}* ${item.color ? `(Cor: ${item.color})` : ''} — ${pStr}\n`;
+      });
+      msg += `\n*Total Estimado:* R$ ${total.toFixed(2).replace('.', ',')}\n\nPoderiam me informar o prazo de envio e dados para pagamento?`;
+      checkoutBtn.setAttribute('href', `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`);
+    }
   }
 
   function openCart() {
     const drawer = document.getElementById('gcCartDrawer');
+    const backdrop = document.getElementById('gcCartBackdrop');
     if (drawer) {
-      drawer.classList.add('open');
+      drawer.classList.add('open', 'active');
+      document.body.classList.add('gc-scroll-locked');
+      if (backdrop) backdrop.classList.add('open', 'active');
       updateCartUI();
     }
   }
 
   function closeCart() {
     const drawer = document.getElementById('gcCartDrawer');
-    if (drawer) drawer.classList.remove('open');
+    const backdrop = document.getElementById('gcCartBackdrop');
+    if (drawer) {
+      drawer.classList.remove('open', 'active');
+      document.body.classList.remove('gc-scroll-locked');
+      if (backdrop) backdrop.classList.remove('open', 'active');
+    }
   }
 
   function checkoutWhatsApp() {
@@ -829,14 +951,19 @@
     const cartDrawer = document.getElementById('gcCartDrawer');
     const checkoutBtn = document.getElementById('gcCheckoutBtn');
 
-    if (cartTrigger) cartTrigger.addEventListener('click', openCart);
-    if (cartClose) cartClose.addEventListener('click', closeCart);
+    document.querySelectorAll('.gc-drawer-backdrop').forEach(b => {
+      b.addEventListener('click', () => {
+        closeMobileNav();
+        closeCart();
+      });
+    });
     if (cartDrawer) {
       cartDrawer.addEventListener('click', (e) => {
         if (e.target === cartDrawer) closeCart();
       });
     }
-    if (checkoutBtn) checkoutBtn.addEventListener('click', checkoutWhatsApp);
+    const cartCheckoutBtn = document.getElementById('gcCartCheckoutBtn') || document.getElementById('gcCheckoutBtn');
+    if (cartCheckoutBtn) cartCheckoutBtn.addEventListener('click', checkoutWhatsApp);
 
     const favTrigger = document.getElementById('gcFavTrigger');
     if (favTrigger) {
@@ -875,6 +1002,45 @@
       });
     }
 
+    // Interatividade do Drawer de Navegação Mobile
+    const mobileNavToggle = document.getElementById('gcMobileNavToggle');
+    const mobileNavClose = document.getElementById('gcMobileNavClose');
+    const mobileNavDrawer = document.getElementById('gcMobileNavDrawer');
+    const mobileNavBackdrop = document.getElementById('gcMobileNavBackdrop');
+    const mobileNavCartLink = document.getElementById('gcMobileNavCartLink');
+
+    if (mobileNavToggle) mobileNavToggle.addEventListener('click', openMobileNav);
+    if (mobileNavClose) mobileNavClose.addEventListener('click', closeMobileNav);
+    if (mobileNavBackdrop) mobileNavBackdrop.addEventListener('click', closeMobileNav);
+    if (mobileNavDrawer) {
+      mobileNavDrawer.addEventListener('click', (e) => {
+        if (e.target === mobileNavDrawer) closeMobileNav();
+      });
+      // Auto-fechamento ao selecionar qualquer link do menu
+      mobileNavDrawer.querySelectorAll('.gc-mobile-nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          if (link.id !== 'gcMobileNavCartLink') {
+            closeMobileNav();
+          }
+        });
+      });
+    }
+    if (mobileNavCartLink) {
+      mobileNavCartLink.addEventListener('click', () => {
+        closeMobileNav();
+        openCart();
+      });
+    }
+
+    // Tecla ESC fecha gavetas e modais abertos
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeMobileNav();
+        closeCart();
+        closeUserModal();
+      }
+    });
+
     updateCartUI();
     updateFavUI();
     updateUserUI();
@@ -906,8 +1072,14 @@
     getCustomer: getCustomer
   };
 
+  window.GoldMobileNav = {
+    open: openMobileNav,
+    close: closeMobileNav
+  };
+
   function init() {
     renderHeader();
+    renderMobileNavDrawer();
     renderMobileBar();
     renderUserModal();
     renderCartDrawer();

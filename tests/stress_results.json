@@ -1,0 +1,3174 @@
+{
+  "header_investigation": {
+    "hasHeader": true,
+    "hasHeaderInner": true,
+    "hasMenuBtn": true,
+    "hasLogoBrand": true,
+    "hasLogoImg": true,
+    "hasActions": true,
+    "hasCartTrigger": true,
+    "hasBottomBar": true,
+    "hasDrawer": true,
+    "hasBackdrop": true,
+    "menuBtnTargetOk": true,
+    "cartTriggerTargetOk": true,
+    "menuRect": {
+      "left": 14,
+      "right": 58,
+      "width": 44,
+      "height": 44
+    },
+    "logoRect": {
+      "left": 162.34375,
+      "right": 274.640625,
+      "width": 112.296875,
+      "height": 38
+    },
+    "actionsRect": {
+      "left": 379,
+      "right": 475,
+      "width": 96,
+      "height": 44
+    }
+  },
+  "viewport_scan": {
+    "index.html": {
+      "160px": {
+        "passed": true,
+        "docScroll": 160,
+        "winInner": 160,
+        "overflowCount": 219,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card",
+            "right": 295,
+            "width": 134
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card-img-wrap",
+            "right": 294,
+            "width": 132
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 274,
+            "width": 98
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-card-fav-btn",
+            "right": 280,
+            "width": 38
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 270,
+            "width": 18
+          }
+        ]
+      },
+      "280px": {
+        "passed": true,
+        "docScroll": 280,
+        "winInner": 280,
+        "overflowCount": 182,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card",
+            "right": 456,
+            "width": 214
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card-img-wrap",
+            "right": 455,
+            "width": 212
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 355,
+            "width": 98
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-card-fav-btn",
+            "right": 441,
+            "width": 38
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 431,
+            "width": 18
+          }
+        ]
+      },
+      "300px": {
+        "passed": true,
+        "docScroll": 300,
+        "winInner": 300,
+        "overflowCount": 180,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card",
+            "right": 506,
+            "width": 233
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card-img-wrap",
+            "right": 505,
+            "width": 231
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 386,
+            "width": 98
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-card-fav-btn",
+            "right": 491,
+            "width": 38
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 481,
+            "width": 18
+          }
+        ]
+      },
+      "320px": {
+        "passed": true,
+        "docScroll": 320,
+        "winInner": 320,
+        "overflowCount": 179,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card",
+            "right": 537,
+            "width": 248
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card-img-wrap",
+            "right": 536,
+            "width": 246
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 401,
+            "width": 98
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-card-fav-btn",
+            "right": 522,
+            "width": 38
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 512,
+            "width": 18
+          }
+        ]
+      },
+      "360px": {
+        "passed": true,
+        "docScroll": 360,
+        "winInner": 360,
+        "overflowCount": 178,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card",
+            "right": 598,
+            "width": 279
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card-img-wrap",
+            "right": 597,
+            "width": 277
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 432,
+            "width": 98
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-card-fav-btn",
+            "right": 583,
+            "width": 38
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 573,
+            "width": 18
+          }
+        ]
+      },
+      "375px": {
+        "passed": true,
+        "docScroll": 375,
+        "winInner": 375,
+        "overflowCount": 178,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card",
+            "right": 623,
+            "width": 292
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card-img-wrap",
+            "right": 622,
+            "width": 290
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 444,
+            "width": 98
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-card-fav-btn",
+            "right": 608,
+            "width": 38
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 598,
+            "width": 18
+          }
+        ]
+      },
+      "390px": {
+        "passed": true,
+        "docScroll": 390,
+        "winInner": 390,
+        "overflowCount": 178,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card",
+            "right": 647,
+            "width": 304
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card-img-wrap",
+            "right": 646,
+            "width": 302
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 456,
+            "width": 98
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-card-fav-btn",
+            "right": 632,
+            "width": 38
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 622,
+            "width": 18
+          }
+        ]
+      },
+      "414px": {
+        "passed": true,
+        "docScroll": 414,
+        "winInner": 414,
+        "overflowCount": 178,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card",
+            "right": 683,
+            "width": 322
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card-img-wrap",
+            "right": 682,
+            "width": 320
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 474,
+            "width": 98
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-card-fav-btn",
+            "right": 668,
+            "width": 38
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 658,
+            "width": 18
+          }
+        ]
+      },
+      "480px": {
+        "passed": true,
+        "docScroll": 480,
+        "winInner": 480,
+        "overflowCount": 178,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card",
+            "right": 781,
+            "width": 371
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-card-img-wrap",
+            "right": 780,
+            "width": 369
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 524,
+            "width": 98
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-card-fav-btn",
+            "right": 766,
+            "width": 38
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 756,
+            "width": 18
+          }
+        ]
+      }
+    },
+    "pecas.html": {
+      "160px": {
+        "passed": true,
+        "docScroll": 160,
+        "winInner": 160,
+        "overflowCount": 66,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 254,
+            "width": 349
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab",
+            "right": 176,
+            "width": 53
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "",
+            "right": 168,
+            "width": 37
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ",
+            "right": 239,
+            "width": 51
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 225,
+            "width": 22
+          }
+        ]
+      },
+      "280px": {
+        "passed": true,
+        "docScroll": 280,
+        "winInner": 280,
+        "overflowCount": 39,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 314,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ",
+            "right": 299,
+            "width": 51
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 285,
+            "width": 22
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "",
+            "right": 291,
+            "width": 35
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 543,
+            "width": 263
+          }
+        ]
+      },
+      "300px": {
+        "passed": true,
+        "docScroll": 300,
+        "winInner": 300,
+        "overflowCount": 37,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 324,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ",
+            "right": 309,
+            "width": 51
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 546,
+            "width": 222
+          }
+        ]
+      },
+      "320px": {
+        "passed": true,
+        "docScroll": 320,
+        "winInner": 320,
+        "overflowCount": 36,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 334,
+            "width": 349
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 566,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 440,
+            "width": 96
+          }
+        ]
+      },
+      "360px": {
+        "passed": true,
+        "docScroll": 360,
+        "winInner": 360,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 606,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 480,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 406,
+            "width": 18
+          }
+        ]
+      },
+      "375px": {
+        "passed": true,
+        "docScroll": 375,
+        "winInner": 375,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 621,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 495,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 421,
+            "width": 18
+          }
+        ]
+      },
+      "390px": {
+        "passed": true,
+        "docScroll": 390,
+        "winInner": 390,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 636,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 510,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 436,
+            "width": 18
+          }
+        ]
+      },
+      "414px": {
+        "passed": true,
+        "docScroll": 414,
+        "winInner": 414,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 660,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 534,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 460,
+            "width": 18
+          }
+        ]
+      },
+      "480px": {
+        "passed": true,
+        "docScroll": 480,
+        "winInner": 480,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 726,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 600,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 526,
+            "width": 18
+          }
+        ]
+      }
+    },
+    "colecoes.html": {
+      "160px": {
+        "passed": false,
+        "docScroll": 160,
+        "winInner": 160,
+        "overflowCount": 69,
+        "samples": [
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-page-hero-tag",
+            "right": 169,
+            "width": 141
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "",
+            "right": 212,
+            "width": 78
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "",
+            "right": 162,
+            "width": 74
+          },
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 254,
+            "width": 349
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab",
+            "right": 176,
+            "width": 53
+          }
+        ]
+      },
+      "280px": {
+        "passed": true,
+        "docScroll": 280,
+        "winInner": 280,
+        "overflowCount": 39,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 314,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ",
+            "right": 299,
+            "width": 51
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 285,
+            "width": 22
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "",
+            "right": 291,
+            "width": 35
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 543,
+            "width": 263
+          }
+        ]
+      },
+      "300px": {
+        "passed": true,
+        "docScroll": 300,
+        "winInner": 300,
+        "overflowCount": 37,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 324,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ",
+            "right": 309,
+            "width": 51
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 546,
+            "width": 222
+          }
+        ]
+      },
+      "320px": {
+        "passed": true,
+        "docScroll": 320,
+        "winInner": 320,
+        "overflowCount": 36,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 334,
+            "width": 349
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 566,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 440,
+            "width": 96
+          }
+        ]
+      },
+      "360px": {
+        "passed": true,
+        "docScroll": 360,
+        "winInner": 360,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 606,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 480,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 406,
+            "width": 18
+          }
+        ]
+      },
+      "375px": {
+        "passed": true,
+        "docScroll": 375,
+        "winInner": 375,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 621,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 495,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 421,
+            "width": 18
+          }
+        ]
+      },
+      "390px": {
+        "passed": true,
+        "docScroll": 390,
+        "winInner": 390,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 636,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 510,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 436,
+            "width": 18
+          }
+        ]
+      },
+      "414px": {
+        "passed": true,
+        "docScroll": 414,
+        "winInner": 414,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 660,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 534,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 460,
+            "width": 18
+          }
+        ]
+      },
+      "480px": {
+        "passed": true,
+        "docScroll": 480,
+        "winInner": 480,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 726,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 600,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 526,
+            "width": 18
+          }
+        ]
+      }
+    },
+    "novidades.html": {
+      "160px": {
+        "passed": false,
+        "docScroll": 160,
+        "winInner": 160,
+        "overflowCount": 74,
+        "samples": [
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-page-hero-tag",
+            "right": 197,
+            "width": 169
+          },
+          {
+            "tag": "IMG",
+            "id": "",
+            "className": "gc-spotlight-img",
+            "right": 207,
+            "width": 178
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-spotlight-info",
+            "right": 207,
+            "width": 178
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 203,
+            "width": 174
+          },
+          {
+            "tag": "H2",
+            "id": "",
+            "className": "",
+            "right": 207,
+            "width": 178
+          }
+        ]
+      },
+      "280px": {
+        "passed": true,
+        "docScroll": 280,
+        "winInner": 280,
+        "overflowCount": 39,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 314,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ",
+            "right": 299,
+            "width": 51
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 285,
+            "width": 22
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "",
+            "right": 291,
+            "width": 35
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 543,
+            "width": 263
+          }
+        ]
+      },
+      "300px": {
+        "passed": true,
+        "docScroll": 300,
+        "winInner": 300,
+        "overflowCount": 37,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 324,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ",
+            "right": 309,
+            "width": 51
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 546,
+            "width": 222
+          }
+        ]
+      },
+      "320px": {
+        "passed": true,
+        "docScroll": 320,
+        "winInner": 320,
+        "overflowCount": 36,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 334,
+            "width": 349
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 566,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 440,
+            "width": 96
+          }
+        ]
+      },
+      "360px": {
+        "passed": true,
+        "docScroll": 360,
+        "winInner": 360,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 606,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 480,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 406,
+            "width": 18
+          }
+        ]
+      },
+      "375px": {
+        "passed": true,
+        "docScroll": 375,
+        "winInner": 375,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 621,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 495,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 421,
+            "width": 18
+          }
+        ]
+      },
+      "390px": {
+        "passed": true,
+        "docScroll": 390,
+        "winInner": 390,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 636,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 510,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 436,
+            "width": 18
+          }
+        ]
+      },
+      "414px": {
+        "passed": true,
+        "docScroll": 414,
+        "winInner": 414,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 660,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 534,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 460,
+            "width": 18
+          }
+        ]
+      },
+      "480px": {
+        "passed": true,
+        "docScroll": 480,
+        "winInner": 480,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 726,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 600,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 526,
+            "width": 18
+          }
+        ]
+      }
+    },
+    "casa-gold.html": {
+      "160px": {
+        "passed": false,
+        "docScroll": 160,
+        "winInner": 160,
+        "overflowCount": 73,
+        "samples": [
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-page-hero-tag",
+            "right": 175,
+            "width": 147
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "",
+            "right": 179,
+            "width": 150
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 179,
+            "width": 150
+          },
+          {
+            "tag": "H3",
+            "id": "",
+            "className": "",
+            "right": 179,
+            "width": 150
+          },
+          {
+            "tag": "P",
+            "id": "",
+            "className": "",
+            "right": 179,
+            "width": 150
+          }
+        ]
+      },
+      "280px": {
+        "passed": true,
+        "docScroll": 280,
+        "winInner": 280,
+        "overflowCount": 39,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 314,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ",
+            "right": 299,
+            "width": 51
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 285,
+            "width": 22
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "",
+            "right": 291,
+            "width": 35
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 543,
+            "width": 263
+          }
+        ]
+      },
+      "300px": {
+        "passed": true,
+        "docScroll": 300,
+        "winInner": 300,
+        "overflowCount": 37,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 324,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ",
+            "right": 309,
+            "width": 51
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 546,
+            "width": 222
+          }
+        ]
+      },
+      "320px": {
+        "passed": true,
+        "docScroll": 320,
+        "winInner": 320,
+        "overflowCount": 36,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 334,
+            "width": 349
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 566,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 440,
+            "width": 96
+          }
+        ]
+      },
+      "360px": {
+        "passed": true,
+        "docScroll": 360,
+        "winInner": 360,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 606,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 480,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 406,
+            "width": 18
+          }
+        ]
+      },
+      "375px": {
+        "passed": true,
+        "docScroll": 375,
+        "winInner": 375,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 621,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 495,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 421,
+            "width": 18
+          }
+        ]
+      },
+      "390px": {
+        "passed": true,
+        "docScroll": 390,
+        "winInner": 390,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 636,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 510,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 436,
+            "width": 18
+          }
+        ]
+      },
+      "414px": {
+        "passed": true,
+        "docScroll": 414,
+        "winInner": 414,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 660,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 534,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 460,
+            "width": 18
+          }
+        ]
+      },
+      "480px": {
+        "passed": true,
+        "docScroll": 480,
+        "winInner": 480,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 726,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 600,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 526,
+            "width": 18
+          }
+        ]
+      }
+    },
+    "cliente.html": {
+      "160px": {
+        "passed": false,
+        "docScroll": 160,
+        "winInner": 160,
+        "overflowCount": 67,
+        "samples": [
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 282,
+            "width": 142
+          },
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 254,
+            "width": 349
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab",
+            "right": 176,
+            "width": 53
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "",
+            "right": 168,
+            "width": 37
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ac",
+            "right": 239,
+            "width": 51
+          }
+        ]
+      },
+      "280px": {
+        "passed": false,
+        "docScroll": 280,
+        "winInner": 280,
+        "overflowCount": 40,
+        "samples": [
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "gc-badge-tag",
+            "right": 282,
+            "width": 142
+          },
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 314,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ac",
+            "right": 299,
+            "width": 51
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 285,
+            "width": 22
+          },
+          {
+            "tag": "SPAN",
+            "id": "",
+            "className": "",
+            "right": 291,
+            "width": 35
+          }
+        ]
+      },
+      "300px": {
+        "passed": true,
+        "docScroll": 300,
+        "winInner": 300,
+        "overflowCount": 37,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 324,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ac",
+            "right": 309,
+            "width": 51
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 546,
+            "width": 222
+          }
+        ]
+      },
+      "320px": {
+        "passed": true,
+        "docScroll": 320,
+        "winInner": 320,
+        "overflowCount": 36,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 334,
+            "width": 349
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 566,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 440,
+            "width": 96
+          }
+        ]
+      },
+      "360px": {
+        "passed": true,
+        "docScroll": 360,
+        "winInner": 360,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 606,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 480,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 406,
+            "width": 18
+          }
+        ]
+      },
+      "375px": {
+        "passed": true,
+        "docScroll": 375,
+        "winInner": 375,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 621,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 495,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 421,
+            "width": 18
+          }
+        ]
+      },
+      "390px": {
+        "passed": true,
+        "docScroll": 390,
+        "winInner": 390,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 636,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 510,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 436,
+            "width": 18
+          }
+        ]
+      },
+      "414px": {
+        "passed": true,
+        "docScroll": 414,
+        "winInner": 414,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 660,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 534,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 460,
+            "width": 18
+          }
+        ]
+      },
+      "480px": {
+        "passed": true,
+        "docScroll": 480,
+        "winInner": 480,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 726,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 600,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 526,
+            "width": 18
+          }
+        ]
+      }
+    },
+    "produtos/vestido-sol-dourado.html": {
+      "160px": {
+        "passed": false,
+        "docScroll": 160,
+        "winInner": 160,
+        "overflowCount": 86,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-gallery",
+            "right": 294,
+            "width": 245
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-main-img-box",
+            "right": 294,
+            "width": 245
+          },
+          {
+            "tag": "IMG",
+            "id": "mainProductImg",
+            "className": "",
+            "right": 293,
+            "width": 243
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-info",
+            "right": 294,
+            "width": 245
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "",
+            "right": 294,
+            "width": 245
+          }
+        ]
+      },
+      "280px": {
+        "passed": false,
+        "docScroll": 280,
+        "winInner": 280,
+        "overflowCount": 51,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-gallery",
+            "right": 294,
+            "width": 245
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-main-img-box",
+            "right": 294,
+            "width": 245
+          },
+          {
+            "tag": "IMG",
+            "id": "mainProductImg",
+            "className": "",
+            "right": 293,
+            "width": 243
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-product-info",
+            "right": 294,
+            "width": 245
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "",
+            "right": 294,
+            "width": 245
+          }
+        ]
+      },
+      "300px": {
+        "passed": true,
+        "docScroll": 300,
+        "winInner": 300,
+        "overflowCount": 37,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 324,
+            "width": 349
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ",
+            "right": 309,
+            "width": 51
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 582,
+            "width": 282
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 546,
+            "width": 222
+          }
+        ]
+      },
+      "320px": {
+        "passed": true,
+        "docScroll": 320,
+        "winInner": 320,
+        "overflowCount": 36,
+        "samples": [
+          {
+            "tag": "NAV",
+            "id": "gcMobileBar",
+            "className": "gc-mobile-bottom-bar",
+            "right": 334,
+            "width": 349
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 621,
+            "width": 301
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 566,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 440,
+            "width": 96
+          }
+        ]
+      },
+      "360px": {
+        "passed": true,
+        "docScroll": 360,
+        "winInner": 360,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 698,
+            "width": 338
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 606,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 480,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 406,
+            "width": 18
+          }
+        ]
+      },
+      "375px": {
+        "passed": true,
+        "docScroll": 375,
+        "winInner": 375,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 728,
+            "width": 353
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 621,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 495,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 421,
+            "width": 18
+          }
+        ]
+      },
+      "390px": {
+        "passed": true,
+        "docScroll": 390,
+        "winInner": 390,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 757,
+            "width": 367
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 636,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 510,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 436,
+            "width": 18
+          }
+        ]
+      },
+      "414px": {
+        "passed": true,
+        "docScroll": 414,
+        "winInner": 414,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 803,
+            "width": 389
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 660,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 534,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 460,
+            "width": 18
+          }
+        ]
+      },
+      "480px": {
+        "passed": true,
+        "docScroll": 480,
+        "winInner": 480,
+        "overflowCount": 35,
+        "samples": [
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-drawer-box",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header",
+            "right": 920,
+            "width": 440
+          },
+          {
+            "tag": "DIV",
+            "id": "",
+            "className": "gc-cart-header-actions",
+            "right": 726,
+            "width": 222
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "gc-drawer-head-btn",
+            "right": 600,
+            "width": 96
+          },
+          {
+            "tag": "svg",
+            "id": "",
+            "className": "[object SVGAnimatedString]",
+            "right": 526,
+            "width": 18
+          }
+        ]
+      }
+    }
+  },
+  "drawer_stress": {
+    "totalCycles": 20,
+    "errorDetected": false,
+    "finalBodyLocked": false,
+    "finalDrawerOpen": false,
+    "finalBackdropOpen": false,
+    "finalBodyOverflow": "hidden auto",
+    "success": true,
+    "cycleLog": [
+      {
+        "cycle": 1,
+        "afterOpen": {
+          "drawerHasOpen": true,
+          "backdropHasOpen": true,
+          "bodyHasScrollLocked": true
+        },
+        "afterClose": {
+          "drawerHasOpen": false,
+          "backdropHasOpen": false,
+          "bodyHasScrollLocked": false,
+          "bodyOverflow": "hidden auto"
+        }
+      },
+      {
+        "cycle": 10,
+        "afterOpen": {
+          "drawerHasOpen": true,
+          "backdropHasOpen": true,
+          "bodyHasScrollLocked": true
+        },
+        "afterClose": {
+          "drawerHasOpen": false,
+          "backdropHasOpen": false,
+          "bodyHasScrollLocked": false,
+          "bodyOverflow": "hidden auto"
+        }
+      },
+      {
+        "cycle": 20,
+        "afterOpen": {
+          "drawerHasOpen": true,
+          "backdropHasOpen": true,
+          "bodyHasScrollLocked": true
+        },
+        "afterClose": {
+          "drawerHasOpen": false,
+          "backdropHasOpen": false,
+          "bodyHasScrollLocked": false,
+          "bodyOverflow": "hidden auto"
+        }
+      }
+    ]
+  },
+  "safe_area": {
+    "declaredSafeTop": "0px",
+    "declaredSafeBottom": "0px",
+    "defaultBottomBarPadding": "6px",
+    "defaultBodyPadding": "84px",
+    "simulatedBottomBarPadding": "6px",
+    "bodyHasSafePadding": true
+  },
+  "summary": {
+    "total_viewport_tests": 63,
+    "viewport_passes": 56,
+    "viewport_failures_count": 7,
+    "viewport_failures": [
+      {
+        "page": "colecoes.html",
+        "viewport": 160,
+        "data": {
+          "docWidth": 160,
+          "docScroll": 160,
+          "winInner": 160,
+          "bodyScroll": 212,
+          "overflowCount": 69,
+          "hasOverflow": true,
+          "samples": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "className": "gc-page-hero-tag",
+              "right": 169,
+              "width": 141
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "className": "",
+              "right": 212,
+              "width": 78
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "className": "",
+              "right": 162,
+              "width": 74
+            },
+            {
+              "tag": "NAV",
+              "id": "gcMobileBar",
+              "className": "gc-mobile-bottom-bar",
+              "right": 254,
+              "width": 349
+            },
+            {
+              "tag": "BUTTON",
+              "id": "",
+              "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab",
+              "right": 176,
+              "width": 53
+            }
+          ]
+        }
+      },
+      {
+        "page": "novidades.html",
+        "viewport": 160,
+        "data": {
+          "docWidth": 160,
+          "docScroll": 160,
+          "winInner": 160,
+          "bodyScroll": 207,
+          "overflowCount": 74,
+          "hasOverflow": true,
+          "samples": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "className": "gc-page-hero-tag",
+              "right": 197,
+              "width": 169
+            },
+            {
+              "tag": "IMG",
+              "id": "",
+              "className": "gc-spotlight-img",
+              "right": 207,
+              "width": 178
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "className": "gc-spotlight-info",
+              "right": 207,
+              "width": 178
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "className": "gc-badge-tag",
+              "right": 203,
+              "width": 174
+            },
+            {
+              "tag": "H2",
+              "id": "",
+              "className": "",
+              "right": 207,
+              "width": 178
+            }
+          ]
+        }
+      },
+      {
+        "page": "casa-gold.html",
+        "viewport": 160,
+        "data": {
+          "docWidth": 160,
+          "docScroll": 160,
+          "winInner": 160,
+          "bodyScroll": 179,
+          "overflowCount": 73,
+          "hasOverflow": true,
+          "samples": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "className": "gc-page-hero-tag",
+              "right": 175,
+              "width": 147
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "className": "",
+              "right": 179,
+              "width": 150
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "className": "gc-badge-tag",
+              "right": 179,
+              "width": 150
+            },
+            {
+              "tag": "H3",
+              "id": "",
+              "className": "",
+              "right": 179,
+              "width": 150
+            },
+            {
+              "tag": "P",
+              "id": "",
+              "className": "",
+              "right": 179,
+              "width": 150
+            }
+          ]
+        }
+      },
+      {
+        "page": "cliente.html",
+        "viewport": 160,
+        "data": {
+          "docWidth": 160,
+          "docScroll": 160,
+          "winInner": 160,
+          "bodyScroll": 282,
+          "overflowCount": 67,
+          "hasOverflow": true,
+          "samples": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "className": "gc-badge-tag",
+              "right": 282,
+              "width": 142
+            },
+            {
+              "tag": "NAV",
+              "id": "gcMobileBar",
+              "className": "gc-mobile-bottom-bar",
+              "right": 254,
+              "width": 349
+            },
+            {
+              "tag": "BUTTON",
+              "id": "",
+              "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab",
+              "right": 176,
+              "width": 53
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "className": "",
+              "right": 168,
+              "width": 37
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ac",
+              "right": 239,
+              "width": 51
+            }
+          ]
+        }
+      },
+      {
+        "page": "cliente.html",
+        "viewport": 280,
+        "data": {
+          "docWidth": 280,
+          "docScroll": 280,
+          "winInner": 280,
+          "bodyScroll": 282,
+          "overflowCount": 40,
+          "hasOverflow": true,
+          "samples": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "className": "gc-badge-tag",
+              "right": 282,
+              "width": 142
+            },
+            {
+              "tag": "NAV",
+              "id": "gcMobileBar",
+              "className": "gc-mobile-bottom-bar",
+              "right": 314,
+              "width": 349
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "className": "gc-mobile-tab-btn gc-mobile-bar-item gc-bar-tab ac",
+              "right": 299,
+              "width": 51
+            },
+            {
+              "tag": "svg",
+              "id": "",
+              "className": "[object SVGAnimatedString]",
+              "right": 285,
+              "width": 22
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "className": "",
+              "right": 291,
+              "width": 35
+            }
+          ]
+        }
+      },
+      {
+        "page": "produtos/vestido-sol-dourado.html",
+        "viewport": 160,
+        "data": {
+          "docWidth": 160,
+          "docScroll": 160,
+          "winInner": 160,
+          "bodyScroll": 294,
+          "overflowCount": 86,
+          "hasOverflow": true,
+          "samples": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "className": "gc-product-gallery",
+              "right": 294,
+              "width": 245
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "className": "gc-main-img-box",
+              "right": 294,
+              "width": 245
+            },
+            {
+              "tag": "IMG",
+              "id": "mainProductImg",
+              "className": "",
+              "right": 293,
+              "width": 243
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "className": "gc-product-info",
+              "right": 294,
+              "width": 245
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "className": "",
+              "right": 294,
+              "width": 245
+            }
+          ]
+        }
+      },
+      {
+        "page": "produtos/vestido-sol-dourado.html",
+        "viewport": 280,
+        "data": {
+          "docWidth": 280,
+          "docScroll": 280,
+          "winInner": 280,
+          "bodyScroll": 294,
+          "overflowCount": 51,
+          "hasOverflow": true,
+          "samples": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "className": "gc-product-gallery",
+              "right": 294,
+              "width": 245
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "className": "gc-main-img-box",
+              "right": 294,
+              "width": 245
+            },
+            {
+              "tag": "IMG",
+              "id": "mainProductImg",
+              "className": "",
+              "right": 293,
+              "width": 243
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "className": "gc-product-info",
+              "right": 294,
+              "width": 245
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "className": "",
+              "right": 294,
+              "width": 245
+            }
+          ]
+        }
+      }
+    ],
+    "drawer_stress_passed": true,
+    "header_present": true,
+    "menu_touch_target_ok": true,
+    "overall_verdict": "REQUEST_CHANGES"
+  }
+}
