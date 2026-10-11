@@ -68,13 +68,21 @@ A navegação superior do site segue rigorosamente a ordem:
 ## 12. Carrossel de Criações em Destaque
 - Substitui grades estáticas por um **carrossel horizontal interativo** abastecido com produtos do catálogo de forma dinâmica e farta (mínimo de 12 itens embaralhados aleatoriamente).
 - Possui **setas de navegação** (Anterior e Próximo).
-- Suporta **arraste com o mouse** (com proteção contra clique acidental) e **arraste por toque (swipe)** fluido no celular.
+- **Física de Deslize Fluida (Mouse & Touch):**
+  - O arraste com mouse deve desativar o arrasto nativo de imagens (`user-drag: none; pointer-events: none`) para evitar congelamento.
+  - Durante o movimento, desativa temporariamente o `scroll-behavior: smooth` e o `scroll-snap` para resposta 1:1 ao cursor, escutando `mousemove`/`mouseup` a nível global (`window`).
+  - Ao soltar o clique, calcula a velocidade instantânea e aplica impulso com inércia suave (*momentum glide*) antes de restaurar o encaixe (*snap*).
 - O botão "Ver Todo o Acervo" não possui seta.
 
 ## 13. Experiência da Gaveta de Sacola (3 Estados Estritos)
 1. **Sacola Vazia & Deslogado:** Exibe a **silhueta clássica da sacola em SVG**, a mensagem "Sua sacola está vazia.", o link "Explore nossas peças!" e o card "Pegue sua bolsa" com o botão "Entrar na Minha Conta".
 2. **Sacola Vazia & Logado:** Exibe apenas a silhueta clássica da sacola, a mensagem "Sua sacola está vazia." e o link de explorar. O card de login **não aparece**.
 3. **Sacola com Produtos:** Exibe a lista de itens, o total, o pill de identificação `Conectado como <Nome>` e o botão dourado sólido com o texto exato **"Finalizar pelo WhatsApp"** (sem emoji de foguete 🚀).
+
+## 14. Fluxo Único de Pedido: Exclusividade da Sacola
+- **Sem Compra Direta em Produtos:** É estritamente proibido incluir botões de "Comprar Direto no WhatsApp" nas páginas de produtos (`produtos/*.html`).
+- **Ação Única do Produto:** O único botão de ação é **"Adicionar à Sacola"**, garantindo que todas as peças passem pelo carrinho para cálculo de brindes, cadastro do cliente e escolha de cores/medidas.
+- **Finalização Exclusiva na Gaveta:** O WhatsApp é acionado unicamente pelo botão **"Finalizar pelo WhatsApp"** na gaveta da sacola.
 
 
 
