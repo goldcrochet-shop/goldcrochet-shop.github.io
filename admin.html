@@ -839,8 +839,11 @@
 
     <!-- CONFIG -->
     <div id="section-config" class="hidden">
-      <div class="page-header"><div><h2>Configurações do Site</h2><p>Textos e links aplicados automaticamente</p></div></div>
+      <div class="page-header"><div><h2>Configurações do Site & Gestão VIP</h2><p>Textos institucionais, Programa de Brindes e Cupons de Desconto</p></div></div>
+      
+      <!-- Informações Gerais & Contato -->
       <div class="panel">
+        <div class="panel-header"><h3>⚙️ Informações do Hero & Contato Oficial</h3></div>
         <div class="form-group"><label>Título do Hero <span class="req">*</span></label><input type="text" id="config_hero_title" maxlength="120" placeholder="Elegância que se <em>Tece</em><br>à Mão"></div>
         <div class="form-group"><label>Subtítulo do Hero</label><textarea id="config_hero_subtitle" maxlength="300"></textarea></div>
         <div class="form-row">
@@ -848,7 +851,77 @@
           <div class="form-group"><label>E-mail de contato</label><input type="email" id="config_email"></div>
           <div class="form-group"><label>WhatsApp de Vendas (DDD + Número)</label><input type="text" id="config_whatsapp" placeholder="5531984566047"></div>
         </div>
-        <button class="btn btn-primary" onclick="saveConfig()">💾 Salvar e Publicar</button>
+        <button class="btn btn-primary" onclick="saveConfig()">💾 Salvar e Publicar Contato</button>
+      </div>
+
+      <!-- Programa de Brindes do Ateliê -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3>🎁 Programa de Brindes do Ateliê (Fidelidade)</h3>
+          <span style="font-size:0.82rem;color:var(--text-soft);">Sincronizado automaticamente com os clientes</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Meta de Pedidos para Brinde</label>
+            <input type="number" id="gift_min_purchases" value="3" min="1" step="1">
+          </div>
+          <div class="form-group">
+            <label>Nome do Brinde Ativo</label>
+            <input type="text" id="gift_name" placeholder="ex: Porta-Joias Exclusivo em Crochê Dourado">
+          </div>
+          <div class="form-group">
+            <label>Status do Programa</label>
+            <select id="gift_active" style="padding:10px 14px;border:1.5px solid var(--border-soft);border-radius:8px;font-family:var(--font-body);width:100%;">
+              <option value="true">✅ Ativo no Ateliê</option>
+              <option value="false">⏸️ Pausado</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descrição do Brinde & Detalhes</label>
+          <textarea id="gift_desc" placeholder="Detalhes dos materiais, confecção artesanal e instruções..." style="min-height:75px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>URL da Imagem do Brinde</label>
+          <input type="text" id="gift_image" placeholder="assets/logo.png">
+        </div>
+        <button class="btn btn-primary" onclick="saveGiftProgramConfig()">💾 Salvar Programa de Brindes</button>
+      </div>
+
+      <!-- Cupons de Desconto -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3>🏷️ Gestão de Cupons de Desconto</h3>
+          <span style="font-size:0.82rem;color:var(--text-soft);">Validados instantaneamente na sacola de compras</span>
+        </div>
+
+        <div style="background:var(--off-white);padding:18px;border-radius:12px;margin-bottom:20px;border:1px solid var(--border-soft);">
+          <h4 style="margin:0 0 12px;font-size:0.92rem;color:var(--text-dark);">+ Criar Novo Cupom</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Código do Cupom <span class="req">*</span></label>
+              <input type="text" id="new_coupon_code" placeholder="ex: OURO25" style="text-transform:uppercase;font-weight:700;">
+            </div>
+            <div class="form-group">
+              <label>Tipo de Desconto</label>
+              <select id="new_coupon_type" style="padding:10px;border-radius:8px;border:1px solid var(--border-soft);width:100%;">
+                <option value="percent">Porcentagem (%)</option>
+                <option value="fixed">Valor Fixo (R$)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Valor do Desconto <span class="req">*</span></label>
+              <input type="number" id="new_coupon_val" placeholder="ex: 15" min="1" step="1">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Descrição do Cupom</label>
+            <input type="text" id="new_coupon_desc" placeholder="ex: 15% de desconto de boas-vindas ao ateliê">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="addNewCoupon()">➕ Adicionar Cupom</button>
+        </div>
+
+        <div id="couponsListTable"></div>
       </div>
     </div>
 
@@ -1199,6 +1272,18 @@ let badges = [];
 let collections = [];
 let blogPosts = [];
 let siteConfig = {};
+let coupons = [
+  { code: 'ATELIER10', discount: 10, type: 'percent', description: '10% OFF Ateliê', active: true },
+  { code: 'OURO20', discount: 20, type: 'percent', description: '20% OFF Lançamento', active: true },
+  { code: 'FRETEGRATIS', discount: 50, type: 'fixed', description: 'R$ 50 OFF Frete Cortesia', active: true }
+];
+let giftProgram = {
+  minPurchases: 3,
+  giftName: 'Porta-Joias Exclusivo em Crochê Dourado',
+  giftDesc: 'Confeccionado artesanalmente com fios acetinados e fecho em búzio dourado.',
+  giftImage: 'assets/buzio-oficial.png',
+  active: true
+};
 let activityLog = [];
 let editingId = null;
 let editingPostId = null;
@@ -1721,6 +1806,8 @@ async function refreshFromGitHub(silent) {
       if (data.globalColors && data.globalColors.length) globalColors = data.globalColors;
       if (data.blogPosts && data.blogPosts.length) blogPosts = data.blogPosts;
       if (data.config) siteConfig = data.config;
+      if (data.coupons && Array.isArray(data.coupons)) coupons = data.coupons;
+      if (data.giftProgram) giftProgram = data.giftProgram;
       saveState('goldcrochet_products', products);
       saveState('goldcrochet_categories', categories);
       saveState('goldcrochet_badges', badges);
@@ -1728,6 +1815,8 @@ async function refreshFromGitHub(silent) {
       saveState('goldcrochet_global_colors', globalColors);
       saveState('goldcrochet_blogPosts', blogPosts);
       saveState('goldcrochet_config', siteConfig);
+      saveState('goldcrochet_coupons', coupons);
+      saveState('goldcrochet_giftProgram', giftProgram);
       if (!silent) { logActivity('🔄 Sincronizado do Servidor/GitHub'); showToast('✅ Dados sincronizados!'); }
     }
   } catch(e) {
@@ -2401,12 +2490,114 @@ async function openCustomerDetail(uid) {
       }).join('') : '<p style="color:var(--text-soft);font-style:italic;font-size:0.88rem;">Nenhum pedido ainda.</p>'}
 
       <div style="display:flex;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--gray-light);flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="openCustomerEditModal('${uid}')">✏️ Editar Cadastro & Medidas</button>
         <a href="mailto:${escapeHtml(user.email || '')}" class="btn btn-ghost btn-sm" style="text-decoration:none;">✉️ Enviar email</a>
         <button class="btn btn-danger btn-sm" onclick="deleteCustomerDoc('${uid}')">🗑 Remover cadastro</button>
       </div>
     `;
   } catch(e) {
     content.innerHTML = `<p style="color:var(--danger);">Erro: ${escapeHtml(e.message)}</p>`;
+  }
+}
+
+async function openCustomerEditModal(uid) {
+  const content = document.getElementById('genericModalContent');
+  if (!content) return;
+  content.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-soft);">Carregando dados para edição...</p>';
+  try {
+    const doc = await db.collection('users').doc(uid).get();
+    if (!doc.exists) { showToast('Cliente não encontrado.', 'error'); return; }
+    const u = doc.data();
+    const m = u.measures || u.measurements || {};
+    const a = u.address || {};
+
+    content.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <h3 style="font-family:var(--font-display);font-size:1.35rem;margin:0;">✏️ Editar Cadastro da Cliente</h3>
+        <button class="btn btn-ghost btn-sm" onclick="viewCustomerDetails('${uid}')">&larr; Voltar</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+        <div class="form-group">
+          <label>Nome Completo</label>
+          <input type="text" id="cust_edit_name" value="${escapeHtml(u.name || '')}">
+        </div>
+        <div class="form-group">
+          <label>Compras Computadas (Brinde)</label>
+          <input type="number" id="cust_edit_purchases" value="${u.purchasesCount || 0}" min="0">
+        </div>
+      </div>
+
+      <div style="background:var(--off-white);padding:14px 18px;border-radius:10px;margin-bottom:16px;border:1px solid var(--border-soft);">
+        <strong style="display:block;margin-bottom:10px;color:var(--gold-deep);font-size:0.9rem;">📐 Medidas da Cliente (cm / preferência)</strong>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;">
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">Busto (cm)</label><input type="text" id="cust_edit_busto" value="${escapeHtml(m.busto || '')}" placeholder="Ex: 92"></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">Cintura (cm)</label><input type="text" id="cust_edit_cintura" value="${escapeHtml(m.cintura || '')}" placeholder="Ex: 74"></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">Quadril (cm)</label><input type="text" id="cust_edit_quadril" value="${escapeHtml(m.quadril || '')}" placeholder="Ex: 100"></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">Altura (cm)</label><input type="text" id="cust_edit_altura" value="${escapeHtml(m.altura || '')}" placeholder="Ex: 168"></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">Comprimento</label><input type="text" id="cust_edit_comp" value="${escapeHtml(m.comprimento || '')}" placeholder="Ex: Midi"></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">Cor Predileta</label><input type="text" id="cust_edit_cor" value="${escapeHtml(m.cor || '')}" placeholder="Ex: Dourado"></div>
+        </div>
+      </div>
+
+      <div style="background:var(--off-white);padding:14px 18px;border-radius:10px;margin-bottom:20px;border:1px solid var(--border-soft);">
+        <strong style="display:block;margin-bottom:10px;color:var(--gold-deep);font-size:0.9rem;">📍 Endereço de Entrega</strong>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:10px;">
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">Rua / Logradouro</label><input type="text" id="cust_edit_rua" value="${escapeHtml(a.rua || '')}"></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">Número</label><input type="text" id="cust_edit_num" value="${escapeHtml(a.num || '')}"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">Bairro</label><input type="text" id="cust_edit_bairro" value="${escapeHtml(a.bairro || '')}"></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">Cidade/UF</label><input type="text" id="cust_edit_cidade" value="${escapeHtml(a.cidade || '')}"></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);">CEP</label><input type="text" id="cust_edit_cep" value="${escapeHtml(a.cep || '')}"></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn btn-ghost" onclick="viewCustomerDetails('${uid}')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveCustomerEdits('${uid}')">💾 Salvar Alterações</button>
+      </div>
+    `;
+  } catch(e) {
+    content.innerHTML = `<p style="color:var(--danger);">Erro: ${escapeHtml(e.message)}</p>`;
+  }
+}
+
+async function saveCustomerEdits(uid) {
+  if (!db || !isFirebaseAdmin()) { showToast('🔒 Login Firebase necessário.', 'warning'); return; }
+  const name = document.getElementById('cust_edit_name')?.value.trim();
+  const purchasesCount = parseInt(document.getElementById('cust_edit_purchases')?.value) || 0;
+  const measures = {
+    busto: document.getElementById('cust_edit_busto')?.value.trim() || '',
+    cintura: document.getElementById('cust_edit_cintura')?.value.trim() || '',
+    quadril: document.getElementById('cust_edit_quadril')?.value.trim() || '',
+    altura: document.getElementById('cust_edit_altura')?.value.trim() || '',
+    comprimento: document.getElementById('cust_edit_comp')?.value.trim() || '',
+    cor: document.getElementById('cust_edit_cor')?.value.trim() || ''
+  };
+  const address = {
+    rua: document.getElementById('cust_edit_rua')?.value.trim() || '',
+    num: document.getElementById('cust_edit_num')?.value.trim() || '',
+    bairro: document.getElementById('cust_edit_bairro')?.value.trim() || '',
+    cidade: document.getElementById('cust_edit_cidade')?.value.trim() || '',
+    cep: document.getElementById('cust_edit_cep')?.value.trim() || ''
+  };
+
+  try {
+    await db.collection('users').doc(uid).set({
+      name: name || 'Cliente Gold',
+      purchasesCount: purchasesCount,
+      measures: measures,
+      measurements: measures,
+      address: address,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    showToast('✅ Dados da cliente atualizados e sincronizados!', 'success');
+    logActivity(`👥 Cadastro da cliente ${uid} atualizado`);
+    viewCustomerDetails(uid);
+    renderClients();
+  } catch(e) {
+    showToast('❌ ' + e.message, 'error');
   }
 }
 
@@ -2639,7 +2830,7 @@ document.getElementById('genericModal').addEventListener('click', e => {
 });
 
 // ════════════════════════════════════════
-// CONFIG (mantido)
+// CONFIG, PROGRAMA DE BRINDES & CUPONS DE DESCONTO
 // ════════════════════════════════════════
 function renderConfig() {
   document.getElementById('config_hero_title').value = siteConfig.hero_title || 'Elegância que se <em>Tece</em><br>à Mão';
@@ -2647,7 +2838,25 @@ function renderConfig() {
   document.getElementById('config_instagram').value = siteConfig.instagram || 'https://www.instagram.com/goldcrochetbrasil?stkn=Mm5ndmt2cTJzNXRo';
   document.getElementById('config_email').value = siteConfig.email || 'goldcrochet.suporte@gmail.com';
   document.getElementById('config_whatsapp').value = siteConfig.whatsapp || '5531984566047';
+
+  // Programa de Brindes
+  if (giftProgram) {
+    const minP = document.getElementById('gift_min_purchases');
+    const nameP = document.getElementById('gift_name');
+    const actP = document.getElementById('gift_active');
+    const descP = document.getElementById('gift_desc');
+    const imgP = document.getElementById('gift_image');
+    if (minP) minP.value = giftProgram.minPurchases || 3;
+    if (nameP) nameP.value = giftProgram.giftName || '';
+    if (actP) actP.value = giftProgram.active !== false ? 'true' : 'false';
+    if (descP) descP.value = giftProgram.giftDesc || '';
+    if (imgP) imgP.value = giftProgram.giftImage || 'assets/buzio-oficial.png';
+  }
+
+  // Tabela de Cupons
+  renderCouponsTable();
 }
+
 async function saveConfig() {
   siteConfig = {
     hero_title: document.getElementById('config_hero_title').value.trim(),
@@ -2657,9 +2866,161 @@ async function saveConfig() {
     whatsapp: (document.getElementById('config_whatsapp').value.trim().replace(/\D/g, '') || '5531984566047')
   };
   saveState('goldcrochet_config', siteConfig);
-  logActivity('⚙️ Configurações atualizadas');
+  logActivity('⚙️ Configurações de contato e hero atualizadas');
   await publishAll();
   showToast('✅ Configurações publicadas!');
+}
+
+async function saveGiftProgramConfig() {
+  const minP = parseInt(document.getElementById('gift_min_purchases')?.value) || 3;
+  const nameP = document.getElementById('gift_name')?.value.trim() || 'Brinde Artesanal Exclusivo';
+  const actP = document.getElementById('gift_active')?.value === 'true';
+  const descP = document.getElementById('gift_desc')?.value.trim() || '';
+  const imgP = document.getElementById('gift_image')?.value.trim() || 'assets/buzio-oficial.png';
+
+  giftProgram = {
+    minPurchases: minP,
+    giftName: nameP,
+    giftDesc: descP,
+    giftImage: imgP,
+    active: actP
+  };
+
+  saveState('goldcrochet_giftProgram', giftProgram);
+  logActivity(`🎁 Programa de brindes atualizado: ${nameP}`);
+
+  if (db && isFirebaseAdmin()) {
+    try {
+      await db.collection('settings').doc('giftProgram').set(giftProgram, { merge: true });
+    } catch(e) {}
+  }
+
+  await publishAll();
+  showToast('🎉 Programa de Brindes salvo e publicado no site!');
+}
+
+function renderCouponsTable() {
+  const tableContainer = document.getElementById('couponsListTable');
+  if (!tableContainer) return;
+
+  if (!coupons || !coupons.length) {
+    tableContainer.innerHTML = '<p style="color:var(--text-soft);font-style:italic;padding:14px 0;">Nenhum cupom cadastrado.</p>';
+    return;
+  }
+
+  tableContainer.innerHTML = `
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+        <thead>
+          <tr style="border-bottom:1.5px solid var(--border);text-align:left;color:var(--text-soft);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">
+            <th style="padding:10px 14px;">Código</th>
+            <th style="padding:10px 14px;">Tipo</th>
+            <th style="padding:10px 14px;">Valor</th>
+            <th style="padding:10px 14px;">Descrição</th>
+            <th style="padding:10px 14px;">Status</th>
+            <th style="padding:10px 14px;text-align:right;">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${coupons.map(c => {
+            const isPct = c.type === 'percent';
+            const valStr = isPct ? `${c.discount}% OFF` : `R$ ${Number(c.discount).toFixed(2).replace('.', ',')} OFF`;
+            const isActive = c.active !== false;
+            return `
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:12px 14px;font-weight:700;font-family:var(--font-mono);color:var(--gold-deep);">
+                  <span style="background:rgba(205,164,52,0.12);padding:4px 10px;border-radius:6px;border:1px solid rgba(205,164,52,0.25);">
+                    ${escapeHtml(c.code)}
+                  </span>
+                </td>
+                <td style="padding:12px 14px;color:var(--text-mid);">
+                  ${isPct ? 'Porcentagem' : 'Valor Fixo'}
+                </td>
+                <td style="padding:12px 14px;font-weight:700;color:#2e7d32;">
+                  ${valStr}
+                </td>
+                <td style="padding:12px 14px;color:var(--text-soft);font-size:0.82rem;">
+                  ${escapeHtml(c.description || '-')}
+                </td>
+                <td style="padding:12px 14px;">
+                  <span style="display:inline-flex;align-items:center;gap:4px;font-size:0.78rem;font-weight:700;color:${isActive ? '#2e7d32' : '#d32f2f'};">
+                    ● ${isActive ? 'Ativo' : 'Pausado'}
+                  </span>
+                </td>
+                <td style="padding:12px 14px;text-align:right;white-space:nowrap;">
+                  <button class="btn btn-ghost btn-sm" onclick="toggleCoupon('${escapeHtml(c.code)}')">
+                    ${isActive ? '⏸️ Pausar' : '▶️ Ativar'}
+                  </button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteCoupon('${escapeHtml(c.code)}')">
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+async function addNewCoupon() {
+  const codeInput = document.getElementById('new_coupon_code');
+  const typeSelect = document.getElementById('new_coupon_type');
+  const valInput = document.getElementById('new_coupon_val');
+  const descInput = document.getElementById('new_coupon_desc');
+
+  const code = (codeInput?.value || '').trim().toUpperCase();
+  const type = typeSelect?.value || 'percent';
+  const val = parseFloat(valInput?.value) || 0;
+  const desc = (descInput?.value || '').trim();
+
+  if (!code) { showToast('❗ Digite o código do cupom.', 'error'); return; }
+  if (val <= 0) { showToast('❗ O desconto precisa ser maior que zero.', 'error'); return; }
+
+  const exists = coupons.some(c => c.code.toUpperCase() === code);
+  if (exists) { showToast('⚠️ Um cupom com este código já existe.', 'warning'); return; }
+
+  const newCup = {
+    code: code,
+    discount: val,
+    type: type,
+    description: desc || `${val}${type === 'percent' ? '%' : ' R$'} de desconto`,
+    active: true
+  };
+
+  coupons.unshift(newCup);
+  saveState('goldcrochet_coupons', coupons);
+  logActivity(`🏷️ Novo cupom cadastrado: ${code}`);
+
+  if (codeInput) codeInput.value = '';
+  if (valInput) valInput.value = '';
+  if (descInput) descInput.value = '';
+
+  renderCouponsTable();
+  await publishAll();
+  showToast(`✅ Cupom ${code} adicionado com sucesso!`);
+}
+
+async function toggleCoupon(code) {
+  const cup = coupons.find(c => c.code === code);
+  if (!cup) return;
+  cup.active = !cup.active;
+  saveState('goldcrochet_coupons', coupons);
+  logActivity(`🏷️ Cupom ${code} alterado para ${cup.active ? 'ativo' : 'pausado'}`);
+  renderCouponsTable();
+  await publishAll();
+  showToast(`Cupom ${code} ${cup.active ? 'ativado' : 'pausado'}.`);
+}
+
+async function deleteCoupon(code) {
+  if (!confirm(`Remover o cupom "${code}" permanentemente?`)) return;
+  coupons = coupons.filter(c => c.code !== code);
+  saveState('goldcrochet_coupons', coupons);
+  logActivity(`🗑️ Cupom ${code} removido`);
+  renderCouponsTable();
+  await publishAll();
+  showToast(`Cupom ${code} removido.`);
 }
 
 // ════════════════════════════════════════
@@ -3135,8 +3496,23 @@ function generateProductHtml(p, allProducts, cfg) {
   const pageUrl = `${siteUrl}/produtos/${slug}.html`;
   const whatsappNumber = (cfg && cfg.whatsapp) || '5531984566047';
   
-  const formattedPrice = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
-  const parcelPrice = p.price ? `3x de R$ ${(Number(p.price) / 3).toFixed(2).replace('.', ',')} sem juros` : '';
+  const discountPct = Number(p.discount || 0);
+  let formattedPrice = 'Sob Consulta';
+  let originalPriceHtml = '';
+  let parcelPrice = '';
+
+  if (p.price) {
+    const rawNum = Number(p.price);
+    if (discountPct > 0) {
+      const finalVal = rawNum * (1 - discountPct / 100);
+      formattedPrice = `R$ ${finalVal.toFixed(2).replace('.', ',')}`;
+      originalPriceHtml = `<span style="text-decoration:line-through;color:var(--color-muted);font-size:1.1rem;margin-left:8px;font-weight:400">R$ ${rawNum.toFixed(2).replace('.', ',')}</span>`;
+      parcelPrice = `3x de R$ ${(finalVal / 3).toFixed(2).replace('.', ',')} sem juros`;
+    } else {
+      formattedPrice = `R$ ${rawNum.toFixed(2).replace('.', ',')}`;
+      parcelPrice = `3x de R$ ${(rawNum / 3).toFixed(2).replace('.', ',')} sem juros`;
+    }
+  }
   
   const mainImage = p.image || (p.gallery && p.gallery[0]) || '../assets/icon.svg';
   const gallery = [p.image, ...(p.gallery || [])].filter(Boolean);
@@ -3257,7 +3633,8 @@ ${schemaJson}
       <div class="gc-product-gallery">
         ${uniqueGallery.map((img, idx) => `
           <div class="gc-gallery-item-box">
-            <img src="${img}" alt="${p.name} - Detalhe ${idx + 1}" loading="lazy" onerror="this.src='../assets/icon.svg'">
+            <div class="gc-img-loader-spinner"></div>
+            <img src="${img}" alt="${p.name} - Detalhe ${idx + 1}" loading="lazy" onload="this.classList.add('loaded'); this.parentElement.querySelector('.gc-img-loader-spinner')?.remove();" onerror="this.src='../assets/icon.svg'; this.parentElement.querySelector('.gc-img-loader-spinner')?.remove();">
           </div>
         `).join('')}
       </div>
@@ -3265,13 +3642,19 @@ ${schemaJson}
       <!-- Informações do Produto (Coluna Fixa / Accordions Cartier) -->
       <div class="gc-product-info">
         <div>
-          ${p.badge ? `<span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:12px">${p.badge}</span>` : ''}
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+            ${discountPct > 0 ? `<span class="gc-badge-tag" style="position:static;display:inline-block;background:#e53e3e;color:#fff">-${discountPct}% OFF</span>` : ''}
+            ${p.badge ? `<span class="gc-badge-tag" style="position:static;display:inline-block;">${p.badge}</span>` : ''}
+          </div>
           <span style="display:block;font-size:0.75rem;color:var(--color-muted);letter-spacing:0.15em;text-transform:uppercase;font-weight:600;margin-bottom:4px">${categoryName}</span>
           <h1 class="gc-product-title">${p.name}</h1>
         </div>
 
         <div class="gc-price-card">
-          <div class="gc-price-val">${formattedPrice}</div>
+          <div class="gc-price-val">
+            <span>${formattedPrice}</span>
+            ${originalPriceHtml}
+          </div>
           ${parcelPrice ? `<div class="gc-price-inst">ou em até ${parcelPrice}</div>` : ''}
         </div>
 
@@ -3351,8 +3734,8 @@ ${schemaJson}
       <div class="gc-carousel-header">
         <h2 style="font-family:var(--font-display);font-size:1.85rem;color:var(--color-ebony);margin:0">Você Também Pode Gostar</h2>
         <div style="display:flex;gap:8px">
-          <button id="relatedPrevBtn" class="gc-carousel-arrow-btn" aria-label="Anterior">&lsaquo;</button>
-          <button id="relatedNextBtn" class="gc-carousel-arrow-btn" aria-label="Próximo">&rsaquo;</button>
+          <button id="relatedPrevBtn" class="gc-carousel-arrow-btn" aria-label="Anterior">&lt;</button>
+          <button id="relatedNextBtn" class="gc-carousel-arrow-btn" aria-label="Próximo">&gt;</button>
         </div>
       </div>
       <div class="gc-carousel-viewport">
@@ -3442,47 +3825,76 @@ ${schemaJson}
       }
     }
 
-    // Carrega o carrossel infinito 'Você Também Pode Gostar'
+    // Carrega o carrossel 'Você Também Pode Gostar' idêntico ao da Home
     (async function initRelatedCarousel() {
       const all = await window.fetchCatalog();
       if (!all || !all.length) return;
       const filtered = all.filter(item => item.id !== productData.id);
       const shuffled = [...filtered].sort(() => 0.5 - Math.random());
       const base = shuffled.slice(0, 8);
-      const infinite = [...base, ...base];
       const track = document.getElementById('gridRelatedCarousel');
       if (!track) return;
 
-      track.innerHTML = infinite.map(item => {
-        const pSlug = item.slug || 'produto';
-        const pImg = item.image || (item.gallery && item.gallery[0]) || '../assets/icon.svg';
-        const pPrice = item.price ? `R$ ${Number(item.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
-        return `
-          <div class="gc-product-card" onclick="window.location.href='./' + '${pSlug}' + '.html'" style="cursor:pointer">
-            <div class="gc-product-card-img-wrap">
-              <button class="gc-card-fav-btn" data-id="${item.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${item.id});" aria-label="Favoritar">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-              </button>
-              <img src="${pImg}" alt="${item.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='../assets/icon.svg'">
-            </div>
-            <div class="gc-product-card-body">
-              <h3 class="gc-product-title">${item.name}</h3>
-              <div class="gc-product-price-row">
-                <span class="gc-product-price">${pPrice}</span>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      let autoRelTimer = setInterval(() => {
-        track.scrollBy({ left: 300, behavior: 'smooth' });
-      }, 30000);
+      track.innerHTML = base.map(item => {
+        const pSlug = item.slug || "produto";
+        const pImg = item.image || (item.gallery && item.gallery[0]) || "../assets/icon.svg";
+        const rawPrice = item.price ? Number(item.price) : null;
+        const discountPct = Number(item.discount || 0);
+        let priceHtml = "";
+        if (rawPrice) {
+          if (discountPct > 0) {
+            const finalPrice = rawPrice * (1 - discountPct / 100);
+            priceHtml = "<span class=\"gc-product-price\" style=\"color:var(--color-gold-deep)\">R$ " + finalPrice.toFixed(2).replace(".", ",") + "</span> " +
+              "<span style=\"text-decoration:line-through;color:var(--color-muted);font-size:0.82rem;margin-left:6px\">R$ " + rawPrice.toFixed(2).replace(".", ",") + "</span>";
+          } else {
+            priceHtml = "<span class=\"gc-product-price\">R$ " + rawPrice.toFixed(2).replace(".", ",") + "</span>";
+          }
+        } else {
+          priceHtml = "<span class=\"gc-product-price\">Sob Consulta</span>";
+        }
+        const badgeHtml = discountPct > 0
+          ? ("<span class=\"gc-badge-tag\" style=\"background:#e53e3e;color:#fff\">-" + discountPct + "%</span>")
+          : (item.badge ? ("<span class=\"gc-badge-tag\">" + item.badge + "</span>") : "");
+        return "<div class=\"gc-product-card\" onclick=\"window.location.href='./" + pSlug + ".html'\" style=\"cursor:pointer\">" +
+          "<div class=\"gc-product-card-img-wrap\" style=\"position:relative\">" +
+            "<div class=\"gc-img-loader-spinner\"></div>" +
+            badgeHtml +
+            "<button class=\"gc-card-fav-btn\" data-id=\"" + item.id + "\" onclick=\"event.stopPropagation(); window.GoldFav.toggle(" + item.id + ");\" aria-label=\"Favoritar\">" +
+              "<svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"><path d=\"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z\"></path></svg>" +
+            "</button>" +
+            "<img src=\"" + pImg + "\" alt=\"" + (item.name || "") + "\" class=\"gc-product-card-img\" loading=\"lazy\" onload=\"this.classList.add('loaded'); this.parentElement.querySelector('.gc-img-loader-spinner')?.remove();\" onerror=\"this.src='../assets/icon.svg'; this.parentElement.querySelector('.gc-img-loader-spinner')?.remove();\">" +
+          "</div>" +
+          "<div class=\"gc-product-card-body\">" +
+            "<span class=\"gc-product-card-category\">" + (item.category ? item.category.toUpperCase() : "ALTA-COSTURA") + "</span>" +
+            "<h3 class=\"gc-product-card-title\">" + (item.name || "") + "</h3>" +
+            "<div class=\"gc-product-price-row\">" + priceHtml + "</div>" +
+          "</div>" +
+        "</div>";
+      }).join("");
 
       const pBtn = document.getElementById('relatedPrevBtn');
       const nBtn = document.getElementById('relatedNextBtn');
-      if (pBtn) pBtn.addEventListener('click', () => { track.scrollBy({ left: -300, behavior: 'smooth' }); });
-      if (nBtn) nBtn.addEventListener('click', () => { track.scrollBy({ left: 300, behavior: 'smooth' }); });
+      if (pBtn) pBtn.addEventListener('click', () => { track.scrollBy({ left: -310, behavior: 'smooth' }); });
+      if (nBtn) nBtn.addEventListener('click', () => { track.scrollBy({ left: 310, behavior: 'smooth' }); });
+
+      let isDown = false, startX = 0, startScroll = 0;
+      track.addEventListener('mousedown', (e) => {
+        isDown = true;
+        startX = e.pageX;
+        startScroll = track.scrollLeft;
+        track.classList.add('grabbing');
+        track.style.scrollBehavior = 'auto';
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        track.scrollLeft = startScroll - (e.pageX - startX);
+      });
+      window.addEventListener('mouseup', () => {
+        if (!isDown) return;
+        isDown = false;
+        track.classList.remove('grabbing');
+        track.style.scrollBehavior = 'smooth';
+      });
     })();
   <\/${'script'}>
 </body>
@@ -3541,6 +3953,8 @@ async function publishAll() {
   showSaving('Sincronizando catálogo...', 'Preparando data.json...', 35);
   const data = {
     products, categories, badges, collections, globalColors, blogPosts,
+    coupons,
+    giftProgram,
     config: siteConfig,
     _meta: { updated: new Date().toISOString(), version: '5.0-jamstack' }
   };
@@ -3552,6 +3966,17 @@ async function publishAll() {
   saveState('goldcrochet_global_colors', globalColors);
   saveState('goldcrochet_blogPosts', blogPosts);
   saveState('goldcrochet_config', siteConfig);
+  saveState('goldcrochet_coupons', coupons);
+  saveState('goldcrochet_giftProgram', giftProgram);
+
+  // Sincroniza diretamente com o servidor local se disponível
+  try {
+    await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch(e) {}
 
   let token = getGHToken();
   if (token) {

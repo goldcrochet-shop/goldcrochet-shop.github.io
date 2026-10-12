@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Coleções — Gold Crochet Brasil</title>
-  <meta name="description" content="Explore as coleções exclusivas da Gold Crochet Brasil: Essenciais, Alto Verão e Casa Brasil. Peças artesanais em crochê feitas à mão com fios nobres.">
+  <meta name="description" content="Explore as coleções exclusivas da Gold Crochet Brasil: Maré D'ouro, Casa Gold e Essenciais. Peças em carrosséis horizontais tecidas à mão.">
   <link rel="canonical" href="https://goldcrochet-shop.github.io/colecoes.html">
   <meta name="theme-color" content="#cda434">
 
   <!-- OpenGraph -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Coleções — Gold Crochet Brasil">
-  <meta property="og:description" content="Explore as coleções exclusivas da Gold Crochet: Essenciais, Alto Verão e Casa Brasil. Peças artesanais em crochê feitas à mão com fios nobres.">
+  <meta property="og:description" content="Explore as coleções exclusivas da Gold Crochet Brasil em carrosséis horizontais: Maré D'ouro, Casa Gold e Essenciais.">
   <meta property="og:image" content="./assets/logo.png">
   <meta property="og:url" content="https://goldcrochet-shop.github.io/colecoes.html">
   <meta property="og:site_name" content="Gold Crochet Brasil">
@@ -19,7 +19,7 @@
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Coleções — Gold Crochet Alta-Costura">
-  <meta name="twitter:description" content="Explore as coleções exclusivas da Gold Crochet: Essenciais, Alto Verão e Casa Brasil. Peças artesanais em crochê feitas à mão com fios nobres.">
+  <meta name="twitter:description" content="Explore as coleções exclusivas da Gold Crochet Brasil em carrosséis horizontais: Maré D'ouro, Casa Gold e Essenciais.">
   <meta name="twitter:image" content="./assets/logo.png">
 
   <!-- Favicons -->
@@ -37,72 +37,109 @@
   <link rel="stylesheet" href="./css/luxury-core.css?v=2026">
 
   <style>
-    .gc-collection-banner {
-      position: relative;
-      background: linear-gradient(135deg, #181614 0%, #2e2a25 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: 60px 40px;
-      margin: 40px auto 60px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      max-width: 1400px;
-      border: 1px solid rgba(205, 164, 52, 0.3);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
-    }
-    .gc-collection-banner::after {
-      content: '';
-      position: absolute;
-      right: -50px;
-      top: -50px;
-      width: 320px;
-      height: 320px;
-      background: radial-gradient(circle, rgba(205,164,52,0.25) 0%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    .gc-collection-title {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 4vw, 3rem);
-      margin-bottom: 12px;
-      color: #fff8db;
-    }
-    .gc-collection-desc {
-      font-size: 1rem;
-      color: rgba(255, 255, 255, 0.75);
-      max-width: 650px;
-      line-height: 1.6;
-    }
-    .gc-collection-section {
+    .gc-collection-block {
       margin-bottom: 70px;
     }
-    .gc-collection-section-header {
+    .gc-collection-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       padding-bottom: 16px;
       border-bottom: 1px solid var(--color-border);
-      margin-bottom: 28px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
     }
-    .gc-collection-section-header h2 {
+    .gc-collection-header-info h2 {
       font-family: var(--font-display);
-      font-size: 1.8rem;
+      font-size: clamp(1.6rem, 3.5vw, 2.1rem);
       color: var(--color-ebony);
+      margin: 0 0 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .gc-collection-section-header a {
+    .gc-collection-header-info p {
+      color: var(--color-muted);
+      font-size: 0.92rem;
+      margin: 0;
+      max-width: 620px;
+      line-height: 1.5;
+    }
+    .gc-collection-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .gc-collection-link-btn {
       font-family: var(--font-body);
       font-size: 0.85rem;
       color: var(--color-gold-deep);
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.05em;
       text-transform: uppercase;
       transition: color 0.2s;
     }
-    .gc-collection-section-header a:hover {
+    .gc-collection-link-btn:hover {
       color: var(--color-ebony);
+    }
+    .gc-carousel-arrow-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-gold-deep);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .gc-carousel-arrow-btn:hover {
+      background: var(--color-gold-deep);
+      color: #fff;
+      border-color: var(--color-gold-deep);
+      transform: scale(1.05);
+    }
+    .gc-carousel-viewport {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+    .gc-carousel-track {
+      display: flex;
+      gap: 22px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      cursor: grab;
+      user-select: none;
+      padding-bottom: 8px;
+    }
+    .gc-carousel-track::-webkit-scrollbar {
+      display: none;
+    }
+    .gc-carousel-track.grabbing {
+      cursor: grabbing;
+      scroll-behavior: auto;
+      scroll-snap-type: none;
+    }
+    .gc-carousel-track .gc-product-card {
+      flex: 0 0 300px;
+      max-width: 300px;
+      scroll-snap-align: start;
+    }
+    @media (max-width: 640px) {
+      .gc-carousel-track .gc-product-card {
+        flex: 0 0 76vw;
+        max-width: 76vw;
+      }
     }
   </style>
 </head>
@@ -114,51 +151,16 @@
       <span class="gc-page-hero-tag">Curadoria de Alta-Costura</span>
       <h1 class="gc-page-hero-title">Coleções Exclusivas</h1>
       <p class="gc-page-hero-desc">
-        Narrativas tecidas à mão. Cada coleção expressa um momento da nossa identidade: a luz da costa brasileira, o aconchego do lar e o requinte atemporal do crochê.
+        Narrativas tecidas à mão. Cada coleção traz nomes dispostos em carrosséis horizontais com deslize suave, revelando a Maré D'ouro, a Casa Gold e as peças icônicas do nosso ateliê.
       </p>
     </header>
 
-    <!-- Coleção 1: Essenciais -->
-    <section class="gc-collection-section" id="colecao-essenciais">
-      <div class="gc-collection-section-header">
-        <div>
-          <h2>Coleção Essenciais</h2>
-          <p style="color:var(--color-muted);font-size:0.9rem">O luxo despretensioso das formas puras e peças atemporais para qualquer ocasião.</p>
-        </div>
-        <a href="./pecas.html?colecao=Essenciais">Ver Coleção Completa &rarr;</a>
+    <!-- Container Dinâmico das Coleções (Sincronizado com Admin/data.json) -->
+    <div id="collectionsContainer">
+      <div style="text-align:center;padding:50px 20px;color:var(--color-muted);">
+        <p>Carregando coleções exclusivas...</p>
       </div>
-      <div id="gridEssenciais" class="gc-grid-products">
-        <!-- Injetado dinamicamente via JS -->
-      </div>
-    </section>
-
-    <!-- Coleção 2: Alto Verão & Resort -->
-    <section class="gc-collection-section" id="colecao-verao">
-      <div class="gc-collection-section-header">
-        <div>
-          <h2>Alto Verão &amp; Resort</h2>
-          <p style="color:var(--color-muted);font-size:0.9rem">Leveza e fluidez sob a luz tropical: vestidos, regatas e bolsas de palha e algodão.</p>
-        </div>
-        <a href="./pecas.html?categoria=vestuario">Explorar Resort &rarr;</a>
-      </div>
-      <div id="gridVerao" class="gc-grid-products">
-        <!-- Injetado dinamicamente via JS -->
-      </div>
-    </section>
-
-    <!-- Coleção 3: Casa Brasil & Decoração -->
-    <section class="gc-collection-section" id="colecao-casa">
-      <div class="gc-collection-section-header">
-        <div>
-          <h2>Coleção Casa Brasil</h2>
-          <p style="color:var(--color-muted);font-size:0.9rem">Aconchego botânico e requinte à mesa posta em peças de puro algodão.</p>
-        </div>
-        <a href="./casa-gold.html">Ir para Casa Gold &rarr;</a>
-      </div>
-      <div id="gridCasa" class="gc-grid-products">
-        <!-- Injetado dinamicamente via JS -->
-      </div>
-    </section>
+    </div>
   </main>
 
   <!-- Scripts Essenciais de Luxo -->
@@ -166,20 +168,72 @@
   <script src="./js/shared-ui.js?v=2026"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      const products = await window.fetchCatalog();
-      if (!products || !products.length) return;
+      const container = document.getElementById('collectionsContainer');
+      if (!container) return;
 
-      function renderCard(p) {
+      let catalogProducts = [];
+      let collectionsList = [];
+
+      try {
+        const resp = await fetch('./data.json?t=' + Date.now());
+        if (resp.ok) {
+          const data = await resp.json();
+          catalogProducts = data.products || [];
+          collectionsList = data.collections || [];
+        }
+      } catch (err) {
+        console.warn('Erro ao carregar data.json para coleções:', err);
+      }
+
+      if (!catalogProducts.length && window.fetchCatalog) {
+        catalogProducts = await window.fetchCatalog();
+      }
+
+      // Se não houver coleções definidas no data.json, utiliza as padrão com Maré D'ouro e Casa Gold
+      if (!collectionsList || !collectionsList.length) {
+        collectionsList = [
+          {
+            id: 'mare-douro',
+            name: "Maré D'ouro",
+            filter: "Maré D'ouro",
+            emoji: "🌊",
+            desc: "Peças versáteis inspiradas no balanço do mar, na brisa do litoral e no brilho do ouro."
+          },
+          {
+            id: 'casa-gold',
+            name: "Casa Gold",
+            filter: "Casa Gold",
+            emoji: "🏛️",
+            desc: "Coleção patrimônio tecida à mão: requinte atemporal, peças nobres e harmonia para o lar."
+          },
+          {
+            id: 'essenciais',
+            name: "Essenciais",
+            filter: "Essenciais",
+            emoji: "✨",
+            desc: "Silhuetas icônicas e pontos estruturados essenciais do ateliê Gold Crochet Brasil."
+          }
+        ];
+      }
+
+      function renderProductCard(p) {
         const slug = p.slug || 'produto';
         const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
         const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
-        const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '';
+        const hasDiscount = p.discount && Number(p.discount) > 0;
+        
+        let badgeHtml = '';
+        if (hasDiscount) {
+          badgeHtml = `<span class="gc-badge-discount-vertical">-${p.discount}% OFF</span>`;
+        } else if (p.badge) {
+          badgeHtml = `<span class="gc-badge-vertical">${p.badge}</span>`;
+        }
 
         return `
-          <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
+          <div class="gc-product-card" onclick="if(!window.__gcCarouselDragged) window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
             <div class="gc-product-card-img-wrap">
-              ${badge}
-              <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
+              ${badgeHtml}
+              <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav && window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
@@ -198,20 +252,112 @@
         `;
       }
 
-      // Essenciais
-      const essenciais = products.filter(p => p.collection === 'Essenciais' || p.category === 'bolsas');
-      const elEss = document.getElementById('gridEssenciais');
-      if (elEss) elEss.innerHTML = essenciais.slice(0, 4).map(renderCard).join('');
+      container.innerHTML = collectionsList.map((col, idx) => {
+        // Encontra produtos associados à coleção
+        let prods = catalogProducts.filter(p => {
+          const colName = (col.filter || col.name || '').toLowerCase();
+          const pCol = (p.collection || '').toLowerCase();
+          const pName = (p.name || '').toLowerCase();
+          const pCat = (p.category || '').toLowerCase();
+          const pSec = (p.section || '').toLowerCase();
 
-      // Alto Verão
-      const verao = products.filter(p => p.category === 'saias-vestidos' || p.category === 'tops' || p.slug.includes('noronha') || p.slug.includes('bossa'));
-      const elVer = document.getElementById('gridVerao');
-      if (elVer) elVer.innerHTML = verao.slice(0, 4).map(renderCard).join('');
+          if (colName.includes('maré') || colName.includes('mare')) {
+            return pCol.includes('maré') || pCol.includes('mare') || pName.includes('noronha') || pName.includes('trancoso') || pName.includes('bossa') || pName.includes('arpoador');
+          }
+          if (colName.includes('casa gold') || colName.includes('casa')) {
+            return pCol.includes('casa gold') || pSec === 'casa' || pCat === 'decoracoes' || pCat === 'mantas' || pName.includes('celestial') || pName.includes('jogo americano');
+          }
+          if (colName.includes('essenciais')) {
+            return pCol.includes('essenciais') || pCat === 'bolsas' || pCat === 'saias-vestidos' || pCat === 'tops';
+          }
+          return pCol === colName || pCol.includes(colName);
+        });
 
-      // Casa Brasil
-      const casa = products.filter(p => p.section === 'casa' || p.category === 'decoracoes');
-      const elCasa = document.getElementById('gridCasa');
-      if (elCasa) elCasa.innerHTML = casa.slice(0, 4).map(renderCard).join('');
+        // Se uma coleção não tiver produtos filtrados diretamente, inclui peças padrão para exibição rica
+        if (!prods.length) {
+          prods = catalogProducts.slice(0, 4);
+        }
+
+        const trackId = `carouselTrackCol_${idx}`;
+        const prevId = `prevBtnCol_${idx}`;
+        const nextId = `nextBtnCol_${idx}`;
+
+        return `
+          <section class="gc-collection-block" id="colecao-${col.id || idx}">
+            <div class="gc-collection-header">
+              <div class="gc-collection-header-info">
+                <h2>${col.emoji || '✨'} ${col.name}</h2>
+                <p>${col.desc || 'Peças exclusivas feitas à mão com os pontos mais nobres do crochê brasileiro.'}</p>
+              </div>
+              <div class="gc-collection-actions-row">
+                <a href="./pecas.html?cat=${encodeURIComponent(col.filter || col.name)}" class="gc-collection-link-btn">Ver Coleção Completa &rarr;</a>
+                <div style="display:flex;gap:8px">
+                  <button id="${prevId}" class="gc-carousel-arrow-btn" aria-label="Voltar" title="Anterior">&lt;</button>
+                  <button id="${nextId}" class="gc-carousel-arrow-btn" aria-label="Avançar" title="Próximo">&gt;</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="gc-carousel-viewport">
+              <div id="${trackId}" class="gc-carousel-track">
+                ${prods.map(renderProductCard).join('')}
+              </div>
+            </div>
+          </section>
+        `;
+      }).join('');
+
+      // Inicializa interatividade de carrossel (touch, drag por mouse e botões de seta)
+      collectionsList.forEach((_, idx) => {
+        const track = document.getElementById(`carouselTrackCol_${idx}`);
+        const prev = document.getElementById(`prevBtnCol_${idx}`);
+        const next = document.getElementById(`nextBtnCol_${idx}`);
+        if (!track) return;
+
+        let isDown = false;
+        let startX = 0;
+        let startScroll = 0;
+        let hasMoved = false;
+
+        track.addEventListener('mousedown', (e) => {
+          isDown = true;
+          hasMoved = false;
+          window.__gcCarouselDragged = false;
+          startX = e.pageX;
+          startScroll = track.scrollLeft;
+          track.classList.add('grabbing');
+          track.style.scrollBehavior = 'auto';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          const dx = e.pageX - startX;
+          if (Math.abs(dx) > 6) {
+            hasMoved = true;
+            window.__gcCarouselDragged = true;
+          }
+          track.scrollLeft = startScroll - dx;
+        });
+
+        window.addEventListener('mouseup', () => {
+          if (!isDown) return;
+          isDown = false;
+          track.classList.remove('grabbing');
+          track.style.scrollBehavior = 'smooth';
+          setTimeout(() => { window.__gcCarouselDragged = false; }, 100);
+        });
+
+        if (prev) {
+          prev.addEventListener('click', () => {
+            track.scrollBy({ left: -320, behavior: 'smooth' });
+          });
+        }
+        if (next) {
+          next.addEventListener('click', () => {
+            track.scrollBy({ left: 320, behavior: 'smooth' });
+          });
+        }
+      });
 
       if (window.GoldFav && window.GoldFav.updateUI) {
         window.GoldFav.updateUI();

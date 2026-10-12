@@ -190,6 +190,29 @@
       "slug": "short-noronha"
     },
     {
+      "id": 1789957755102,
+      "name": "BERMUDA ARPOADOR RIVIERA",
+      "emoji": "🧶",
+      "desc": "Confeccionada com alfaiataria em crochê manual masculino. A Bermuda Arpoador Riviera traz uma trama estruturada em tons areia e off-white, com caimento impecável e cós ajustável em cordão artesanal nobre.",
+      "category": "calcas",
+      "section": "dia-a-dia",
+      "gender": "masculino",
+      "collection": "Essenciais",
+      "price": 85,
+      "badge": "Novo",
+      "discount": 0,
+      "model3d": "",
+      "prod_time": "18",
+      "material": "Fio 100% Algodão Nobre",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955074956_0.png",
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955081599_1.png"
+      ],
+      "colorSections": [],
+      "colors": [],
+      "slug": "bermuda-arpoador-riviera"
+    },
+    {
       "id": 1790643259085,
       "name": "DÚO CELESTIAL SOL E LUA",
       "emoji": "🧶",
@@ -197,13 +220,13 @@
       "category": "decoracoes",
       "section": "casa",
       "gender": null,
-      "collection": null,
+      "collection": "Casa Gold",
       "price": 75,
       "badge": "Destaque",
       "discount": 10,
       "model3d": "",
       "prod_time": "24",
-      "material": "",
+      "material": "Fio de Algodão Macio Aveludado",
       "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643252900_0.webp",
       "gallery": [
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643255070_1.webp",
@@ -217,11 +240,11 @@
       "id": 1790644607412,
       "name": "JOGO AMERICANO & TRILHO IPÊ ROSA CASA BRASIL",
       "emoji": "🧶",
-      "desc": "​A delicadeza da nossa flora traduzida em afeto e requinte à mesa posta. O conjunto une a base em tom cru com uma moldura botânica trançada à mão: caules em verde-oliva que desabrocham em pétalas no tom rosa ipê, evocando a beleza espontânea dos nossos jardins e matas.",
+      "desc": "A delicadeza da nossa flora traduzida em afeto e requinte à mesa posta. O conjunto une a base em tom cru com uma moldura botânica trançada à mão: caules em verde-oliva que desabrocham em pétalas no tom rosa ipê, evocando a beleza espontânea dos nossos jardins e matas.",
       "category": "decoracoes",
       "section": "casa",
       "gender": null,
-      "collection": null,
+      "collection": "Casa Gold",
       "price": 75,
       "badge": "Exclusivo",
       "discount": 0,
@@ -271,11 +294,25 @@
   ],
   "collections": [
     {
-      "id": "dia-a-dia",
-      "name": "Coleção Maré de Ouro",
-      "filter": "Essenciais",
+      "id": "mare-douro",
+      "name": "Maré D'ouro",
+      "filter": "Maré D'ouro",
       "emoji": "🌊",
-      "desc": "Peças versáteis inspiradas no balanço do mar e no brilho do ouro."
+      "desc": "Peças versáteis inspiradas no balanço do mar, na brisa do litoral e no brilho do ouro."
+    },
+    {
+      "id": "casa-gold",
+      "name": "Casa Gold",
+      "filter": "Casa Gold",
+      "emoji": "🏛️",
+      "desc": "Coleção patrimônio tecida à mão: requinte atemporal, peças nobres e harmonia para o lar."
+    },
+    {
+      "id": "essenciais",
+      "name": "Essenciais",
+      "filter": "Essenciais",
+      "emoji": "✨",
+      "desc": "Silhuetas icônicas e pontos estruturados essenciais do ateliê Gold Crochet Brasil."
     }
   ],
   "globalColors": [
@@ -363,8 +400,40 @@
     "whatsapp": "5531984566047"
   },
   "_meta": {
-    "updated": "2026-09-29T01:17:07.476Z",
-    "version": "4.0"
+    "updated": "2026-10-12T18:40:00.000Z",
+    "version": "4.2"
   },
-  "newsletter": []
+  "newsletter": [],
+  "coupons": [
+    {
+      "code": "ATELIER10",
+      "discount": 10,
+      "type": "percent",
+      "description": "10% de desconto de boas-vindas ao ateliê",
+      "active": true
+    },
+    {
+      "code": "OURO20",
+      "discount": 20,
+      "type": "percent",
+      "description": "20% especial de lançamento da alta-costura",
+      "active": true
+    },
+    {
+      "code": "FRETEGRATIS",
+      "discount": 50,
+      "type": "fixed",
+      "description": "R$ 50 de desconto cortesia para frete",
+      "active": true
+    }
+  ],
+  "giftProgram": {
+    "minPurchases": 3,
+    "giftName": "Porta-Joias Exclusivo em Crochê Dourado",
+    "giftDesc": "Ao completar 3 pedidos no ateliê, receba sem custo um estojo porta-joias manual em fios metalizados e forro de seda.",
+    "giftImage": "assets/logo.png",
+    "active": true
+  },
+  "customers": [],
+  "orders": []
 }

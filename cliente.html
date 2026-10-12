@@ -177,7 +177,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Cards de Estatísticas em Grade Orgânica */
+    /* Cards de Estatísticas em Grade Orgânica & Mobile Refinado */
     .gc-stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -189,9 +189,31 @@
         grid-template-columns: repeat(2, 1fr);
       }
     }
-    @media (max-width: 500px) {
+    @media (max-width: 640px) {
+      .gc-portal-tabs-nav {
+        gap: 6px;
+        margin-bottom: 20px;
+        padding-bottom: 4px;
+      }
+      .gc-portal-tab-pill {
+        padding: 7px 12px !important;
+        font-size: 0.74rem !important;
+        gap: 4px !important;
+        border-radius: 8px !important;
+      }
       .gc-stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        margin-bottom: 20px;
+      }
+      .gc-stat-box {
+        padding: 14px 10px !important;
+      }
+      .gc-stat-num {
+        font-size: 1.55rem !important;
+      }
+      .gc-stat-label {
+        font-size: 0.68rem !important;
       }
     }
 
@@ -751,7 +773,7 @@
       syncWithFirestore: async function(client) {
         if (!client || !client.id) return client;
         try {
-          if (db && fsDoc && setDoc) {
+          if (db && fsDoc && setDoc && auth && auth.currentUser) {
             const userRef = fsDoc(db, 'users', client.id);
             const docSnap = await getDoc(userRef).catch(() => null);
             if (docSnap && docSnap.exists()) {
@@ -999,6 +1021,7 @@
 
         let userUid = null;
         let displayName = name;
+        let authSuccess = false;
 
         try {
           if (auth) {
@@ -1006,26 +1029,33 @@
               const res = await signInWithEmailAndPassword(auth, email, pass);
               userUid = res.user.uid;
               displayName = res.user.displayName || name;
+              authSuccess = true;
             } catch(signInErr) {
-              if (signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-credential' || signInErr.code === 'auth/wrong-password') {
+              if (signInErr.code === 'auth/operation-not-allowed') {
+                console.info('[Firebase Auth] Provedor de E-mail/Senha requer ativação no Firebase Console ou uso do Google Sign-In. Usando modo resiliente.');
+              } else if (signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-credential' || signInErr.code === 'auth/wrong-password') {
                 try {
                   const res = await createUserWithEmailAndPassword(auth, email, pass);
                   userUid = res.user.uid;
                   displayName = name;
+                  authSuccess = true;
                 } catch(createErr) {
-                  console.warn('Create user error:', createErr);
-                  throw createErr;
+                  if (createErr.code === 'auth/operation-not-allowed') {
+                    console.info('[Firebase Auth] Provedor E-mail/Senha desativado no Firebase Console. Recomendado login com Google.');
+                  } else {
+                    console.warn('[Firebase Auth] Falha ao criar usuário:', createErr.message);
+                  }
                 }
               } else {
-                throw signInErr;
+                console.warn('[Firebase Auth] Erro login e-mail:', signInErr.message);
               }
             }
           }
         } catch(authErr) {
-          console.warn('Firebase Auth email err:', authErr);
+          console.warn('Firebase Auth email err:', authErr.message || authErr);
         }
 
-        const id = userUid || ('cli_' + Date.now().toString().slice(-5));
+        const id = userUid || ('cli_' + email.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) + Date.now().toString().slice(-4));
         let client = {
           id: id,
           name: displayName,
@@ -1039,7 +1069,9 @@
           address: {}
         };
 
-        client = await this.syncWithFirestore(client);
+        if (auth && auth.currentUser) {
+          client = await this.syncWithFirestore(client);
+        }
         saveLocalClient(client);
         this.renderLoggedPortal(client);
         alert(`✨ Bem-vinda ao Ateliê Gold Crochet, ${displayName}! Sua conta foi conectada.`);

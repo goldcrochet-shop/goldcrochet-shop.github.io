@@ -139,3 +139,29 @@ export {
   getDocs,
   serverTimestamp
 };
+
+if (typeof window !== 'undefined') {
+  window.GoldFirebase = {
+    app,
+    auth,
+    db,
+    googleProvider,
+    onAuthStateChanged,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    signInWithPopup,
+    fsDoc,
+    setDoc,
+    getDoc,
+    updateDoc,
+    deleteDoc,
+    fsCollection,
+    addDoc,
+    fsQuery,
+    fsWhere,
+    getDocs,
+    serverTimestamp,
+    handleFirestoreError
+  };
+}

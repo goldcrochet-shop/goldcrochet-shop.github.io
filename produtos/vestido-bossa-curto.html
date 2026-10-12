@@ -110,14 +110,16 @@
       <!-- Informações do Produto (Coluna Fixa / Accordions Cartier) -->
       <div class="gc-product-info">
         <div>
+          <span class="gc-badge-tag" style="background:#e53e3e;color:#fff;position:static;display:inline-block;margin-bottom:12px;margin-right:6px">-20% OFF</span>
           <span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:12px">Destaque</span>
           <span style="display:block;font-size:0.75rem;color:var(--color-muted);letter-spacing:0.15em;text-transform:uppercase;font-weight:600;margin-bottom:4px">SAIAS-VESTIDOS</span>
           <h1 class="gc-product-title">VESTIDO BOSSA CURTO</h1>
         </div>
 
         <div class="gc-price-card">
-          <div class="gc-price-val">R$ 85,00</div>
-          <div class="gc-price-inst">ou em até 3x de R$ 28,33 sem juros</div>
+          <div style="font-size:0.95rem;text-decoration:line-through;color:var(--color-muted);margin-bottom:2px">De R$ 85,00</div>
+          <div class="gc-price-val" style="color:var(--color-gold-deep)">Por R$ 68,00</div>
+          <div class="gc-price-inst">ou em até 3x de R$ 22,67 sem juros</div>
         </div>
 
         <p style="color:var(--color-charcoal);font-size:0.95rem;line-height:1.7">Um clássico atemporal que captura a essência do luxo despretensioso carioca. O Vestido Bossa Curto possui uma trama milimetricamente estruturada, onde a fluidez da linha encontra a solidez do metal.</p>
@@ -180,13 +182,16 @@
       </div>
     </div>
 
-    <!-- Seção 'Você Também Pode Gostar' em Carrossel Infinito com Produtos Aleatórios -->
-    <section style="margin-top:90px">
+    <!-- Seção 'Você Também Pode Gostar' em Carrossel com Produtos do Acervo -->
+    <section style="margin-top:70px">
       <div class="gc-carousel-header">
-        <h2 style="font-family:var(--font-display);font-size:1.85rem;color:var(--color-ebony);margin:0">Você Também Pode Gostar</h2>
+        <div>
+          <span style="font-size:0.75rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--color-gold-deep);font-weight:700;display:block;margin-bottom:4px">Sugestões do Ateliê</span>
+          <h2 style="font-family:var(--font-display);font-size:1.6rem;color:var(--color-ebony);margin:0">Você Também Pode Gostar</h2>
+        </div>
         <div style="display:flex;gap:8px">
-          <button id="relatedPrevBtn" class="gc-carousel-arrow-btn" aria-label="Anterior">&lsaquo;</button>
-          <button id="relatedNextBtn" class="gc-carousel-arrow-btn" aria-label="Próximo">&rsaquo;</button>
+          <button id="relatedPrevBtn" class="gc-carousel-arrow-btn" aria-label="Voltar destaques" title="Anterior">&lt;</button>
+          <button id="relatedNextBtn" class="gc-carousel-arrow-btn" aria-label="Avançar destaques" title="Próximo">&gt;</button>
         </div>
       </div>
       <div class="gc-carousel-viewport">
@@ -276,47 +281,81 @@
       }
     }
 
-    // Carrega o carrossel infinito 'Você Também Pode Gostar'
+    // Carrega o carrossel 'Você Também Pode Gostar' com card idêntico à Home
     (async function initRelatedCarousel() {
       const all = await window.fetchCatalog();
       if (!all || !all.length) return;
       const filtered = all.filter(item => item.id !== productData.id);
       const shuffled = [...filtered].sort(() => 0.5 - Math.random());
       const base = shuffled.slice(0, 8);
-      const infinite = [...base, ...base];
       const track = document.getElementById('gridRelatedCarousel');
       if (!track) return;
 
-      track.innerHTML = infinite.map(item => {
+      track.innerHTML = base.map(item => {
         const pSlug = item.slug || 'produto';
         const pImg = item.image || (item.gallery && item.gallery[0]) || '../assets/icon.svg';
-        const pPrice = item.price ? `R$ ${Number(item.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+        const rawPrice = item.price ? Number(item.price) : null;
+        const discountPct = Number(item.discount || 0);
+        let priceHtml = '';
+
+        if (rawPrice) {
+          if (discountPct > 0) {
+            const finalPrice = rawPrice * (1 - discountPct / 100);
+            priceHtml = `
+              <span class="gc-product-price" style="color:var(--color-gold-deep)">R$ ${finalPrice.toFixed(2).replace('.', ',')}</span>
+              <span style="text-decoration:line-through;color:var(--color-muted);font-size:0.82rem;margin-left:6px">R$ ${rawPrice.toFixed(2).replace('.', ',')}</span>
+            `;
+          } else {
+            priceHtml = `<span class="gc-product-price">R$ ${rawPrice.toFixed(2).replace('.', ',')}</span>`;
+          }
+        } else {
+          priceHtml = `<span class="gc-product-price">Sob Consulta</span>`;
+        }
+
+        const badgeHtml = discountPct > 0 
+          ? `<span class="gc-badge-tag" style="background:#e53e3e;color:#fff">-${discountPct}%</span>`
+          : (item.badge ? `<span class="gc-badge-tag">${item.badge}</span>` : '');
+
         return `
           <div class="gc-product-card" onclick="window.location.href='./' + '${pSlug}' + '.html'" style="cursor:pointer">
-            <div class="gc-product-card-img-wrap">
+            <div class="gc-product-card-img-wrap" style="position:relative">
+              <div class="gc-img-loader-spinner"></div>
+              ${badgeHtml}
               <button class="gc-card-fav-btn" data-id="${item.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${item.id});" aria-label="Favoritar">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
               </button>
-              <img src="${pImg}" alt="${item.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='../assets/icon.svg'">
+              <img src="${pImg}" alt="${item.name}" class="gc-product-card-img" loading="lazy" onload="this.classList.add('loaded'); this.parentElement.querySelector('.gc-img-loader-spinner')?.remove();" onerror="this.src='../assets/icon.svg'; this.parentElement.querySelector('.gc-img-loader-spinner')?.remove();">
             </div>
             <div class="gc-product-card-body">
-              <h3 class="gc-product-title">${item.name}</h3>
+              <span class="gc-product-card-category">${item.category ? item.category.toUpperCase() : 'ALTA-COSTURA'}</span>
+              <h3 class="gc-product-card-title">${item.name}</h3>
               <div class="gc-product-price-row">
-                <span class="gc-product-price">${pPrice}</span>
+                ${priceHtml}
               </div>
             </div>
           </div>
         `;
       }).join('');
 
-      let autoRelTimer = setInterval(() => {
-        track.scrollBy({ left: 300, behavior: 'smooth' });
-      }, 30000);
-
       const pBtn = document.getElementById('relatedPrevBtn');
       const nBtn = document.getElementById('relatedNextBtn');
-      if (pBtn) pBtn.addEventListener('click', () => { track.scrollBy({ left: -300, behavior: 'smooth' }); });
-      if (nBtn) nBtn.addEventListener('click', () => { track.scrollBy({ left: 300, behavior: 'smooth' }); });
+      if (pBtn) pBtn.addEventListener('click', () => { track.scrollBy({ left: -310, behavior: 'smooth' }); });
+      if (nBtn) nBtn.addEventListener('click', () => { track.scrollBy({ left: 310, behavior: 'smooth' }); });
+
+      let isDown = false, startX = 0, startScroll = 0;
+      track.addEventListener('mousedown', (e) => {
+        isDown = true;
+        startX = e.pageX - track.offsetLeft;
+        startScroll = track.scrollLeft;
+      });
+      window.addEventListener('mouseup', () => { isDown = false; });
+      track.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - track.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        track.scrollLeft = startScroll - walk;
+      });
     })();
   </script>
 </body>

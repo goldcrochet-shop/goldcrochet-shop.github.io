@@ -281,13 +281,16 @@
           <li><a href="${root}novidades.html" class="gc-mobile-nav-link ${activePage === 'novidades' ? 'active' : ''}">Novidades</a></li>
           <li><a href="${root}casa-gold.html" class="gc-mobile-nav-link ${activePage === 'casa-gold' ? 'active' : ''}">Casa Gold</a></li>
           <li><a href="${root}cliente.html" class="gc-mobile-nav-link ${activePage === 'cliente' ? 'active' : ''}">Minha Conta</a></li>
+          <li><a href="javascript:void(0)" id="gcMobileNavFavLink" class="gc-mobile-nav-link">Favoritos</a></li>
           <li><a href="javascript:void(0)" id="gcMobileNavCartLink" class="gc-mobile-nav-link">Sacola</a></li>
         </ul>
 
         <div class="gc-mobile-nav-footer">
-          <a href="https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Olá! Gostaria de falar com o concierge do ateliê Gold Crochet.')}" target="_blank" rel="noopener noreferrer" class="gc-mobile-nav-wpp">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.634.072-1.802-.411-.973-.404-1.603-1.393-1.651-1.458-.048-.065-.398-.53-.398-1.011 0-.482.253-.719.343-.817.09-.098.196-.123.262-.123.065 0 .131.002.188.005.06.003.14-.023.219.167.081.194.277.674.301.724.024.05.04.108.007.174-.033.065-.05.105-.098.163-.049.058-.103.13-.147.174-.05.048-.102.101-.044.201.058.099.257.424.551.687.378.337.697.441.796.491.098.05.156.042.214-.025.058-.066.246-.288.311-.387.066-.099.132-.082.222-.049.09.033.573.27.671.319.098.049.164.074.188.115.025.041.025.241-.119.646z"></path></svg>
-            <span>WhatsApp Ateliê</span>
+          <a href="https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Olá! Gostaria de falar com o concierge do ateliê Gold Crochet.')}" target="_blank" rel="noopener noreferrer" class="gc-mobile-nav-suporte">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+            <span>Suporte Ateliê</span>
           </a>
         </div>
       </div>
@@ -361,7 +364,7 @@
 
     const drawer = document.createElement('div');
     drawer.id = 'gcCartDrawer';
-    drawer.className = 'gc-cart-drawer gc-drawer-panel';
+    drawer.className = 'gc-cart-drawer';
     drawer.innerHTML = `
       <div class="gc-cart-drawer-box">
         <div class="gc-cart-header">
@@ -384,6 +387,33 @@
         </div>
         <div id="gcCartBody" class="gc-cart-body" style="padding:0;"></div>
         <div id="gcCartFooter" class="gc-cart-footer">
+          <!-- Bloco do Cupom de Desconto Retrátil -->
+          <div class="gc-coupon-box" id="gcCouponBox">
+            <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:6px" onclick="const f=document.getElementById('gcCouponFormBox'); if(f) f.style.display = (f.style.display==='none' || !f.style.display)?'block':'none';">
+              <span style="font-size:0.78rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-gold-deep);font-weight:700;display:flex;align-items:center;gap:6px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                Cupom de Desconto
+              </span>
+              <span style="font-size:0.74rem;color:var(--color-muted);font-weight:600">Inserir +</span>
+            </div>
+            <div id="gcCouponFormBox" style="display:none;margin-top:6px">
+              <div style="display:flex;gap:6px">
+                <input type="text" id="gcCouponInput" class="gc-coupon-input" placeholder="Ex: ATELIER10" autocomplete="off">
+                <button type="button" class="gc-coupon-apply-btn" onclick="window.GoldCart.applyCoupon()">Aplicar</button>
+              </div>
+              <div id="gcCouponFeedback" style="font-size:0.75rem;margin-top:5px;display:none"></div>
+            </div>
+          </div>
+
+          <div id="gcCartSubtotalRow" class="gc-cart-total-row" style="display:none;margin-bottom:4px">
+            <span class="gc-cart-total-label" style="font-size:0.82rem;color:var(--color-muted)">Subtotal</span>
+            <span id="gcCartSubtotalVal" style="font-size:0.88rem;color:var(--color-charcoal)">R$ 0,00</span>
+          </div>
+          <div id="gcCartDiscountRow" class="gc-cart-total-row" style="display:none;margin-bottom:6px;color:#2e7d32">
+            <span class="gc-cart-total-label" style="font-size:0.82rem">Desconto (<span id="gcCartDiscountCodeLabel"></span>)</span>
+            <span id="gcCartDiscountVal" style="font-size:0.88rem;font-weight:700">- R$ 0,00</span>
+          </div>
+
           <div class="gc-cart-total-row">
             <span class="gc-cart-total-label">Total</span>
             <span id="gcCartTotalVal" class="gc-cart-total-value gc-cart-total-val cart-total">R$ 0,00</span>
@@ -421,7 +451,7 @@
 
     const drawer = document.createElement('div');
     drawer.id = 'gcWishlistDrawer';
-    drawer.className = 'gc-cart-drawer gc-drawer-panel';
+    drawer.className = 'gc-cart-drawer gc-wishlist-drawer';
     drawer.innerHTML = `
       <div class="gc-cart-drawer-box">
         <div class="gc-cart-header">
@@ -584,26 +614,34 @@
           </div>
         </div>
 
-        <a href="${root}cliente.html" class="gc-btn-pill-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:12px;padding:12px 20px">
+        <a href="${root}cliente.html" class="gc-btn-pill-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:12px;padding:12px 16px;white-space:nowrap;font-size:0.85rem">
           💎 Acessar Portal Completo da Cliente
         </a>
 
-        <button class="gc-filter-pill" style="width:100%;border-color:rgba(229,62,62,0.3);color:#e53e3e" onclick="window.GoldAccount.logout()">
+        <button class="gc-filter-pill" style="width:100%;border-color:rgba(229,62,62,0.3);color:#e53e3e;white-space:nowrap" onclick="window.GoldAccount.logout()">
           Encerrar Sessão
         </button>
       `;
     } else {
       // FORMULÁRIO DE LOGIN / CADASTRO DE CLIENTE
+      const customNotice = customAuthModalMsg ? `
+        <div style="background:rgba(205,164,52,0.12);border:1px solid var(--color-primary-gold);border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:0.84rem;color:var(--color-ebony);line-height:1.45;text-align:left;">
+          ✨ <strong>${customAuthModalMsg}</strong>
+        </div>
+      ` : '';
+
       container.innerHTML = `
-        <div style="text-align:center;margin-bottom:24px">
+        <div style="text-align:center;margin-bottom:20px">
           <div style="width:56px;height:56px;border-radius:50%;background:var(--color-secondary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:1px solid var(--color-border)">
             <img src="${root}assets/buzio-oficial.png" alt="Búzio Dourado Oficial" style="width:36px;height:auto;object-fit:contain;">
           </div>
           <h3 style="font-family:var(--font-display);font-size:1.45rem;color:var(--color-ebony);margin:0 0 4px">Ateliê Gold Crochet</h3>
-          <p style="font-size:0.85rem;color:var(--color-muted);margin:0">Entre em sua conta para acompanhar seus pedidos e acumular compras para ganhar brindes.</p>
+          <p style="font-size:0.85rem;color:var(--color-muted);margin:0">Acesse sua conta para salvar sacola e favoritos em todos os seus dispositivos.</p>
         </div>
 
-        <button class="gc-btn-pill-google" onclick="window.GoldAccount.loginGoogle()">
+        ${customNotice}
+
+        <button class="gc-btn-pill-google" onclick="window.GoldAccount.loginGoogle()" style="white-space:nowrap">
           <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.41 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.16 0 9.94 0 12s.45 3.84 1.24 5.42l4.04-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.59 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
           Entrar com Google
         </button>
@@ -617,15 +655,18 @@
         <form id="gcLoginForm" onsubmit="window.GoldAccount.loginEmail(event)">
           <input type="text" id="gcInputName" class="gc-input-pill" placeholder="Seu nome completo" required>
           <input type="email" id="gcInputEmail" class="gc-input-pill" placeholder="Seu e-mail" required>
-          <button type="submit" class="gc-btn-pill-primary">Acessar Minha Conta</button>
+          <button type="submit" class="gc-btn-pill-primary" style="white-space:nowrap">Acessar Minha Conta</button>
         </form>
 
-        <a href="${root}cliente.html" class="gc-filter-pill" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:12px;font-size:0.85rem">
+        <a href="${root}cliente.html" class="gc-filter-pill" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:12px;font-size:0.85rem;white-space:nowrap">
           Abrir Portal Completo da Cliente &rarr;
         </a>
       `;
     }
   }
+
+  let pendingAuthAction = null;
+  let customAuthModalMsg = '';
 
   function updateUserUI() {
     const customer = getCustomer();
@@ -642,7 +683,8 @@
     renderUserModalContent();
   }
 
-  function openUserModal() {
+  function openUserModal(customMsg = '') {
+    customAuthModalMsg = customMsg;
     const modal = document.getElementById('gcUserModal');
     if (modal) {
       renderUserModalContent();
@@ -652,6 +694,7 @@
   }
 
   function closeUserModal() {
+    customAuthModalMsg = '';
     const modal = document.getElementById('gcUserModal');
     if (modal) {
       modal.classList.remove('open');
@@ -659,22 +702,114 @@
     }
   }
 
-  function loginWithGoogle() {
-    // Tenta autenticação real com Google e fallback automático elegante
-    const fallbackName = prompt('Digite seu nome para acessar a conta do ateliê:', 'Cliente Gold');
-    if (fallbackName) {
-      const cust = {
-        name: fallbackName,
-        email: 'cliente@goldcrochet.com.br',
-        purchasesCount: 0,
-        giftsClaimed: 0
-      };
-      saveCustomer(cust);
-      alert(`✨ Seja bem-vinda ao Ateliê Gold Crochet, ${fallbackName}! Seu perfil foi ativado.`);
+  async function syncUserCrossDevice(cust) {
+    if (!cust || !cust.email) return;
+    try {
+      const fb = window.GoldFirebase;
+      const currentAuthUser = fb && fb.auth && fb.auth.currentUser;
+      const docId = (currentAuthUser && currentAuthUser.uid) ? currentAuthUser.uid : cust.email.toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '_');
+
+      if (fb && fb.db && currentAuthUser) {
+        const { db, fsDoc, setDoc, getDoc } = fb;
+        const userRef = fsDoc(db, 'users', docId);
+        try {
+          const snap = await getDoc(userRef);
+          if (snap && snap.exists && snap.exists()) {
+            const remote = snap.data();
+            if (Array.isArray(remote.favs)) {
+              const localFavs = getFavs();
+              const mergedFavs = Array.from(new Set([...localFavs, ...remote.favs]));
+              localStorage.setItem(FAV_KEY, JSON.stringify(mergedFavs));
+              updateFavUI();
+            }
+            if (remote.measurements) {
+              cust.measurements = { ...remote.measurements, ...(cust.measurements || {}) };
+            }
+            if (remote.address) {
+              cust.address = { ...remote.address, ...(cust.address || {}) };
+            }
+            if (remote.purchasesCount !== undefined) {
+              cust.purchasesCount = Math.max(cust.purchasesCount || 0, remote.purchasesCount || 0);
+            }
+            saveCustomer(cust);
+          }
+        } catch(e) {}
+
+        await setDoc(userRef, {
+          id: cleanId,
+          name: cust.name || 'Cliente Gold',
+          email: cust.email,
+          role: 'customer',
+          cart: getCart(),
+          favs: getFavs(),
+          measurements: cust.measurements || {},
+          address: cust.address || {},
+          purchasesCount: cust.purchasesCount || 0,
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+        console.log('☁️ [Gold Crochet] Dados salvos e sincronizados com Firestore!');
+      }
+    } catch(err) {
+      console.warn('⚠️ Sincronização offline ou local:', err.message);
     }
   }
 
-  function loginWithEmail(e) {
+  async function completeAuth(cust) {
+    saveCustomer(cust);
+    updateUserUI();
+    closeUserModal();
+    await syncUserCrossDevice(cust);
+
+    if (pendingAuthAction) {
+      const act = pendingAuthAction;
+      pendingAuthAction = null;
+      if (act.type === 'cart') {
+        addToCart(act.product, act.qty, act.selectedColor);
+      } else if (act.type === 'fav') {
+        toggleFav(act.id);
+      }
+    }
+  }
+
+  async function loginWithGoogle() {
+    if (window.GoldFirebase && window.GoldFirebase.auth && window.GoldFirebase.signInWithPopup) {
+      try {
+        const { auth, googleProvider, signInWithPopup } = window.GoldFirebase;
+        const res = await signInWithPopup(auth, googleProvider);
+        if (res && res.user) {
+          const u = res.user;
+          const existing = getCustomer() || {};
+          const cust = {
+            name: u.displayName || 'Cliente Gold',
+            email: u.email || 'cliente@goldcrochet.com.br',
+            purchasesCount: existing.purchasesCount || 0,
+            giftsClaimed: existing.giftsClaimed || 0,
+            measurements: existing.measurements || {},
+            address: existing.address || {}
+          };
+          await completeAuth(cust);
+          return;
+        }
+      } catch(err) {
+        console.warn('Tentando login com fallback ateliê:', err.message);
+      }
+    }
+    const fallbackName = prompt('Digite seu nome para acessar a conta do ateliê:', 'Cliente Gold');
+    if (fallbackName) {
+      const cleanEmail = fallbackName.toLowerCase().replace(/[^a-z0-9]/g, '') + '@cliente.goldcrochet.com.br';
+      const cust = {
+        name: fallbackName,
+        email: cleanEmail,
+        purchasesCount: 0,
+        giftsClaimed: 0,
+        measurements: {},
+        address: {}
+      };
+      await completeAuth(cust);
+    }
+  }
+
+  async function loginWithEmail(e) {
     if (e) e.preventDefault();
     const nameEl = document.getElementById('gcInputName');
     const emailEl = document.getElementById('gcInputEmail');
@@ -688,10 +823,11 @@
       name: name,
       email: email,
       purchasesCount: existing.purchasesCount !== undefined ? existing.purchasesCount : 0,
-      giftsClaimed: existing.giftsClaimed || 0
+      giftsClaimed: existing.giftsClaimed || 0,
+      measurements: existing.measurements || {},
+      address: existing.address || {}
     };
-    saveCustomer(cust);
-    alert(`✨ Bem-vinda ao Ateliê, ${name}!`);
+    await completeAuth(cust);
   }
 
   function addCustomerPurchase() {
@@ -701,6 +837,7 @@
     const code = codeInput ? codeInput.value.trim() : '';
     cust.purchasesCount = (cust.purchasesCount || 0) + 1;
     saveCustomer(cust);
+    syncUserCrossDevice(cust);
     alert(`🎉 Pedido registrado com sucesso! Você tem agora ${cust.purchasesCount} compras computadas.`);
     if (codeInput) codeInput.value = '';
   }
@@ -739,6 +876,13 @@
   }
 
   function addToCart(product, qty = 1, selectedColor = '') {
+    const customer = getCustomer();
+    if (!customer || !customer.email) {
+      pendingAuthAction = { type: 'cart', product, qty, selectedColor };
+      openUserModal('Crie sua conta ou faça login para adicionar itens à sua sacola e sincronizá-los em todos os seus aparelhos.');
+      return;
+    }
+
     const cart = getCart();
     const existing = cart.find(item => item.id === product.id && item.color === selectedColor);
     if (existing) {
@@ -755,6 +899,7 @@
       });
     }
     saveCart(cart);
+    syncUserCrossDevice(customer);
     openCart();
   }
 
@@ -844,10 +989,10 @@
       }
     }
 
-    let total = 0;
+    let subtotal = 0;
     body.innerHTML = cart.map((item, idx) => {
       const itemTotal = (item.price || 0) * item.qty;
-      total += itemTotal;
+      subtotal += itemTotal;
       const formattedPrice = item.price ? `R$ ${(item.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
 
       return `
@@ -867,7 +1012,39 @@
       `;
     }).join('');
 
-    totalValEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    // Cálculo dinâmico do cupom de desconto
+    let discountVal = 0;
+    if (appliedCoupon && subtotal > 0) {
+      if (appliedCoupon.type === 'percent') {
+        discountVal = subtotal * (Number(appliedCoupon.discount || 0) / 100);
+      } else {
+        discountVal = Math.min(Number(appliedCoupon.discount || 0), subtotal);
+      }
+    }
+    const finalTotal = Math.max(0, subtotal - discountVal);
+
+    const subtotalRow = document.getElementById('gcCartSubtotalRow');
+    const subtotalValEl = document.getElementById('gcCartSubtotalVal');
+    const discountRow = document.getElementById('gcCartDiscountRow');
+    const discountValEl = document.getElementById('gcCartDiscountVal');
+    const discountCodeLabel = document.getElementById('gcCartDiscountCodeLabel');
+
+    if (appliedCoupon && discountVal > 0) {
+      if (subtotalRow) {
+        subtotalRow.style.display = 'flex';
+        subtotalValEl.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+      }
+      if (discountRow) {
+        discountRow.style.display = 'flex';
+        discountValEl.textContent = `- R$ ${discountVal.toFixed(2).replace('.', ',')}`;
+        if (discountCodeLabel) discountCodeLabel.textContent = appliedCoupon.code;
+      }
+    } else {
+      if (subtotalRow) subtotalRow.style.display = 'none';
+      if (discountRow) discountRow.style.display = 'none';
+    }
+
+    totalValEl.textContent = `R$ ${finalTotal.toFixed(2).replace('.', ',')}`;
 
     const checkoutBtn = document.getElementById('gcCartCheckoutBtn') || document.getElementById('gcCheckoutBtn');
     if (checkoutBtn) {
@@ -878,12 +1055,71 @@
         const pStr = item.price ? `R$ ${(item.price).toFixed(2).replace('.', ',')}` : 'Sob consulta';
         msg += `▪ ${item.qty}x *${item.name}* ${item.color ? `(Cor: ${item.color})` : ''} — ${pStr}\n`;
       });
-      msg += `\n*Total Estimado:* R$ ${total.toFixed(2).replace('.', ',')}\n\nPoderiam me informar o prazo de envio e dados para pagamento?`;
+      if (appliedCoupon && discountVal > 0) {
+        msg += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+        msg += `🏷 *Cupom de Desconto:* ${appliedCoupon.code} (-R$ ${discountVal.toFixed(2).replace('.', ',')})\n`;
+      }
+      msg += `\n*Total Estimado:* R$ ${finalTotal.toFixed(2).replace('.', ',')}\n\nPoderiam me informar o prazo de envio e dados para pagamento?`;
       checkoutBtn.setAttribute('href', `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`);
     }
   }
 
+  let appliedCoupon = null;
+
+  async function applyCoupon() {
+    const input = document.getElementById('gcCouponInput');
+    const feedback = document.getElementById('gcCouponFeedback');
+    if (!input || !feedback) return;
+    const code = input.value.trim().toUpperCase();
+    if (!code) {
+      feedback.style.display = 'block';
+      feedback.style.color = '#e53e3e';
+      feedback.textContent = 'Por favor, digite o código do cupom.';
+      return;
+    }
+
+    try {
+      const res = await fetch(`${root}data.json?v=${Date.now()}`);
+      const data = await res.json();
+      const list = data.coupons || [
+        { code: 'ATELIER10', discount: 10, type: 'percent', description: '10% OFF Ateliê', active: true },
+        { code: 'OURO20', discount: 20, type: 'percent', description: '20% OFF Lançamento', active: true },
+        { code: 'FRETEGRATIS', discount: 50, type: 'fixed', description: 'R$ 50 OFF Frete Cortesia', active: true }
+      ];
+      const match = list.find(c => c.code && c.code.toUpperCase() === code && c.active);
+
+      if (!match) {
+        feedback.style.display = 'block';
+        feedback.style.color = '#e53e3e';
+        feedback.textContent = 'Cupom inválido ou expirado.';
+        appliedCoupon = null;
+        updateCartUI();
+        return;
+      }
+
+      appliedCoupon = match;
+      feedback.style.display = 'block';
+      feedback.style.color = '#2e7d32';
+      feedback.textContent = `✨ Cupom ${match.code} aplicado com sucesso!`;
+      updateCartUI();
+    } catch(err) {
+      if (code === 'ATELIER10' || code === 'OURO20' || code === 'FRETEGRATIS') {
+        appliedCoupon = { code, discount: code === 'ATELIER10' ? 10 : (code === 'OURO20' ? 20 : 50), type: code === 'FRETEGRATIS' ? 'fixed' : 'percent' };
+        feedback.style.display = 'block';
+        feedback.style.color = '#2e7d32';
+        feedback.textContent = `✨ Cupom ${code} aplicado com sucesso!`;
+        updateCartUI();
+      } else {
+        feedback.style.display = 'block';
+        feedback.style.color = '#e53e3e';
+        feedback.textContent = 'Não foi possível validar o cupom.';
+      }
+    }
+  }
+
   function openCart() {
+    closeWishlist();
+    closeMobileNav();
     const drawer = document.getElementById('gcCartDrawer');
     const backdrop = document.getElementById('gcCartBackdrop');
     if (drawer) {
@@ -899,8 +1135,14 @@
     const backdrop = document.getElementById('gcCartBackdrop');
     if (drawer) {
       drawer.classList.remove('open', 'active');
-      document.body.classList.remove('gc-scroll-locked');
       if (backdrop) backdrop.classList.remove('open', 'active');
+    }
+    const wishlist = document.getElementById('gcWishlistDrawer');
+    const mobileNav = document.getElementById('gcMobileNavDrawer');
+    const isWishlistOpen = wishlist && (wishlist.classList.contains('open') || wishlist.classList.contains('active'));
+    const isMobileNavOpen = mobileNav && (mobileNav.classList.contains('open') || mobileNav.classList.contains('active'));
+    if (!isWishlistOpen && !isMobileNavOpen) {
+      document.body.classList.remove('gc-scroll-locked');
     }
   }
 
@@ -912,7 +1154,7 @@
     }
 
     const customer = getCustomer();
-    let total = 0;
+    let subtotal = 0;
     let msg = `✨ *Pedido Gold Crochet Brasil — Alta-Costura*\n\n`;
     if (customer && customer.name) {
       msg += `👤 Cliente: *${customer.name}*\n\n`;
@@ -921,18 +1163,30 @@
 
     cart.forEach(item => {
       const itemTotal = (item.price || 0) * item.qty;
-      total += itemTotal;
+      subtotal += itemTotal;
       const priceStr = item.price ? `R$ ${(item.price).toFixed(2).replace('.', ',')}` : 'Sob consulta';
       msg += `▪ ${item.qty}x *${item.name}* ${item.color ? `(Cor: ${item.color})` : ''} — ${priceStr}\n`;
     });
 
-    msg += `\n*Total Estimado:* R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
+    let discountVal = 0;
+    if (appliedCoupon && subtotal > 0) {
+      if (appliedCoupon.type === 'percent') {
+        discountVal = subtotal * (Number(appliedCoupon.discount || 0) / 100);
+      } else {
+        discountVal = Math.min(Number(appliedCoupon.discount || 0), subtotal);
+      }
+      msg += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+      msg += `🏷 *Cupom de Desconto:* ${appliedCoupon.code} (-R$ ${discountVal.toFixed(2).replace('.', ',')})\n`;
+    }
+
+    const finalTotal = Math.max(0, subtotal - discountVal);
+    msg += `\n*Total Estimado:* R$ ${finalTotal.toFixed(2).replace('.', ',')}\n\n`;
     msg += `Poderiam me informar o prazo de envio e dados para pagamento?`;
 
-    // Se estiver logado, soma compra para brinde
     if (customer) {
       customer.purchasesCount = (customer.purchasesCount || 0) + 1;
       saveCustomer(customer);
+      syncUserCrossDevice(customer);
     }
 
     const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
@@ -950,6 +1204,13 @@
   }
 
   function toggleFav(id) {
+    const customer = getCustomer();
+    if (!customer || !customer.email) {
+      pendingAuthAction = { type: 'fav', id };
+      openUserModal('Crie sua conta ou faça login para salvar peças no coração e sincronizá-las em todos os seus aparelhos.');
+      return false;
+    }
+
     let favs = getFavs();
     const idx = favs.indexOf(id);
     if (idx >= 0) favs.splice(idx, 1);
@@ -958,6 +1219,7 @@
       localStorage.setItem(FAV_KEY, JSON.stringify(favs));
     } catch (e) {}
     updateFavUI();
+    syncUserCrossDevice(customer);
     return idx < 0;
   }
 
@@ -1084,8 +1346,14 @@
     const backdrop = document.getElementById('gcCartBackdrop');
     if (drawer) {
       drawer.classList.remove('open', 'active');
-      document.body.classList.remove('gc-scroll-locked');
       if (backdrop) backdrop.classList.remove('open', 'active');
+    }
+    const cart = document.getElementById('gcCartDrawer');
+    const mobileNav = document.getElementById('gcMobileNavDrawer');
+    const isCartOpen = cart && (cart.classList.contains('open') || cart.classList.contains('active'));
+    const isMobileNavOpen = mobileNav && (mobileNav.classList.contains('open') || mobileNav.classList.contains('active'));
+    if (!isCartOpen && !isMobileNavOpen) {
+      document.body.classList.remove('gc-scroll-locked');
     }
   }
 
@@ -1224,6 +1492,7 @@
     const mobileNavDrawer = document.getElementById('gcMobileNavDrawer');
     const mobileNavBackdrop = document.getElementById('gcMobileNavBackdrop');
     const mobileNavCartLink = document.getElementById('gcMobileNavCartLink');
+    const mobileNavFavLink = document.getElementById('gcMobileNavFavLink');
 
     if (mobileNavToggle) mobileNavToggle.addEventListener('click', openMobileNav);
     if (mobileNavClose) mobileNavClose.addEventListener('click', closeMobileNav);
@@ -1232,10 +1501,10 @@
       mobileNavDrawer.addEventListener('click', (e) => {
         if (e.target === mobileNavDrawer) closeMobileNav();
       });
-      // Auto-fechamento ao selecionar qualquer link do menu
+      // Auto-fechamento ao selecionar qualquer link comum do menu
       mobileNavDrawer.querySelectorAll('.gc-mobile-nav-link').forEach(link => {
         link.addEventListener('click', (e) => {
-          if (link.id !== 'gcMobileNavCartLink') {
+          if (link.id !== 'gcMobileNavCartLink' && link.id !== 'gcMobileNavFavLink') {
             closeMobileNav();
           }
         });
@@ -1245,6 +1514,12 @@
       mobileNavCartLink.addEventListener('click', () => {
         closeMobileNav();
         openCart();
+      });
+    }
+    if (mobileNavFavLink) {
+      mobileNavFavLink.addEventListener('click', () => {
+        closeMobileNav();
+        openWishlist();
       });
     }
 
@@ -1286,12 +1561,25 @@
   }
 
   // APIs Globais
+  window.openCart = openCart;
+  window.closeCart = closeCart;
+  window.openFavorites = openWishlist;
+  window.closeFavorites = closeWishlist;
+  window.openWishlist = openWishlist;
+  window.closeWishlist = closeWishlist;
+
   window.GoldCart = {
     add: addToCart,
     open: openCart,
     close: closeCart,
+    toggle: () => {
+      const d = document.getElementById('gcCartDrawer');
+      if (d && (d.classList.contains('open') || d.classList.contains('active'))) closeCart();
+      else openCart();
+    },
     changeQty: updateItemQty,
-    checkout: checkoutWhatsApp
+    checkout: checkoutWhatsApp,
+    applyCoupon: applyCoupon
   };
 
   window.GoldFav = {

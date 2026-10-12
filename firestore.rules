@@ -31,7 +31,7 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
-        (request.auth.token.email in ['goldcrochet.suporte@gmail.com', 'rossipereira2010@gmail.com'] && request.auth.token.email_verified == true)
+        request.auth.token.email in ['goldcrochet.suporte@gmail.com', 'rossipereira2010@gmail.com']
       );
     }
 
@@ -82,6 +82,18 @@ service cloud.firestore {
                     && incoming().email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
                     && incoming().active == true;
       allow read, list, update, delete: if isAdmin();
+    }
+
+    // Coupons collection (read by all for checkout discount validation, written by admin)
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Site settings & Gift Program (read by all, written by admin)
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     // Test connection document for initial health checks
