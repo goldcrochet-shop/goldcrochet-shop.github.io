@@ -767,6 +767,9 @@
         <button class="admin-nav-item" data-view="orders" onclick="window.AdminCore.switchView('orders')">
           <span class="nav-icon">📦</span> Pedidos &amp; Atendimento
         </button>
+        <button class="admin-nav-item" data-view="whatsapp" onclick="window.AdminCore.switchView('whatsapp')">
+          <span class="nav-icon">💬</span> WhatsApp
+        </button>
         <button class="admin-nav-item" data-view="sync" onclick="window.AdminCore.switchView('sync')">
           <span class="nav-icon">☁️</span> Nuvem &amp; GitHub
         </button>
@@ -935,6 +938,43 @@
               <tr><td colspan="6" class="empty-state">Carregando pedidos...</td></tr>
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- VIEW: WHATSAPP -->
+      <section id="viewWhatsapp" class="view-container hidden">
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <h3 class="card-panel-title">Integração WhatsApp ⇄ Loja</h3>
+            <span style="font-size:0.85rem;color:var(--text-muted)">Salvo no Firestore e aplicado em todo o site automaticamente</span>
+          </div>
+          <div style="padding:28px;max-width:720px">
+            <div class="form-group">
+              <label class="form-label">Número oficial da loja (DDI + DDD + número)</label>
+              <input type="tel" id="waPhoneInput" class="form-input" placeholder="5531984566047">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mensagem de saudação (botões "Fale conosco")</label>
+              <input type="text" id="waGreetingInput" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Final da mensagem de pedido (sacola → WhatsApp)</label>
+              <input type="text" id="waCheckoutFooterInput" class="form-input">
+            </div>
+
+            <h4 style="margin:24px 0 8px">Mensagens para a cliente por status</h4>
+            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:12px">Use <code>{nome}</code>, <code>{codigo}</code> e <code>{total}</code>.</p>
+            <div class="form-group"><label class="form-label">⏳ Pendente</label><textarea id="waTpl_pendente" class="form-input" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">🧶 Em Produção</label><textarea id="waTpl_producao" class="form-input" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">📦 Enviado</label><textarea id="waTpl_enviado" class="form-input" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">✅ Entregue</label><textarea id="waTpl_entregue" class="form-input" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">❌ Cancelado</label><textarea id="waTpl_cancelado" class="form-input" rows="2"></textarea></div>
+
+            <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
+              <button class="btn-primary-action" onclick="window.AdminCore.saveWhatsAppSettings()">💾 Salvar Configurações</button>
+              <button class="btn-secondary-action" onclick="window.AdminCore.testWhatsAppNumber()">🧪 Testar Número</button>
+            </div>
+          </div>
         </div>
       </section>
 

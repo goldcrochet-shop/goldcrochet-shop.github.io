@@ -8,7 +8,56 @@
   const CART_KEY = 'gc_cart_items_v2';
   const FAV_KEY = 'gc_fav_items_v2';
   const USER_KEY = 'gc_customer_account_v2';
-  const WHATSAPP_PHONE = '5531984566047';
+  // ════════════════════════════════════════
+  // INTEGRAÇÃO WHATSAPP ⇄ PAINEL ADMIN
+  // Configuração editável no admin (Firestore: settings/whatsapp).
+  // ════════════════════════════════════════
+  const WA_DEFAULT_PHONE = '5531984566047';
+  const WA_CACHE_KEY = 'gc_wa_settings_v1';
+  const WA_FS_URL = 'https://firestore.googleapis.com/v1/projects/lucky-dolphin-861jg/databases/ai-studio-goldcrochetshop-0e84b9ac-6dbb-400f-9959-fc455c1c4776/documents/settings/whatsapp?key=AIzaSyDHHGEuFeQViQutklqIhFoEI5akvAv4Ko8';
+  let waSettings = { phone: WA_DEFAULT_PHONE, greeting: 'Olá! Gostaria de falar com o concierge do ateliê Gold Crochet.', checkoutFooter: 'Poderiam me informar o prazo de envio e dados para pagamento?' };
+  try { Object.assign(waSettings, JSON.parse(localStorage.getItem(WA_CACHE_KEY) || '{}')); } catch (e) {}
+  let WHATSAPP_PHONE = String(waSettings.phone || WA_DEFAULT_PHONE).replace(/\D/g, '') || WA_DEFAULT_PHONE;
+
+  function waUrl(text, phone) {
+    const num = String(phone || WHATSAPP_PHONE).replace(/\D/g, '');
+    return `https://wa.me/${num}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
+  }
+
+  // Reescreve links wa.me já renderizados (inclusive em HTML estático) para o número atual
+  function refreshWhatsAppLinks() {
+    document.querySelectorAll('a[href*="wa.me/"]').forEach(a => {
+      if (a.dataset.waCustomer) return; // links para o telefone da cliente não mudam
+      a.setAttribute('href', a.getAttribute('href').replace(/wa\.me\/\d+/, `wa.me/${WHATSAPP_PHONE}`));
+    });
+  }
+
+  async function loadWhatsAppSettings() {
+    try {
+      const res = await fetch(WA_FS_URL, { cache: 'no-store' });
+      if (!res.ok) return;
+      const json = await res.json();
+      const f = json.fields || {};
+      const val = k => f[k] && (f[k].stringValue ?? f[k].integerValue);
+      const next = {};
+      ['phone', 'greeting', 'checkoutFooter'].forEach(k => { if (val(k)) next[k] = String(val(k)); });
+      if (!Object.keys(next).length) return;
+      Object.assign(waSettings, next);
+      localStorage.setItem(WA_CACHE_KEY, JSON.stringify(waSettings));
+      WHATSAPP_PHONE = String(waSettings.phone).replace(/\D/g, '') || WA_DEFAULT_PHONE;
+      refreshWhatsAppLinks();
+      document.dispatchEvent(new CustomEvent('gc:whatsapp-settings', { detail: waSettings }));
+    } catch (e) { /* offline: mantém cache */ }
+  }
+
+  window.GCWhatsApp = {
+    getPhone: () => WHATSAPP_PHONE,
+    getSettings: () => ({ ...waSettings }),
+    url: waUrl,
+    refreshLinks: refreshWhatsAppLinks
+  };
+  loadWhatsAppSettings();
+  document.addEventListener('DOMContentLoaded', refreshWhatsAppLinks);
 
   function getRootPath() {
     const path = window.location.pathname;
@@ -1146,7 +1195,9 @@
     }
   }
 
-  function checkoutWhatsApp() {
+  function checkoutWhatsApp(ev) {
+    // O botão é um <a href>; evita abrir 2 abas (href + window.open)
+    if (ev && ev.preventDefault) ev.preventDefault();
     const cart = getCart();
     if (!cart.length) {
       alert('Sua sacola está vazia.');
@@ -1154,8 +1205,10 @@
     }
 
     const customer = getCustomer();
+    const orderCode = 'GC' + Date.now().toString(36).toUpperCase().slice(-6);
     let subtotal = 0;
-    let msg = `✨ *Pedido Gold Crochet Brasil — Alta-Costura*\n\n`;
+    let msg = `✨ *Pedido Gold Crochet Brasil — Alta-Costura*\n`;
+    msg += `🧾 Código: *${orderCode}*\n\n`;
     if (customer && customer.name) {
       msg += `👤 Cliente: *${customer.name}*\n\n`;
     }
@@ -1181,7 +1234,7 @@
 
     const finalTotal = Math.max(0, subtotal - discountVal);
     msg += `\n*Total Estimado:* R$ ${finalTotal.toFixed(2).replace('.', ',')}\n\n`;
-    msg += `Poderiam me informar o prazo de envio e dados para pagamento?`;
+    msg += waSettings.checkoutFooter || 'Poderiam me informar o prazo de envio e dados para pagamento?';
 
     if (customer) {
       customer.purchasesCount = (customer.purchasesCount || 0) + 1;
@@ -1189,8 +1242,36 @@
       syncUserCrossDevice(customer);
     }
 
-    const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank');
+    // Abre o WhatsApp imediatamente (antes de await, para não ser bloqueado como pop-up)
+    window.open(waUrl(msg), '_blank');
+
+    // Registra o pedido no Firestore → aparece ao vivo no painel admin
+    registerWhatsAppOrder({ orderCode, cart, subtotal, discountVal, finalTotal, customer });
+  }
+
+  async function registerWhatsAppOrder({ orderCode, cart, subtotal, discountVal, finalTotal, customer }) {
+    try {
+      const fb = window.GoldFirebase;
+      const user = fb && fb.auth && fb.auth.currentUser;
+      if (!fb || !fb.db || !user) return; // regras exigem login
+      await fb.setDoc(fb.fsDoc(fb.db, 'orders', orderCode), {
+        code: orderCode,
+        source: 'whatsapp-checkout',
+        userId: user.uid,
+        userName: (customer && customer.name) || user.displayName || '',
+        userEmail: (customer && customer.email) || user.email || '',
+        phone: String((customer && (customer.phone || customer.whatsapp)) || user.phoneNumber || '').replace(/\D/g, ''),
+        items: cart.slice(0, 100).map(i => ({ name: i.name || '', qty: Number(i.qty) || 1, price: Number(i.price) || 0, color: i.color || '' })),
+        subtotal: Number(subtotal.toFixed(2)),
+        discount: Number(discountVal.toFixed(2)),
+        coupon: appliedCoupon ? appliedCoupon.code : '',
+        total: Number(finalTotal.toFixed(2)),
+        status: 'pendente',
+        createdAt: fb.serverTimestamp()
+      });
+    } catch (err) {
+      console.warn('[Checkout] Pedido não registrado no Firestore:', err && err.message);
+    }
   }
 
   // Favoritos

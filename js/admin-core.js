@@ -376,6 +376,7 @@ export async function syncCategoriesFromFirestore() {
 export async function syncOrdersFromFirestore() {
   const fb = window.GoldFirebase;
   if (!fb || !fb.db) return;
+  loadWhatsAppSettings();
 
   try {
     const colRef = fb.fsCollection(fb.db, 'orders');
@@ -555,15 +556,22 @@ export async function updateOrderStatus(orderId, newStatus) {
   localStorage.setItem('gc_cached_orders', JSON.stringify(adminState.orders));
   calculateMetrics();
   renderCurrentView();
-  showToast(`Pedido #${orderId.slice(-6)} atualizado para "${newStatus}".`, 'success');
-  logActivity('Atualizou Status Pedido', `#${orderId.slice(-6)} -> ${newStatus}`);
+  showToast(`Pedido ${orderCode(order)} atualizado para "${newStatus}".`, 'success');
+  logActivity('Atualizou Status Pedido', `${orderCode(order)} -> ${newStatus}`);
+
+  // Oferece avisar a cliente pelo WhatsApp com a mensagem do status
+  if (confirm(`Avisar ${order.userName || 'a cliente'} pelo WhatsApp sobre o novo status?`)) {
+    window.open(buildCustomerWhatsAppLink(order, newStatus), '_blank');
+  }
 
   const fb = window.GoldFirebase;
   if (fb && fb.db) {
     try {
       const docRef = fb.fsDoc(fb.db, 'orders', String(orderId));
       await fb.updateDoc(docRef, { status: newStatus });
-    } catch(e) {}
+    } catch (e) {
+      showToast('Status não salvo no Firestore: ' + e.message, 'error');
+    }
   }
 }
 
@@ -672,6 +680,9 @@ export function renderCurrentView() {
       break;
     case 'sync':
       renderSyncView();
+      break;
+    case 'whatsapp':
+      loadWhatsAppSettings();
       break;
   }
 }
@@ -814,6 +825,37 @@ export function renderCategoriesList() {
   }).join('');
 }
 
+// ════════════════════════════════════════
+// WHATSAPP ⇄ PEDIDOS
+// ════════════════════════════════════════
+const WA_STATUS_TEMPLATES = {
+  pendente: 'Olá {nome}! Recebemos seu pedido {codigo} no Ateliê Gold Crochet ✨ Em breve enviaremos os dados de pagamento e prazo.',
+  producao: 'Olá {nome}! Seu pedido {codigo} já está em produção no ateliê 🧶 Cada ponto feito à mão com carinho!',
+  enviado: 'Olá {nome}! Seu pedido {codigo} foi enviado 📦 Em breve você recebe o código de rastreio.',
+  entregue: 'Olá {nome}! Seu pedido {codigo} consta como entregue ✅ Esperamos que ame sua peça Gold Crochet!',
+  cancelado: 'Olá {nome}. Seu pedido {codigo} foi cancelado. Qualquer dúvida, estamos à disposição por aqui.'
+};
+
+function getWaTemplates() {
+  return { ...WA_STATUS_TEMPLATES, ...((adminState.waSettings && adminState.waSettings.templates) || {}) };
+}
+
+function orderCode(o) {
+  return o.code || `#${String(o.id || '').slice(-6).toUpperCase()}`;
+}
+
+export function buildCustomerWhatsAppLink(o, status) {
+  const tpl = getWaTemplates()[status || o.status || 'pendente'] || WA_STATUS_TEMPLATES.pendente;
+  const text = tpl
+    .replace(/\{nome\}/g, (o.userName || '').split(' ')[0] || '')
+    .replace(/\{codigo\}/g, orderCode(o))
+    .replace(/\{total\}/g, formatBRL(o.total));
+  let phone = String(o.phone || '').replace(/\D/g, '');
+  if (phone && phone.length <= 11) phone = '55' + phone; // DDD+número BR sem DDI
+  // Sem telefone salvo: wa.me sem número abre o seletor de contatos
+  return phone ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
+}
+
 export function renderOrdersList() {
   const tbody = document.getElementById('ordersTableBody');
   if (!tbody) return;
@@ -823,24 +865,33 @@ export function renderOrdersList() {
     return;
   }
 
-  tbody.innerHTML = adminState.orders.map(o => {
+  const sorted = [...adminState.orders].sort((a, b) => {
+    const ta = (a.createdAt && (a.createdAt.seconds || Date.parse(a.createdAt) / 1000)) || 0;
+    const tb = (b.createdAt && (b.createdAt.seconds || Date.parse(b.createdAt) / 1000)) || 0;
+    return tb - ta;
+  });
+
+  tbody.innerHTML = sorted.map(o => {
     const dateStr = formatDate(o.createdAt);
     const totalStr = formatBRL(o.total);
-    const itemsCount = (o.items && o.items.length) || 1;
-    const clientPhone = o.phone || '5531984566047';
-    const whatsappLink = `https://wa.me/${clientPhone.replace(/\D/g, '')}?text=${encodeURIComponent(`Olá ${o.userName || ''}! Somos do Ateliê Gold Crochet falando sobre seu pedido #${(o.id||'').slice(-6)}.`)}`;
+    const items = Array.isArray(o.items) ? o.items : [];
+    const itemsCount = items.reduce((s, i) => s + (Number(i.qty) || 1), 0) || 1;
+    const itemsTitle = items.map(i => `${i.qty || 1}x ${i.name || ''}${i.color ? ` (${i.color})` : ''}`).join('\n').replace(/"/g, '&quot;');
+    const sourceBadge = o.source === 'whatsapp-checkout' ? '<small title="Pedido feito pela sacola → WhatsApp">💬 via WhatsApp</small>' : '';
+    const phoneInfo = o.phone ? `<small>📱 ${o.phone}</small>` : `<small style="color:var(--warning)">sem telefone</small>`;
 
     return `
       <tr>
-        <td><strong>#${(o.id || '').slice(-6)}</strong></td>
+        <td><strong>${orderCode(o)}</strong><br>${sourceBadge}</td>
         <td>
           <div class="customer-cell">
             <strong>${o.userName || 'Cliente VIP'}</strong>
             <small>${o.userEmail || '—'}</small>
+            ${phoneInfo}
           </div>
         </td>
         <td>${dateStr}</td>
-        <td><strong>${totalStr}</strong> <small>(${itemsCount} itens)</small></td>
+        <td title="${itemsTitle}"><strong>${totalStr}</strong> <small>(${itemsCount} ${itemsCount === 1 ? 'item' : 'itens'})</small></td>
         <td>
           <select class="status-select status-${o.status || 'pendente'}" onchange="window.AdminCore.updateOrderStatus('${o.id}', this.value)">
             <option value="pendente" ${o.status === 'pendente' ? 'selected' : ''}>⏳ Pendente</option>
@@ -851,11 +902,90 @@ export function renderOrdersList() {
           </select>
         </td>
         <td class="table-actions">
-          <a href="${whatsappLink}" target="_blank" class="btn-action whatsapp" title="Conversar no WhatsApp">💬</a>
+          <a href="${buildCustomerWhatsAppLink(o)}" data-wa-customer="1" target="_blank" rel="noopener" class="btn-action whatsapp" title="Avisar cliente sobre o status atual">💬</a>
+          <button class="btn-action edit" onclick="window.AdminCore.editOrderPhone('${o.id}')" title="Editar telefone da cliente">📱</button>
         </td>
       </tr>
     `;
   }).join('');
+}
+
+export async function editOrderPhone(orderId) {
+  const o = adminState.orders.find(x => String(x.id) === String(orderId));
+  if (!o) return;
+  const val = prompt('WhatsApp da cliente (com DDD):', o.phone || '');
+  if (val === null) return;
+  o.phone = val.replace(/\D/g, '');
+  try {
+    const fb = window.GoldFirebase;
+    if (fb && fb.db) await fb.updateDoc(fb.fsDoc(fb.db, 'orders', orderId), { phone: o.phone });
+    showToast('Telefone atualizado!', 'success');
+  } catch (err) {
+    showToast('Erro ao salvar telefone: ' + err.message, 'error');
+  }
+  renderOrdersList();
+}
+
+// ════════════════════════════════════════
+// CONFIGURAÇÕES DO WHATSAPP (settings/whatsapp — lido pelo site)
+// ════════════════════════════════════════
+export async function loadWhatsAppSettings() {
+  const fb = window.GoldFirebase;
+  try {
+    if (fb && fb.db) {
+      const snap = await fb.getDoc(fb.fsDoc(fb.db, 'settings', 'whatsapp'));
+      if (snap.exists()) adminState.waSettings = snap.data();
+    }
+  } catch (err) {
+    console.warn('[WhatsApp Settings]', err.message);
+  }
+  adminState.waSettings = adminState.waSettings || {};
+  fillWhatsAppForm();
+}
+
+function fillWhatsAppForm() {
+  const s = adminState.waSettings || {};
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+  set('waPhoneInput', s.phone || '5531984566047');
+  set('waGreetingInput', s.greeting || 'Olá! Gostaria de falar com o concierge do ateliê Gold Crochet.');
+  set('waCheckoutFooterInput', s.checkoutFooter || 'Poderiam me informar o prazo de envio e dados para pagamento?');
+  const tpls = getWaTemplates();
+  Object.keys(WA_STATUS_TEMPLATES).forEach(k => set(`waTpl_${k}`, tpls[k]));
+}
+
+export async function saveWhatsAppSettings() {
+  const get = id => (document.getElementById(id) || {}).value || '';
+  const phone = get('waPhoneInput').replace(/\D/g, '');
+  if (phone.length < 12) {
+    showToast('Informe o número com DDI + DDD (ex: 5531984566047).', 'error');
+    return;
+  }
+  const templates = {};
+  Object.keys(WA_STATUS_TEMPLATES).forEach(k => { templates[k] = get(`waTpl_${k}`).trim() || WA_STATUS_TEMPLATES[k]; });
+  const data = {
+    phone,
+    greeting: get('waGreetingInput').trim(),
+    checkoutFooter: get('waCheckoutFooterInput').trim(),
+    templates,
+    updatedAt: new Date().toISOString()
+  };
+  try {
+    const fb = window.GoldFirebase;
+    if (!fb || !fb.db) throw new Error('Firestore indisponível');
+    await fb.setDoc(fb.fsDoc(fb.db, 'settings', 'whatsapp'), data);
+    adminState.waSettings = data;
+    logActivity('WhatsApp atualizado', `Número ${phone}`);
+    showToast('✅ WhatsApp salvo! O site já usa o novo número.', 'success');
+    renderOrdersList();
+  } catch (err) {
+    showToast('Erro ao salvar: ' + err.message, 'error');
+  }
+}
+
+export function testWhatsAppNumber() {
+  const phone = ((document.getElementById('waPhoneInput') || {}).value || '').replace(/\D/g, '');
+  const msg = (document.getElementById('waGreetingInput') || {}).value || '';
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 function renderSyncView() {
@@ -921,6 +1051,9 @@ if (typeof window !== 'undefined') {
     saveCategory,
     deleteCategory,
     updateOrderStatus,
+    editOrderPhone,
+    saveWhatsAppSettings,
+    testWhatsAppNumber,
     pushCatalogToGitHub,
     showToast
   };
