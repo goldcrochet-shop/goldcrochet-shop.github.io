@@ -1,21 +1,36 @@
 /**
  * Gold Crochet — Gerador de Template Estático de Página Individual de Produto (SSG)
- * Gera páginas HTML autônomas, completas e otimizadas para SEO e compartilhamento social.
+ * Estilo Cartier de Alta-Costura:
+ * - Galeria vertical de imagens com rolagem fluida
+ * - Grid sem borda/caixa externa engessada
+ * - "Voltar ao Catálogo" limpo sem setas
+ * - Botão "Adicionar à Sacola" com tipografia branca (#ffffff)
+ * - Informações técnicas e institucionais com linhas expansíveis (+) estilo Cartier
+ * - Carrossel infinito "Você Também Pode Gostar" com produtos aleatórios
  */
+
+function slugify(text) {
+  if (!text) return 'produto';
+  return text.toString().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
 export function generateProductHtml(product, allProducts = [], config = {}) {
   const p = product;
-  const slug = p.slug || 'produto-' + p.id;
-  const siteUrl = 'https://goldcrochet-shop.github.io/goldcrochet-shop';
+  const slug = p.slug || slugify(p.name);
+  const siteUrl = 'https://goldcrochet-shop.github.io';
   const pageUrl = `${siteUrl}/produtos/${slug}.html`;
-  const whatsappNumber = config.whatsapp || '5531984566047'; // número comercial
+  const whatsappNumber = config.whatsapp || '5531984566047';
   
   const formattedPrice = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
   const parcelPrice = p.price ? `3x de R$ ${(Number(p.price) / 3).toFixed(2).replace('.', ',')} sem juros` : '';
   
-  const mainImage = p.image || (p.gallery && p.gallery[0]) || '../assets/logo.png';
+  const mainImage = p.image || (p.gallery && p.gallery[0]) || '../assets/icon.svg';
   const gallery = [p.image, ...(p.gallery || [])].filter(Boolean);
   const uniqueGallery = [...new Set(gallery)];
+  if (!uniqueGallery.length) uniqueGallery.push(mainImage);
 
   const colors = p.colors || [];
   const colorSections = p.colorSections || [];
@@ -26,22 +41,19 @@ export function generateProductHtml(product, allProducts = [], config = {}) {
     }
   });
 
-  const categoryName = p.category ? p.category.toUpperCase() : 'EXCLUSIVO';
-  const material = p.material || 'Fio 100% Algodão Premium selecionado à mão';
-  const prodTime = p.prod_time ? `${p.prod_time} horas de confecção artesanal` : 'Feito sob demanda artesanalmente';
+  const categoryName = p.category ? p.category.toUpperCase() : 'ALTA-COSTURA';
+  const material = p.material || 'Fio 100% Algodão Nobre selecionado à mão';
+  const prodTime = p.prod_time ? `${p.prod_time} horas de tecelagem manual` : 'Feito artesanalmente sob demanda';
+  const desc = p.desc || 'Peça exclusiva em crochê manual criada pelo Ateliê Gold Crochet.';
 
-  // Schema.org JSON-LD para Google Search
   const schemaJson = JSON.stringify({
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": p.name,
-    "image": uniqueGallery.map(img => img.startsWith('http') ? img : `${siteUrl}/${img.replace(/^\.\//, '')}`),
-    "description": p.desc || `Peça exclusiva em crochê feita à mão pela Gold Crochet.`,
+    "image": uniqueGallery.map(img => img.startsWith('http') ? img : `${siteUrl}/${img.replace(/^\.\.\//, '')}`),
+    "description": desc,
     "sku": `GC-${p.id}`,
-    "brand": {
-      "@type": "Brand",
-      "name": "Gold Crochet"
-    },
+    "brand": { "@type": "Brand", "name": "Gold Crochet" },
     "offers": {
       "@type": "Offer",
       "url": pageUrl,
@@ -52,552 +64,315 @@ export function generateProductHtml(product, allProducts = [], config = {}) {
     }
   }, null, 2);
 
-  // Produtos relacionados sugeridos (excluindo o atual)
-  const related = allProducts
-    .filter(item => item.id !== p.id && item.slug)
-    .slice(0, 4);
+  const firstColor = allColorItems[0] ? allColorItems[0].name : '';
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>${p.name} — Gold Crochet</title>
-  <meta name="description" content="${p.desc ? p.desc.replace(/"/g, '&quot;') : 'Peça exclusiva em crochê feita à mão com acabamento dourado e fios nobres.'}">
+  <title>${p.name} — Gold Crochet Alta-Costura</title>
+  <meta name="description" content="${desc.replace(/"/g, '&quot;')}">
   <link rel="canonical" href="${pageUrl}">
-  <meta name="theme-color" content="#d4af37">
-
-  <!-- OpenGraph / WhatsApp / Instagram / Facebook -->
+  <meta name="theme-color" content="#cda434">
   <meta property="og:type" content="product">
   <meta property="og:title" content="${p.name} — Gold Crochet">
-  <meta property="og:description" content="${p.desc ? p.desc.replace(/"/g, '&quot;') : 'Peças artesanais exclusivas em crochê de alto padrão.'}">
+  <meta property="og:description" content="${desc.replace(/"/g, '&quot;')}">
   <meta property="og:image" content="${mainImage}">
   <meta property="og:url" content="${pageUrl}">
   <meta property="og:site_name" content="Gold Crochet">
   <meta property="product:price:amount" content="${p.price || 0}">
   <meta property="product:price:currency" content="BRL">
-
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${p.name} — Gold Crochet">
-  <meta name="twitter:description" content="${p.desc ? p.desc.replace(/"/g, '&quot;') : 'Peças artesanais exclusivas em crochê de alto padrão.'}">
+  <meta name="twitter:description" content="${desc.replace(/"/g, '&quot;')}">
   <meta name="twitter:image" content="${mainImage}">
-
-  <!-- Favicons -->
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/icon.png?v=3">
-  <link rel="icon" type="image/svg+xml" href="../assets/icon.svg?v=3">
-  <link rel="shortcut icon" href="../assets/icon.ico?v=3">
-  <link rel="apple-touch-icon" sizes="180x180" href="../assets/icon.png?v=3">
-
-  <!-- Google Fonts -->
+  <link rel="icon" type="image/svg+xml" href="../assets/icon.svg?v=buzio2026">
+  <link rel="icon" type="image/png" sizes="64x64" href="../assets/icon.png?v=buzio2026">
+  <link rel="shortcut icon" href="../favicon.ico?v=buzio2026">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/icon.png?v=buzio2026">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-  
-  <!-- Estilos Globais -->
-  <link rel="stylesheet" href="../style.css">
-
-  <!-- Schema.org JSON-LD -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css?v=2026">
+  <link rel="stylesheet" href="../css/luxury-core.css?v=2026">
   <script type="application/ld+json">
 ${schemaJson}
   </script>
-
   <style>
-    .product-standalone {
-      max-width: 1200px;
-      margin: 100px auto 60px;
-      padding: 0 24px;
-    }
-    .breadcrumbs {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.85rem;
-      color: #8b7a5a;
-      margin-bottom: 24px;
-    }
-    .breadcrumbs a {
-      color: inherit;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .breadcrumbs a:hover {
-      color: #cda434;
-    }
-    .breadcrumbs span {
-      color: #c9b686;
-    }
-    .product-grid-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 36px;
-      box-shadow: 0 10px 40px rgba(166,124,0,0.08);
-      border: 1px solid rgba(205,164,52,0.15);
-    }
-    @media (max-width: 868px) {
-      .product-grid-layout {
-        grid-template-columns: 1fr;
-        gap: 32px;
-        padding: 20px;
-      }
-      .product-standalone {
-        margin-top: 80px;
-        padding: 0 16px;
-      }
-    }
-    .gallery-container {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .main-image-wrap {
-      width: 100%;
-      height: 480px;
-      border-radius: 20px;
-      overflow: hidden;
-      background: #fdf9f0;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(205,164,52,0.15);
-    }
-    .main-image-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-    }
-    .main-image-wrap:hover img {
-      transform: scale(1.03);
-    }
-    .gallery-thumbs {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-    }
-    .thumb-btn {
-      width: 80px;
-      height: 80px;
-      border-radius: 12px;
-      border: 2px solid transparent;
-      overflow: hidden;
-      cursor: pointer;
-      background: #fdf9f0;
-      padding: 0;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-    .thumb-btn.active {
-      border-color: #cda434;
-      box-shadow: 0 0 12px rgba(205,164,52,0.3);
-    }
-    .thumb-btn img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .product-details-col {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .product-badge-tag {
-      display: inline-block;
-      align-self: flex-start;
-      padding: 6px 14px;
-      border-radius: 50px;
-      background: linear-gradient(135deg, #cda434, #a67c00);
-      color: #fff;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .product-title-h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2.2rem;
-      color: #2a2210;
-      line-height: 1.2;
-    }
-    .product-price-box {
-      background: #fdf9f0;
-      padding: 16px 20px;
-      border-radius: 16px;
-      border-left: 4px solid #cda434;
-    }
-    .price-value {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: #a67c00;
-    }
-    .price-installments {
-      font-size: 0.88rem;
-      color: #6b5b3a;
-      margin-top: 4px;
-    }
-    .product-description-text {
-      color: #554830;
-      font-size: 1rem;
-      line-height: 1.7;
-    }
-    .specs-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 16px;
-      background: #faf6ed;
-      border-radius: 14px;
-    }
-    .spec-item {
-      font-size: 0.85rem;
-      color: #4a3e20;
-    }
-    .spec-item strong {
-      color: #2a2210;
-      display: block;
-      margin-bottom: 2px;
-    }
-    .color-picker-box {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .color-options {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .color-chip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border-radius: 50px;
-      border: 1.5px solid #d4c29a;
-      background: #fff;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s;
-    }
-    .color-chip.selected {
-      border-color: #a67c00;
-      background: #fdf6e2;
-      font-weight: 600;
-    }
-    .color-dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 1px solid rgba(0,0,0,0.15);
-    }
-    .action-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .btn-buy-whatsapp {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #25D366, #128C7E);
-      color: #ffffff;
-      padding: 16px 24px;
-      border-radius: 50px;
-      font-size: 1.05rem;
-      font-weight: 700;
-      text-decoration: none;
-      box-shadow: 0 6px 20px rgba(37,211,102,0.3);
-      transition: all 0.25s;
-    }
-    .btn-buy-whatsapp:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(37,211,102,0.45);
-    }
-    .btn-add-cart {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #cda434, #a67c00);
-      color: #ffffff;
-      padding: 15px 24px;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      transition: all 0.25s;
-      box-shadow: 0 6px 20px rgba(205,164,52,0.25);
-    }
-    .btn-add-cart:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(205,164,52,0.35);
-    }
-    .btn-back-home {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: #8b7a5a;
-      text-decoration: none;
-      font-size: 0.9rem;
-      margin-top: 8px;
-      transition: color 0.2s;
-    }
-    .btn-back-home:hover {
-      color: #cda434;
-    }
-    .related-section {
-      margin-top: 60px;
-    }
-    .related-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.8rem;
-      color: #2a2210;
-      margin-bottom: 24px;
-      text-align: center;
-    }
-    .related-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-    }
-    .related-card {
-      background: #fff;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid rgba(205,164,52,0.15);
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.25s;
-      display: flex;
-      flex-direction: column;
-    }
-    .related-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(166,124,0,0.12);
-    }
-    .related-img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      background: #fdf9f0;
-    }
-    .related-info {
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .related-name {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: #2a2210;
-    }
-    .related-price {
-      color: #a67c00;
-      font-weight: 800;
-      font-size: 0.9rem;
-    }
+    .gc-product-page-wrap { max-width: 1300px; margin: 30px auto 80px; padding: 0 24px; }
+    .gc-back-link { display: inline-flex; align-items: center; font-size: 0.82rem; font-weight: 600; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.12em; text-decoration: none; margin-bottom: 30px; cursor: pointer; transition: color 0.2s; }
+    .gc-back-link:hover { color: var(--color-gold-deep); }
+    .gc-product-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; background: transparent; border: none; box-shadow: none; padding: 0; align-items: start; }
+    @media (max-width: 900px) { .gc-product-grid { grid-template-columns: 1fr; gap: 32px; } }
+    .gc-product-gallery { display: flex; flex-direction: column; gap: 20px; }
+    .gc-gallery-item-box { width: 100%; aspect-ratio: 4/5; border-radius: var(--radius-md); overflow: hidden; background: var(--color-sand); border: 1px solid var(--color-border-subtle); display: flex; align-items: center; justify-content: center; }
+    .gc-gallery-item-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .gc-gallery-item-box:hover img { transform: scale(1.02); }
+    .gc-product-info { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 90px; }
+    .gc-product-title { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 2.8rem); color: var(--color-ebony); line-height: 1.15; margin: 0; }
+    .gc-price-card { background: var(--color-sand); padding: 18px 24px; border-radius: var(--radius-md); border-left: 4px solid var(--color-gold); }
+    .gc-price-val { font-family: var(--font-body); font-size: 1.8rem; font-weight: 700; color: var(--color-gold-deep); }
+    .gc-price-inst { font-size: 0.88rem; color: var(--color-muted); margin-top: 4px; }
+    .gc-product-accordions { display: flex; flex-direction: column; border-top: 1px solid var(--color-border); margin-top: 16px; }
+    .gc-accordion-item { border-bottom: 1px solid var(--color-border); }
+    .gc-accordion-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 16px 0; background: none; border: none; font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; color: var(--color-ebony); cursor: pointer; text-align: left; transition: color 0.2s ease; }
+    .gc-accordion-btn:hover { color: var(--color-gold-deep); }
+    .gc-acc-icon { font-size: 1.3rem; font-weight: 300; line-height: 1; transition: transform 0.3s ease; }
+    .gc-accordion-item.active .gc-acc-icon { transform: rotate(45deg); }
+    .gc-accordion-panel { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.35s ease; font-size: 0.88rem; line-height: 1.7; color: var(--color-charcoal); padding: 0; }
+    .gc-accordion-item.active .gc-accordion-panel { max-height: 600px; opacity: 1; padding-bottom: 16px; }
+    .gc-accordion-panel ul { margin: 8px 0 0 18px; padding: 0; }
+    .gc-accordion-panel li { margin-bottom: 6px; }
+    .gc-actions-row { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+    .gc-btn-checkout { color: #ffffff !important; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; }
+    .gc-btn-checkout svg { stroke: #ffffff !important; }
+    .gc-carousel-viewport { position: relative; overflow: hidden; width: 100%; padding: 6px 2px 24px; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%); mask-image: linear-gradient(to right, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%); }
+    .gc-carousel-track { display: flex; gap: 22px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; cursor: grab; }
+    .gc-carousel-track::-webkit-scrollbar { display: none; }
+    .gc-carousel-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1.5px solid var(--color-border); padding-bottom: 16px; margin-bottom: 28px; gap: 16px; }
+    .gc-carousel-arrow-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--color-tertiary); border: 1.5px solid var(--color-border); color: var(--color-ebony); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition-smooth); font-size: 1.3rem; }
+    .gc-carousel-arrow-btn:hover { background: var(--color-btn-gold); color: #ffffff; border-color: var(--color-btn-gold); }
   </style>
 </head>
 <body>
-
-  <!-- Top Bar / Aviso -->
-  <header class="header" role="banner" style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(205,164,52,0.15);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;">
-    <a href="../index.html" class="logo" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
-      <img src="../assets/logo.png" alt="Gold Crochet" style="height:42px;width:auto;">
+  <main class="gc-product-page-wrap">
+    <a class="gc-back-link" onclick="if(window.history.length > 1) { window.history.back(); } else { window.location.href='../pecas.html'; }">
+      Voltar ao Catálogo
     </a>
-    <div style="display:flex;align-items:center;gap:14px;">
-      <a href="../index.html#catalogo" class="nav-link" style="color:#2a2210;text-decoration:none;font-weight:600;font-size:0.9rem;">Coleções</a>
-      <a href="../index.html" class="nav-link" style="color:#2a2210;text-decoration:none;font-weight:600;font-size:0.9rem;">Loja Completa</a>
-      <a href="../index.html#carrinho" class="nav-link" id="headerCartCount" style="background:#fdf9f0;border:1px solid #cda434;padding:6px 14px;border-radius:50px;color:#a67c00;text-decoration:none;font-weight:700;font-size:0.85rem;">Sacola 🛍️</a>
-    </div>
-  </header>
 
-  <main class="product-standalone">
-    <!-- Breadcrumbs -->
-    <nav class="breadcrumbs" aria-label="Navegação">
-      <a href="../index.html">Início</a>
-      <span>/</span>
-      <a href="../index.html#catalogo">${categoryName}</a>
-      <span>/</span>
-      <span aria-current="page">${p.name}</span>
-    </nav>
-
-    <!-- Estrutura Principal do Produto -->
-    <div class="product-grid-layout">
-      <!-- Coluna da Galeria -->
-      <div class="gallery-container">
-        <div class="main-image-wrap">
-          <img id="mainProductImg" src="${mainImage}" alt="${p.name}">
-        </div>
-        ${uniqueGallery.length > 1 ? `
-        <div class="gallery-thumbs">
-          ${uniqueGallery.map((img, idx) => `
-            <button class="thumb-btn ${idx === 0 ? 'active' : ''}" onclick="switchImage('${img}', this)" aria-label="Ver foto ${idx + 1}">
-              <img src="${img}" alt="${p.name} - Imagem ${idx + 1}">
-            </button>
-          `).join('')}
-        </div>
-        ` : ''}
+    <div class="gc-product-grid">
+      <!-- Galeria Vertical de Imagens (Rolagem Estilo Cartier) -->
+      <div class="gc-product-gallery">
+        ${uniqueGallery.map((img, idx) => `
+          <div class="gc-gallery-item-box">
+            <img src="${img}" alt="${p.name} - Detalhe ${idx + 1}" loading="lazy" onerror="this.src='../assets/icon.svg'">
+          </div>
+        `).join('')}
       </div>
 
-      <!-- Coluna de Detalhes -->
-      <div class="product-details-col">
-        ${p.badge ? `<span class="product-badge-tag">${p.badge}</span>` : ''}
-        <h1 class="product-title-h1">${p.name}</h1>
-        
-        <div class="product-price-box">
-          <div class="price-value">${formattedPrice}</div>
-          ${parcelPrice ? `<div class="price-installments">ou em até ${parcelPrice}</div>` : ''}
+      <!-- Informações do Produto (Coluna Fixa / Accordions Cartier) -->
+      <div class="gc-product-info">
+        <div>
+          ${p.badge ? `<span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:12px">${p.badge}</span>` : ''}
+          <span style="display:block;font-size:0.75rem;color:var(--color-muted);letter-spacing:0.15em;text-transform:uppercase;font-weight:600;margin-bottom:4px">${categoryName}</span>
+          <h1 class="gc-product-title">${p.name}</h1>
         </div>
 
-        <p class="product-description-text">${p.desc || 'Peça artesanal exclusiva criada à mão com pontos finos de crochê e materiais de alta resistência e suavidade.'}</p>
+        <div class="gc-price-card">
+          <div class="gc-price-val">${formattedPrice}</div>
+          ${parcelPrice ? `<div class="gc-price-inst">ou em até ${parcelPrice}</div>` : ''}
+        </div>
 
-        <!-- Especificações da Peça -->
-        <div class="specs-grid">
-          <div class="spec-item">
-            <strong>Material:</strong>
-            ${material}
+        <p style="color:var(--color-charcoal);font-size:0.95rem;line-height:1.7">${desc}</p>
+
+        <!-- Informações com Linhas Expansíveis (+) estilo Cartier -->
+        <div class="gc-product-accordions">
+          <div class="gc-accordion-item">
+            <button class="gc-accordion-btn" onclick="toggleAccordion(this)">
+              <span>Material & Fios Nobres</span>
+              <span class="gc-acc-icon">+</span>
+            </button>
+            <div class="gc-accordion-panel">
+              <p>${material}</p>
+            </div>
           </div>
-          <div class="spec-item">
-            <strong>Confecção:</strong>
-            ${prodTime}
+
+          <div class="gc-accordion-item">
+            <button class="gc-accordion-btn" onclick="toggleAccordion(this)">
+              <span>Confecção Artesanal</span>
+              <span class="gc-acc-icon">+</span>
+            </button>
+            <div class="gc-accordion-panel">
+              <p>${prodTime}</p>
+            </div>
           </div>
-          <div class="spec-item">
-            <strong>Categoria:</strong>
-            ${categoryName}
+
+          <div class="gc-accordion-item">
+            <button class="gc-accordion-btn" onclick="toggleAccordion(this)">
+              <span>Coleção & Ateliê</span>
+              <span class="gc-acc-icon">+</span>
+            </button>
+            <div class="gc-accordion-panel">
+              <p>Coleção ${p.collection || 'Essenciais'}. Criação exclusiva tecida à mão pelo Ateliê Gold Crochet Brasil.</p>
+            </div>
           </div>
-          <div class="spec-item">
-            <strong>Acabamento:</strong>
-            Exclusivo Gold Crochet
+
+          <div class="gc-accordion-item">
+            <button class="gc-accordion-btn" onclick="toggleAccordion(this)">
+              <span>Acabamento & Detalhes</span>
+              <span class="gc-acc-icon">+</span>
+            </button>
+            <div class="gc-accordion-panel">
+              <p>Acabamento impecável de alta-costura com arremates invisíveis, trama estruturada e toque macio na pele.</p>
+            </div>
           </div>
         </div>
 
-        <!-- Seletor de Cores -->
         ${allColorItems.length > 0 ? `
-        <div class="color-picker-box">
-          <label style="font-weight:700;font-size:0.9rem;color:#2a2210;">Escolha a Cor:</label>
-          <div class="color-options" id="colorOptions">
+        <div>
+          <label style="display:block;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-muted);margin-bottom:10px">Cores Disponíveis:</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
             ${allColorItems.map((col, idx) => `
-              <div class="color-chip ${idx === 0 ? 'selected' : ''}" onclick="selectColor('${col.name}', this)">
-                <span class="color-dot" style="background-color: ${col.hex || '#cda434'};"></span>
+              <div class="gc-filter-pill ${idx === 0 ? 'active' : ''}" onclick="selectColor('${col.name}', this)" style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px">
+                <span style="width:12px;height:12px;border-radius:50%;background:${col.hex || '#cda434'};display:inline-block;border:1px solid rgba(0,0,0,0.15)"></span>
                 <span>${col.name}</span>
               </div>
             `).join('')}
           </div>
-        </div>
-        ` : ''}
+        </div>` : ''}
 
-        <!-- Botões de Ação -->
-        <div class="action-buttons">
-          <a id="btnWhatsApp" class="btn-buy-whatsapp" href="#" target="_blank" rel="noopener noreferrer">
-            <span>💬 Comprar pelo WhatsApp</span>
-          </a>
-          <button class="btn-add-cart" onclick="addToCartCurrent()">
-            <span>🛍️ Adicionar à Sacola</span>
+        <div class="gc-actions-row">
+          <button class="gc-btn-checkout" onclick="addToCartCurrent()" style="width:100%;color:#ffffff!important;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span style="color:#ffffff!important;">Adicionar à Sacola</span>
           </button>
-          <a href="../index.html" class="btn-back-home">← Voltar para a Loja Principal</a>
         </div>
       </div>
     </div>
 
-    <!-- Seção de Peças Relacionadas -->
-    ${related.length > 0 ? `
-    <section class="related-section">
-      <h2 class="related-title">Você Também Pode Gostar</h2>
-      <div class="related-grid">
-        ${related.map(rel => `
-          <a class="related-card" href="./${rel.slug}.html">
-            <img class="related-img" src="${rel.image || '../assets/logo.png'}" alt="${rel.name}">
-            <div class="related-info">
-              <span class="related-name">${rel.name}</span>
-              <span class="related-price">${rel.price ? `R$ ${Number(rel.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta'}</span>
-            </div>
-          </a>
-        `).join('')}
+    <!-- Seção 'Você Também Pode Gostar' em Carrossel Infinito com Produtos Aleatórios -->
+    <section style="margin-top:90px">
+      <div class="gc-carousel-header">
+        <h2 style="font-family:var(--font-display);font-size:1.85rem;color:var(--color-ebony);margin:0">Você Também Pode Gostar</h2>
+        <div style="display:flex;gap:8px">
+          <button id="relatedPrevBtn" class="gc-carousel-arrow-btn" aria-label="Anterior">&lsaquo;</button>
+          <button id="relatedNextBtn" class="gc-carousel-arrow-btn" aria-label="Próximo">&rsaquo;</button>
+        </div>
+      </div>
+      <div class="gc-carousel-viewport">
+        <div id="gridRelatedCarousel" class="gc-carousel-track">
+          <!-- Carregado dinamicamente via JS -->
+        </div>
       </div>
     </section>
-    ` : ''}
+
+    <!-- Seções Institucionais Cartier com Linhas Expansíveis (+) -->
+    <section style="margin-top:60px;border-top:1.5px solid var(--color-border);padding-top:10px">
+      <div class="gc-accordion-item">
+        <button class="gc-accordion-btn" onclick="toggleAccordion(this)" style="padding:20px 0;font-size:1.05rem;">
+          <span>Cuidados Gold Crochet</span>
+          <span class="gc-acc-icon">+</span>
+        </button>
+        <div class="gc-accordion-panel">
+          <p>Para assegurar a durabilidade e a beleza das tramas manuais do seu modelo:</p>
+          <ul>
+            <li>Lavar exclusivamente à mão com água fria e sabão líquido neutro.</li>
+            <li>Não deixar de molho e não torcer. Pressione delicadamente entre toalhas para remover a umidade.</li>
+            <li>Secar sempre na horizontal à sombra, mantendo a peça em superfície plana.</li>
+            <li>Guardar dobrada em saquinho respirável, evitando cabides para não esticar os pontos.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="gc-accordion-item">
+        <button class="gc-accordion-btn" onclick="toggleAccordion(this)" style="padding:20px 0;font-size:1.05rem;">
+          <span>Embalagem para Presente</span>
+          <span class="gc-acc-icon">+</span>
+        </button>
+        <div class="gc-accordion-panel">
+          <p>Uma apresentação impecável à altura da alta-costura brasileira:</p>
+          <ul>
+            <li>Todas as peças são enviadas na caixa rígida oficial do Ateliê Gold Crochet com laço dourado acetinado.</li>
+            <li>Envolvidas em delicado papel de seda perfumado com aroma floral autoral.</li>
+            <li>Acompanha certificado de autenticidade assinado e cartão de presente com caligrafia personalizada sob solicitação.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="gc-accordion-item">
+        <button class="gc-accordion-btn" onclick="toggleAccordion(this)" style="padding:20px 0;font-size:1.05rem;">
+          <span>Entregas &amp; Devolução</span>
+          <span class="gc-acc-icon">+</span>
+        </button>
+        <div class="gc-accordion-panel">
+          <p>Total comodidade e segurança na sua encomenda:</p>
+          <ul>
+            <li>Envio para todo o Brasil com código de rastreamento direto no seu WhatsApp (Sedex ou Transportadora expressa).</li>
+            <li>Prazo de produção informado com transparência no momento do alinhamento sob medida.</li>
+            <li>Garantia incondicional de devolução ou troca em até 7 dias corridos após o recebimento, com a peça sem uso na embalagem original.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer style="margin-top:80px;background:#15120c;color:#f0e8d8;padding:48px 24px;text-align:center;">
-    <p style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:#d4af37;margin-bottom:8px;">Gold Crochet</p>
-    <p style="font-size:0.85rem;color:#c9b686;margin-bottom:16px;">Peças em crochê feitas à mão, com acabamento premium.</p>
-    <p style="font-size:0.75rem;color:#8b7a5a;">&copy; ${new Date().getFullYear()} Gold Crochet. Todos os direitos reservados.</p>
-  </footer>
-
+  <script src="../js/loader.js?v=2026"></script>
+  <script src="../js/shared-ui.js?v=2026"></script>
   <script>
-    // Gerenciamento de Cores e Imagem na Página
-    let selectedColor = '${allColorItems[0] ? allColorItems[0].name : ''}';
-    const productName = "${p.name.replace(/"/g, '\\"')}";
-    const productPrice = "${formattedPrice}";
-    const pageUrl = window.location.href;
+    let selectedColor = '${firstColor}';
+    const productData = {
+      id: ${p.id},
+      name: "${p.name.replace(/"/g, '\\"')}",
+      price: ${p.price || 0},
+      image: "${mainImage}",
+      slug: "${slug}"
+    };
     const whatsappNum = "${whatsappNumber}";
 
-    function switchImage(src, btn) {
-      document.getElementById('mainProductImg').src = src;
-      document.querySelectorAll('.thumb-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
+    function toggleAccordion(btn) {
+      const item = btn.closest('.gc-accordion-item');
+      if (item) item.classList.toggle('active');
     }
 
     function selectColor(name, el) {
       selectedColor = name;
-      document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('selected'));
-      if (el) el.classList.add('selected');
-      updateWhatsAppLink();
+      document.querySelectorAll('.gc-filter-pill').forEach(c => c.classList.remove('active'));
+      if (el) el.classList.add('active');
     }
 
-    function updateWhatsAppLink() {
-      const colorText = selectedColor ? ' na cor ' + selectedColor : '';
-      const text = encodeURIComponent('Olá! Gostaria de encomendar a peça *' + productName + '*' + colorText + ' (' + productPrice + ') que vi no site: ' + pageUrl);
-      document.getElementById('btnWhatsApp').href = 'https://wa.me/' + whatsappNum + '?text=' + text;
-    }
-
-    updateWhatsAppLink();
-
-    // Integração com Carrinho do LocalStorage (Sincronizado com a loja principal)
     function addToCartCurrent() {
-      try {
-        const cart = JSON.parse(localStorage.getItem('gc_cart') || '[]');
-        const existing = cart.find(i => i.id === ${p.id} && i.selectedColor === selectedColor);
-        if (existing) {
-          existing.qty = (existing.qty || 1) + 1;
-        } else {
-          cart.push({
-            id: ${p.id},
-            name: productName,
-            price: ${p.price || 0},
-            image: "${mainImage}",
-            selectedColor: selectedColor,
-            qty: 1,
-            slug: "${slug}"
-          });
-        }
-        localStorage.setItem('gc_cart', JSON.stringify(cart));
-        alert('✨ "' + productName + '" adicionado à sua sacola!');
-        updateCartBadge();
-      } catch(e) {
-        console.error(e);
+      if (window.GoldCart && window.GoldCart.add) {
+        window.GoldCart.add(productData, 1, selectedColor);
       }
     }
 
-    function updateCartBadge() {
-      try {
-        const cart = JSON.parse(localStorage.getItem('gc_cart') || '[]');
-        const total = cart.reduce((acc, i) => acc + (i.qty || 1), 0);
-        const badge = document.getElementById('headerCartCount');
-        if (badge) badge.textContent = 'Sacola (' + total + ') 🛍️';
-      } catch(e) {}
-    }
-    updateCartBadge();
+    // Carrega o carrossel infinito 'Você Também Pode Gostar'
+    (async function initRelatedCarousel() {
+      const all = await window.fetchCatalog();
+      if (!all || !all.length) return;
+      const filtered = all.filter(item => item.id !== productData.id);
+      const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+      const base = shuffled.slice(0, 8);
+      const infinite = [...base, ...base];
+      const track = document.getElementById('gridRelatedCarousel');
+      if (!track) return;
+
+      track.innerHTML = infinite.map(item => {
+        const pSlug = item.slug || 'produto';
+        const pImg = item.image || (item.gallery && item.gallery[0]) || '../assets/icon.svg';
+        const pPrice = item.price ? `R$ ${Number(item.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+        return `
+          <div class="gc-product-card" onclick="window.location.href='./' + '${pSlug}' + '.html'" style="cursor:pointer">
+            <div class="gc-product-card-img-wrap">
+              <button class="gc-card-fav-btn" data-id="${item.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${item.id});" aria-label="Favoritar">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </button>
+              <img src="${pImg}" alt="${item.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='../assets/icon.svg'">
+            </div>
+            <div class="gc-product-card-body">
+              <h3 class="gc-product-title">${item.name}</h3>
+              <div class="gc-product-price-row">
+                <span class="gc-product-price">${pPrice}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      let autoRelTimer = setInterval(() => {
+        track.scrollBy({ left: 300, behavior: 'smooth' });
+      }, 30000);
+
+      const pBtn = document.getElementById('relatedPrevBtn');
+      const nBtn = document.getElementById('relatedNextBtn');
+      if (pBtn) pBtn.addEventListener('click', () => { track.scrollBy({ left: -300, behavior: 'smooth' }); });
+      if (nBtn) nBtn.addEventListener('click', () => { track.scrollBy({ left: 300, behavior: 'smooth' }); });
+    })();
   </script>
 </body>
 </html>`;

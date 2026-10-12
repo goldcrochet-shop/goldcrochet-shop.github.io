@@ -41,155 +41,165 @@
     if (existingHeader) return;
 
     const header = document.createElement('header');
-    header.className = 'gc-header';
+    header.className = 'gc-header gc-header-top-at-crest';
     header.innerHTML = `
       <div class="gc-header-inner">
-        <!-- 0. Menu Hambúrguer Mobile (44x44px target) -->
-        <button id="gcMobileNavToggle" class="gc-header-menu-btn" aria-label="Menu" title="Menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24" aria-hidden="true">
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
+        <!-- Nível 1: Linha do Topo (Logo Centralizada Ampla no Topo da Página — Efeito Schiaparelli) -->
+        <div class="gc-header-crest-row">
+          <a href="${root}index.html" class="gc-logo-brand gc-logo-brand-crest" title="Gold Crochet Brasil — Início">
+            <img src="${root}assets/logo-brasil-transparent.png" alt="Gold Crochet Brasil" class="gc-logo-official-img">
+          </a>
+        </div>
 
-        <!-- 1. Logo Oficial Centralizada no Mobile -->
-        <a href="${root}index.html" class="gc-logo-brand" title="Gold Crochet Brasil — Início">
-          <img src="${root}assets/logo-brasil-transparent.png" alt="Gold Crochet Brasil" class="gc-logo-official-img">
-        </a>
+        <!-- Nível 2 / Linha Principal de Navegação e Ações -->
+        <div class="gc-header-nav-row">
+          <!-- 0. Menu Hambúrguer Mobile (44x44px target) -->
+          <button id="gcMobileNavToggle" class="gc-header-menu-btn" aria-label="Menu" title="Menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
 
-        <!-- 2. Navegação Principal: Início, Coleções, Peças, Novidades, Casa Gold -->
-        <nav class="gc-header-nav" aria-label="Navegação Principal">
-          <ul class="gc-nav-links">
-            <li><a href="${root}index.html" class="gc-nav-link ${activePage === 'inicio' ? 'active' : ''}">Início</a></li>
-            <li><a href="${root}colecoes.html" class="gc-nav-link ${activePage === 'colecoes' ? 'active' : ''}">Coleções</a></li>
-            <li class="gc-nav-item-dropdown">
-              <a href="#pecas" id="gcMegaMenuToggle" class="gc-nav-link ${activePage === 'pecas' ? 'active' : ''}" role="button" aria-expanded="false">
-                Peças
-              </a>
-              <!-- MEGA-MENU SUSPENSO IDÊNTICO À REFERÊNCIA DO ATELIÊ -->
-              <div class="gc-mega-menu" id="gcMegaMenuPecas">
-                <div class="gc-mega-menu-inner">
-                  <!-- Coluna 1: ESSENCIAIS -->
-                  <div class="gc-mega-col">
-                    <h4 class="gc-mega-heading">ESSENCIAIS</h4>
-                    <div class="gc-mega-subcol-group">
-                      <div class="gc-mega-subcol">
-                        <h5 class="gc-mega-subheading">PARA ELA</h5>
-                        <ul class="gc-mega-list">
-                          <li><a href="${root}pecas.html?cat=noite-ela">Roupas para noite</a></li>
-                          <li><a href="${root}pecas.html?cat=saias-vestidos">Saias e vestidos</a></li>
-                          <li><a href="${root}pecas.html?cat=jaquetas-casacos">Jaquetas e casacos</a></li>
-                          <li><a href="${root}pecas.html?cat=tops">Tops</a></li>
-                          <li><a href="${root}pecas.html?cat=calcas">Calças</a></li>
-                          <li><a href="${root}pecas.html?cat=ela" class="gc-mega-ver-tudo">Ver tudo</a></li>
-                        </ul>
-                      </div>
-                      <div class="gc-mega-subcol">
-                        <h5 class="gc-mega-subheading">PARA ELE</h5>
-                        <ul class="gc-mega-list">
-                          <li><a href="${root}pecas.html?cat=noite-ele">Roupas para noite</a></li>
-                          <li><a href="${root}pecas.html?cat=jaquetas-ele">Jaquetas e casacos</a></li>
-                          <li><a href="${root}pecas.html?cat=calcas-ele">Calças</a></li>
-                          <li><a href="${root}pecas.html?cat=ele" class="gc-mega-ver-tudo">Ver tudo</a></li>
-                        </ul>
+          <!-- 1. Logo Compacta no Canto Esquerdo (Surge suavemente ao rolar a página / Centralizada no Mobile) -->
+          <a href="${root}index.html" class="gc-logo-brand gc-logo-brand-compact" title="Gold Crochet Brasil — Início">
+            <img src="${root}assets/logo-brasil-transparent.png" alt="Gold Crochet Brasil" class="gc-logo-official-img">
+          </a>
+
+          <!-- 2. Navegação Principal -->
+          <nav class="gc-header-nav" aria-label="Navegação Principal">
+            <ul class="gc-nav-links">
+              <li><a href="${root}index.html" class="gc-nav-link ${activePage === 'inicio' ? 'active' : ''}">Início</a></li>
+              <li><a href="${root}colecoes.html" class="gc-nav-link ${activePage === 'colecoes' ? 'active' : ''}">Coleções</a></li>
+              <li class="gc-nav-item-dropdown">
+                <a href="#pecas" id="gcMegaMenuToggle" class="gc-nav-link ${activePage === 'pecas' ? 'active' : ''}" role="button" aria-expanded="false">
+                  Peças
+                </a>
+                <!-- MEGA-MENU SUSPENSO IDÊNTICO À REFERÊNCIA DO ATELIÊ -->
+                <div class="gc-mega-menu" id="gcMegaMenuPecas">
+                  <div class="gc-mega-menu-inner">
+                    <!-- Coluna 1: ESSENCIAIS -->
+                    <div class="gc-mega-col">
+                      <h4 class="gc-mega-heading">ESSENCIAIS</h4>
+                      <div class="gc-mega-subcol-group">
+                        <div class="gc-mega-subcol">
+                          <h5 class="gc-mega-subheading">PARA ELA</h5>
+                          <ul class="gc-mega-list">
+                            <li><a href="${root}pecas.html?cat=noite-ela">Roupas para noite</a></li>
+                            <li><a href="${root}pecas.html?cat=saias-vestidos">Saias e vestidos</a></li>
+                            <li><a href="${root}pecas.html?cat=jaquetas-casacos">Jaquetas e casacos</a></li>
+                            <li><a href="${root}pecas.html?cat=tops">Tops</a></li>
+                            <li><a href="${root}pecas.html?cat=calcas">Calças</a></li>
+                            <li><a href="${root}pecas.html?cat=ela" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                          </ul>
+                        </div>
+                        <div class="gc-mega-subcol">
+                          <h5 class="gc-mega-subheading">PARA ELE</h5>
+                          <ul class="gc-mega-list">
+                            <li><a href="${root}pecas.html?cat=noite-ele">Roupas para noite</a></li>
+                            <li><a href="${root}pecas.html?cat=jaquetas-ele">Jaquetas e casacos</a></li>
+                            <li><a href="${root}pecas.html?cat=calcas-ele">Calças</a></li>
+                            <li><a href="${root}pecas.html?cat=ele" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <!-- Coluna 2: PEQUENINOS -->
-                  <div class="gc-mega-col">
-                    <h4 class="gc-mega-heading">PEQUENINOS</h4>
-                    <ul class="gc-mega-list">
-                      <li><a href="${root}pecas.html?cat=bebe">Bebê</a></li>
-                      <li><a href="${root}pecas.html?cat=garotas">Garotas</a></li>
-                      <li><a href="${root}pecas.html?cat=garotos">Garotos</a></li>
-                      <li><a href="${root}pecas.html?cat=presentes">Presentes</a></li>
-                      <li><a href="${root}pecas.html?cat=pequeninos" class="gc-mega-ver-tudo">Ver tudo</a></li>
-                    </ul>
-                  </div>
+                    <!-- Coluna 2: PEQUENINOS -->
+                    <div class="gc-mega-col">
+                      <h4 class="gc-mega-heading">PEQUENINOS</h4>
+                      <ul class="gc-mega-list">
+                        <li><a href="${root}pecas.html?cat=bebe">Bebê</a></li>
+                        <li><a href="${root}pecas.html?cat=garotas">Garotas</a></li>
+                        <li><a href="${root}pecas.html?cat=garotos">Garotos</a></li>
+                        <li><a href="${root}pecas.html?cat=presentes">Presentes</a></li>
+                        <li><a href="${root}pecas.html?cat=pequeninos" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                      </ul>
+                    </div>
 
-                  <!-- Coluna 3: ACESSÓRIOS -->
-                  <div class="gc-mega-col">
-                    <h4 class="gc-mega-heading">ACESSÓRIOS</h4>
-                    <ul class="gc-mega-list">
-                      <li><a href="${root}pecas.html?cat=bolsas">Bolsas</a></li>
-                      <li><a href="${root}pecas.html?cat=charms">Charms</a></li>
-                      <li><a href="${root}pecas.html?cat=acessorios" class="gc-mega-ver-tudo">Ver tudo</a></li>
-                    </ul>
-                  </div>
+                    <!-- Coluna 3: ACESSÓRIOS -->
+                    <div class="gc-mega-col">
+                      <h4 class="gc-mega-heading">ACESSÓRIOS</h4>
+                      <ul class="gc-mega-list">
+                        <li><a href="${root}pecas.html?cat=bolsas">Bolsas</a></li>
+                        <li><a href="${root}pecas.html?cat=charms">Charms</a></li>
+                        <li><a href="${root}pecas.html?cat=acessorios" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                      </ul>
+                    </div>
 
-                  <!-- Coluna 4: BIJUTERIAS -->
-                  <div class="gc-mega-col">
-                    <h4 class="gc-mega-heading">BIJUTERIAS</h4>
-                    <ul class="gc-mega-list">
-                      <li><a href="${root}pecas.html?cat=brincos">Brincos</a></li>
-                      <li><a href="${root}pecas.html?cat=colares">Colares</a></li>
-                      <li><a href="${root}pecas.html?cat=broches">Broches</a></li>
-                      <li><a href="${root}pecas.html?cat=braceletes">Braceletes</a></li>
-                      <li><a href="${root}pecas.html?cat=aneis">Anéis</a></li>
-                      <li><a href="${root}pecas.html?cat=bijuterias" class="gc-mega-ver-tudo">Ver tudo</a></li>
-                    </ul>
-                  </div>
+                    <!-- Coluna 4: BIJUTERIAS -->
+                    <div class="gc-mega-col">
+                      <h4 class="gc-mega-heading">BIJUTERIAS</h4>
+                      <ul class="gc-mega-list">
+                        <li><a href="${root}pecas.html?cat=brincos">Brincos</a></li>
+                        <li><a href="${root}pecas.html?cat=colares">Colares</a></li>
+                        <li><a href="${root}pecas.html?cat=broches">Broches</a></li>
+                        <li><a href="${root}pecas.html?cat=braceletes">Braceletes</a></li>
+                        <li><a href="${root}pecas.html?cat=aneis">Anéis</a></li>
+                        <li><a href="${root}pecas.html?cat=bijuterias" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                      </ul>
+                    </div>
 
-                  <!-- Coluna 5: ARTIGOS PARA CASA -->
-                  <div class="gc-mega-col">
-                    <h4 class="gc-mega-heading">ARTIGOS PARA CASA</h4>
-                    <ul class="gc-mega-list">
-                      <li><a href="${root}casa-gold.html">Decorações</a></li>
-                      <li><a href="${root}casa-gold.html">Mantas &amp; Cobertores</a></li>
-                      <li><a href="${root}casa-gold.html">Amigurumis</a></li>
-                      <li><a href="${root}casa-gold.html" class="gc-mega-ver-tudo">Ver tudo</a></li>
-                    </ul>
-                  </div>
+                    <!-- Coluna 5: ARTIGOS PARA CASA -->
+                    <div class="gc-mega-col">
+                      <h4 class="gc-mega-heading">ARTIGOS PARA CASA</h4>
+                      <ul class="gc-mega-list">
+                        <li><a href="${root}casa-gold.html">Decorações</a></li>
+                        <li><a href="${root}casa-gold.html">Mantas &amp; Cobertores</a></li>
+                        <li><a href="${root}casa-gold.html">Amigurumis</a></li>
+                        <li><a href="${root}casa-gold.html" class="gc-mega-ver-tudo">Ver tudo</a></li>
+                      </ul>
+                    </div>
 
-                  <!-- Coluna 6: Card Oficial da Marca com Logo Específica da Aba Peças -->
-                  <div class="gc-mega-brand-card">
-                    <img src="${root}images/logo_pecas_dropdown.png" alt="Gold Crochet Oficial" class="gc-mega-brand-logo">
+                    <!-- Coluna 6: Card Oficial da Marca com Logo Específica da Aba Peças -->
+                    <div class="gc-mega-brand-card">
+                      <img src="${root}images/logo_pecas_dropdown.png" alt="Gold Crochet Oficial" class="gc-mega-brand-logo">
+                    </div>
                   </div>
                 </div>
-              </div>
-            </li>
-            <li><a href="${root}novidades.html" class="gc-nav-link ${activePage === 'novidades' ? 'active' : ''}">Novidades</a></li>
-            <li><a href="${root}casa-gold.html" class="gc-nav-link ${activePage === 'casa-gold' ? 'active' : ''}">Casa Gold</a></li>
-          </ul>
-        </nav>
+              </li>
+              <li><a href="${root}novidades.html" class="gc-nav-link ${activePage === 'novidades' ? 'active' : ''}">Novidades</a></li>
+              <li><a href="${root}casa-gold.html" class="gc-nav-link ${activePage === 'casa-gold' ? 'active' : ''}">Casa Gold</a></li>
+            </ul>
+          </nav>
 
-        <!-- 3. Ações à Direita: Pesquisar, Silhueta Usuário, Silhueta Coração, Sacola -->
-        <div class="gc-header-actions">
-          <a href="${root}pecas.html" class="gc-header-search-btn" title="Pesquisar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18" aria-hidden="true">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <span>Pesquisar</span>
-          </a>
+          <!-- 3. Ações à Direita: Pesquisar, Silhueta Usuário, Silhueta Coração, Sacola -->
+          <div class="gc-header-actions">
+            <a href="${root}pecas.html" class="gc-header-search-btn" title="Pesquisar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>Pesquisar</span>
+            </a>
 
-          <!-- Silhueta: Área do Cliente -->
-          <a href="${root}cliente.html" id="gcUserTrigger" class="gc-action-circle-btn ${activePage === 'cliente' ? 'active' : ''}" title="Minha Conta" aria-label="Minha Conta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </a>
+            <!-- Silhueta: Área do Cliente -->
+            <a href="${root}cliente.html" id="gcUserTrigger" class="gc-action-circle-btn ${activePage === 'cliente' ? 'active' : ''}" title="Minha Conta" aria-label="Minha Conta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </a>
 
-          <!-- Silhueta: Coração (Favoritos) -->
-          <button id="gcFavTrigger" class="gc-action-circle-btn" title="Favoritos" aria-label="Favoritos">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
-            <span id="gcFavCount" class="gc-badge-count hidden">0</span>
-          </button>
+            <!-- Silhueta: Coração (Favoritos) -->
+            <button id="gcFavTrigger" class="gc-action-circle-btn" title="Favoritos" aria-label="Favoritos">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              <span id="gcFavCount" class="gc-badge-count hidden">0</span>
+            </button>
 
-          <!-- Sacola de Compras -->
-          <button id="gcCartTrigger" class="gc-action-circle-btn" title="Sacola de Compras" aria-label="Sacola de Compras">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-            <span id="gcCartCount" class="gc-badge-count hidden">0</span>
-          </button>
+            <!-- Sacola de Compras -->
+            <button id="gcCartTrigger" class="gc-action-circle-btn" title="Sacola de Compras" aria-label="Sacola de Compras">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span id="gcCartCount" class="gc-badge-count hidden">0</span>
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -389,6 +399,50 @@
             Finalizar pelo WhatsApp
           </a>
         </div>
+      </div>
+    `;
+
+    document.body.appendChild(drawer);
+  }
+
+  // ════════════════════════════════════════
+  // 4.1 GAVETA LATERAL DE LISTA DE DESEJOS (FAVORITOS)
+  // ════════════════════════════════════════
+  function renderWishlistDrawer() {
+    if (document.getElementById('gcWishlistDrawer')) return;
+
+    let backdrop = document.getElementById('gcCartBackdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'gcCartBackdrop';
+      backdrop.className = 'gc-drawer-backdrop';
+      document.body.appendChild(backdrop);
+    }
+
+    const drawer = document.createElement('div');
+    drawer.id = 'gcWishlistDrawer';
+    drawer.className = 'gc-cart-drawer gc-drawer-panel';
+    drawer.innerHTML = `
+      <div class="gc-cart-drawer-box">
+        <div class="gc-cart-header">
+          <div class="gc-cart-header-actions">
+            <a href="${root}pecas.html" class="gc-drawer-head-btn" title="Pesquisa">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Pesquisa</span>
+            </a>
+            <a href="${root}cliente.html" class="gc-drawer-head-btn" title="Minha Conta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </a>
+            <button class="gc-drawer-head-btn active" id="gcWishlistHeadFavBtn" title="Favoritos">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
+            <button class="gc-drawer-head-btn" id="gcWishlistHeadCartBtn" title="Sacola">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            </button>
+          </div>
+          <button id="gcWishlistClose" class="gc-cart-close" aria-label="Fechar">&times;</button>
+        </div>
+        <div id="gcWishlistBody" class="gc-cart-body" style="padding:24px;"></div>
       </div>
     `;
 
@@ -921,6 +975,8 @@
       if (favs.includes(id)) btn.classList.add('active');
       else btn.classList.remove('active');
     });
+
+    updateWishlistUI();
   }
 
   window.fetchCatalog = async function () {
@@ -933,6 +989,105 @@
       return [];
     }
   };
+
+  // Motor da Gaveta de Desejos (Wishlist Lateral)
+  let cachedProductsForWishlist = null;
+  async function updateWishlistUI() {
+    const body = document.getElementById('gcWishlistBody');
+    if (!body) return;
+
+    const favs = getFavs();
+    if (!favs || favs.length === 0) {
+      body.innerHTML = `
+        <div class="gc-cart-empty-view" style="justify-content:center;min-height:360px;">
+          <div class="gc-cart-empty-top">
+            <div class="gc-cart-bag-icon-wrap" style="color:var(--color-primary-gold);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="60" height="60">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </div>
+            <h3 class="gc-cart-empty-heading">Sua lista de desejos está vazia.</h3>
+            <p style="font-size:0.85rem;color:var(--color-muted);max-width:280px;margin:0 auto 18px;line-height:1.5;">Guarde suas peças autorais prediletas para encomendar com nossa estilista.</p>
+            <a href="${root}pecas.html" class="gc-cart-explore-link">Explorar Coleções</a>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    if (!cachedProductsForWishlist) {
+      body.innerHTML = `<div style="text-align:center;padding:40px;color:var(--color-muted);font-size:0.9rem">Carregando seus desejos...</div>`;
+      cachedProductsForWishlist = await window.fetchCatalog();
+    }
+
+    const items = cachedProductsForWishlist.filter(p => favs.includes(p.id));
+
+    if (items.length === 0) {
+      body.innerHTML = `
+        <div class="gc-cart-empty-view" style="justify-content:center;min-height:360px;">
+          <div class="gc-cart-empty-top">
+            <h3 class="gc-cart-empty-heading">Nenhuma peça encontrada.</h3>
+            <a href="${root}pecas.html" class="gc-cart-explore-link">Explorar Catálogo</a>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    body.innerHTML = `
+      <div style="margin-bottom:18px;display:flex;align-items:center;justify-content:space-between">
+        <h4 style="font-family:var(--font-display);font-size:1.25rem;color:var(--color-ebony);margin:0">Peças Salvas (${items.length})</h4>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        ${items.map(p => {
+          const img = p.image || (p.gallery && p.gallery[0]) || `${root}assets/icon.svg`;
+          const formattedPrice = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+          const safeName = (p.name || '').replace(/'/g, "\\'");
+          return `
+            <div class="gc-cart-item" style="align-items:center;gap:14px;padding:14px;border:1px solid var(--color-border);border-radius:14px;background:#fff">
+              <img src="${img}" alt="${p.name}" class="gc-cart-item-img" style="width:72px;height:90px;object-fit:cover;border-radius:10px" onerror="this.src='${root}assets/icon.svg'">
+              <div class="gc-cart-item-info" style="flex:1">
+                <h4 style="margin:0 0 4px;font-size:0.92rem;font-weight:600;color:var(--color-ebony)">${p.name}</h4>
+                <div style="font-size:0.78rem;color:var(--color-muted);margin-bottom:6px">${p.category ? p.category.toUpperCase() : 'ALTA-COSTURA'}</div>
+                <div style="font-weight:700;color:var(--color-ebony);font-size:0.95rem">${formattedPrice}</div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button class="gc-btn-checkout" onclick="window.GoldCart.add({id:${p.id},name:'${safeName}',price:${p.price || 0},image:'${img}',slug:'${p.slug || ''}'}, 1); closeWishlist();" style="padding:6px 14px;font-size:0.78rem;width:auto;white-space:nowrap;color:#fff!important;background:var(--color-ebony);">
+                    + Adicionar à Sacola
+                  </button>
+                  <button onclick="window.GoldFav.toggle(${p.id}); updateWishlistUI();" style="background:none;border:none;color:#e53e3e;font-size:0.75rem;cursor:pointer;padding:6px 8px;text-decoration:underline">
+                    Remover
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  function openWishlist() {
+    closeCart();
+    closeMobileNav();
+    const drawer = document.getElementById('gcWishlistDrawer');
+    const backdrop = document.getElementById('gcCartBackdrop');
+    if (drawer) {
+      drawer.classList.add('open', 'active');
+      document.body.classList.add('gc-scroll-locked');
+      if (backdrop) backdrop.classList.add('open', 'active');
+      updateWishlistUI();
+    }
+  }
+
+  function closeWishlist() {
+    const drawer = document.getElementById('gcWishlistDrawer');
+    const backdrop = document.getElementById('gcCartBackdrop');
+    if (drawer) {
+      drawer.classList.remove('open', 'active');
+      document.body.classList.remove('gc-scroll-locked');
+      if (backdrop) backdrop.classList.remove('open', 'active');
+    }
+  }
 
   // Eventos Globais
   function setupEvents() {
@@ -949,12 +1104,35 @@
     const cartTrigger = document.getElementById('gcCartTrigger');
     const cartClose = document.getElementById('gcCartClose');
     const cartDrawer = document.getElementById('gcCartDrawer');
-    const checkoutBtn = document.getElementById('gcCheckoutBtn');
+
+    if (cartTrigger) {
+      cartTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        openCart();
+      });
+    }
+    if (cartClose) {
+      cartClose.addEventListener('click', closeCart);
+    }
+
+    const wishlistClose = document.getElementById('gcWishlistClose');
+    if (wishlistClose) {
+      wishlistClose.addEventListener('click', closeWishlist);
+    }
+
+    const wishlistHeadCartBtn = document.getElementById('gcWishlistHeadCartBtn');
+    if (wishlistHeadCartBtn) {
+      wishlistHeadCartBtn.addEventListener('click', () => {
+        closeWishlist();
+        openCart();
+      });
+    }
 
     document.querySelectorAll('.gc-drawer-backdrop').forEach(b => {
       b.addEventListener('click', () => {
         closeMobileNav();
         closeCart();
+        closeWishlist();
       });
     });
     if (cartDrawer) {
@@ -962,21 +1140,30 @@
         if (e.target === cartDrawer) closeCart();
       });
     }
+
+    const wishlistDrawer = document.getElementById('gcWishlistDrawer');
+    if (wishlistDrawer) {
+      wishlistDrawer.addEventListener('click', (e) => {
+        if (e.target === wishlistDrawer) closeWishlist();
+      });
+    }
+
     const cartCheckoutBtn = document.getElementById('gcCartCheckoutBtn') || document.getElementById('gcCheckoutBtn');
     if (cartCheckoutBtn) cartCheckoutBtn.addEventListener('click', checkoutWhatsApp);
 
     const favTrigger = document.getElementById('gcFavTrigger');
     if (favTrigger) {
-      favTrigger.addEventListener('click', () => {
-        window.location.href = `${root}pecas.html?filtro=favoritos`;
+      favTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        openWishlist();
       });
     }
 
     const drawerFavBtn = document.getElementById('gcDrawerFavBtn');
     if (drawerFavBtn) {
-      drawerFavBtn.addEventListener('click', () => {
+      drawerFavBtn.addEventListener('click', (e) => {
         closeCart();
-        window.location.href = `${root}pecas.html?filtro=favoritos`;
+        openWishlist();
       });
     }
 
@@ -1061,16 +1248,22 @@
       });
     }
 
-    // Efeito Dinâmico Schiaparelli no Cabeçalho:
-    // No topo (scrollY === 0) a logo fica maior e centralizada.
-    // Ao rolar, volta suavemente para a posição padrão no canto esquerdo.
+    // Efeito Dinâmico Schiaparelli no Cabeçalho com Histerese (Estável, sem jitter ou travamentos)
+    let isHeaderCompact = false;
     function updateSchiaparelliHeader() {
       const headerEl = document.querySelector('.gc-header');
       if (!headerEl) return;
-      if (window.scrollY < 30) {
-        headerEl.classList.add('gc-header-top-at-crest');
-      } else {
+      if (window.innerWidth <= 960) {
         headerEl.classList.remove('gc-header-top-at-crest');
+        return;
+      }
+      const y = window.scrollY;
+      if (!isHeaderCompact && y > 60) {
+        isHeaderCompact = true;
+        headerEl.classList.remove('gc-header-top-at-crest');
+      } else if (isHeaderCompact && y < 15) {
+        isHeaderCompact = false;
+        headerEl.classList.add('gc-header-top-at-crest');
       }
     }
 
@@ -1082,6 +1275,7 @@
       if (e.key === 'Escape') {
         closeMobileNav();
         closeCart();
+        closeWishlist();
         closeUserModal();
       }
     });
@@ -1103,7 +1297,10 @@
   window.GoldFav = {
     toggle: toggleFav,
     list: getFavs,
-    updateUI: updateFavUI
+    updateUI: updateFavUI,
+    openWishlist: openWishlist,
+    closeWishlist: closeWishlist,
+    updateWishlistUI: updateWishlistUI
   };
 
   window.GoldAccount = {
@@ -1128,6 +1325,7 @@
     renderMobileBar();
     renderUserModal();
     renderCartDrawer();
+    renderWishlistDrawer();
     renderFooter();
     setupEvents();
   }

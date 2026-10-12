@@ -66,14 +66,13 @@
 
     /* A barra translúcida branca ocupa todo o espaço do canto esquerdo até onde foi delimitado */
     .gc-hero-text-col {
-      background: rgba(255, 255, 255, 0.88) !important;
-      backdrop-filter: blur(16px) !important;
-      -webkit-backdrop-filter: blur(16px) !important;
+      background: rgba(255, 255, 255, 0.78) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
       border: none !important;
-      border-right: 3px solid var(--color-primary-gold) !important;
       border-radius: 0 !important;
       padding: 70px 48px 70px 80px !important;
-      box-shadow: 8px 0 32px rgba(0, 0, 0, 0.08) !important;
+      box-shadow: none !important;
       width: 46%;
       max-width: 620px;
       min-width: 320px;
@@ -81,6 +80,18 @@
       flex-direction: column;
       justify-content: center;
       box-sizing: border-box;
+      animation: gcHeroSlideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes gcHeroSlideInLeft {
+      0% {
+        opacity: 0;
+        transform: translateX(-60px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
 
     @media (max-width: 960px) {
@@ -91,8 +102,8 @@
         width: 100%;
         max-width: 100%;
         padding: 50px 24px !important;
-        border-right: none !important;
-        border-bottom: 3px solid var(--color-primary-gold) !important;
+        border: none !important;
+        box-shadow: none !important;
       }
     }
 
@@ -356,6 +367,8 @@
       overflow: hidden;
       width: 100%;
       padding: 6px 2px 24px;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%);
     }
 
     .gc-carousel-track {
@@ -503,7 +516,6 @@
     <section style="margin: 80px 0 50px;">
       <div class="gc-carousel-header">
         <div>
-          <span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:8px">Seleção Curada</span>
           <h2 style="font-family:var(--font-display);font-size:2rem;color:var(--color-ebony);margin:0">Criações em Destaque</h2>
         </div>
         <div class="gc-carousel-actions-row">
@@ -607,17 +619,17 @@
           [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
 
-        // Garante que o carrossel fique bem preenchido (mínimo de 12 itens para deslizar)
-        let listToDisplay = [...shuffled];
-        if (listToDisplay.length < 12 && shuffled.length > 0) {
-          while (listToDisplay.length < 12) {
-            const extra = [...shuffled].sort(() => 0.5 - Math.random());
-            listToDisplay = listToDisplay.concat(extra);
+        // Garante que o carrossel fique bem preenchido e duplica a lista para criar um loop infinito contínuo
+        let baseList = [...shuffled];
+        if (baseList.length < 8 && shuffled.length > 0) {
+          while (baseList.length < 8) {
+            baseList = baseList.concat(shuffled);
           }
-          listToDisplay = listToDisplay.slice(0, 12);
         }
+        // Duplicação para loop infinito transparente onde o início é o fim
+        const infiniteList = [...baseList, ...baseList];
 
-        track.innerHTML = listToDisplay.map(p => {
+        track.innerHTML = infiniteList.map((p, idx) => {
           const slug = p.slug || 'produto';
           const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
           const hasDiscount = p.discount && Number(p.discount) > 0;
@@ -678,6 +690,37 @@
         let hasMoved = false;
         window.__gcCarouselDragged = false;
 
+        // Auto-avanço a cada 30 segundos (conforme solicitado pelo usuário)
+        let autoPlayTimer = setInterval(advanceCarousel, 30000);
+
+        function resetAutoPlay() {
+          clearInterval(autoPlayTimer);
+          autoPlayTimer = setInterval(advanceCarousel, 30000);
+        }
+
+        function checkInfiniteLoop() {
+          const half = track.scrollWidth / 2;
+          if (track.scrollLeft >= half) {
+            track.scrollLeft -= half;
+          } else if (track.scrollLeft <= 5) {
+            track.scrollLeft += half;
+          }
+        }
+
+        function advanceCarousel() {
+          checkInfiniteLoop();
+          track.scrollBy({ left: 320, behavior: 'smooth' });
+        }
+
+        function retreatCarousel() {
+          checkInfiniteLoop();
+          track.scrollBy({ left: -320, behavior: 'smooth' });
+        }
+
+        track.addEventListener('scroll', () => {
+          checkInfiniteLoop();
+        }, { passive: true });
+
         track.addEventListener('mousedown', (e) => {
           if (e.target.closest('.gc-card-fav-btn')) return;
 
@@ -689,6 +732,7 @@
           startScrollLeft = track.scrollLeft;
           lastTime = Date.now();
           velocity = 0;
+          resetAutoPlay();
 
           track.classList.add('grabbing');
           track.style.scrollBehavior = 'auto';
@@ -722,13 +766,13 @@
           track.style.scrollSnapType = 'x mandatory';
 
           if (hasMoved) {
-            // Aplica impulso suave de deslize com inércia
             const momentum = velocity * 260;
             track.scrollBy({ left: -momentum, behavior: 'smooth' });
             setTimeout(() => { window.__gcCarouselDragged = false; }, 140);
           } else {
             window.__gcCarouselDragged = false;
           }
+          resetAutoPlay();
         });
 
         // Setas de Navegação do Carrossel
@@ -736,12 +780,14 @@
         const nextBtn = document.getElementById('carouselNextBtn');
         if (prevBtn) {
           prevBtn.addEventListener('click', () => {
-            track.scrollBy({ left: -330, behavior: 'smooth' });
+            retreatCarousel();
+            resetAutoPlay();
           });
         }
         if (nextBtn) {
           nextBtn.addEventListener('click', () => {
-            track.scrollBy({ left: 330, behavior: 'smooth' });
+            advanceCarousel();
+            resetAutoPlay();
           });
         }
       }
