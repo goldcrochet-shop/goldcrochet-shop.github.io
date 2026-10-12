@@ -1243,6 +1243,13 @@
 
   window.fetchCatalog = async function () {
     try {
+      const cached = localStorage.getItem('gc_cached_products');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch(err) {}
+      }
       const res = await fetch(`${root}data.json?v=${Date.now()}`);
       if (!res.ok) throw new Error('Falha ao carregar catálogo');
       const data = await res.json();

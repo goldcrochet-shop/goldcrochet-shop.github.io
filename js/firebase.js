@@ -31,7 +31,10 @@ import {
   where as fsWhere,
   getDocs,
   serverTimestamp,
-  getDocFromServer
+  getDocFromServer,
+  onSnapshot,
+  orderBy,
+  limit
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // Configuração principal da plataforma Gold Crochet
@@ -137,7 +140,10 @@ export {
   fsWhere,
   fsWhere as where,
   getDocs,
-  serverTimestamp
+  serverTimestamp,
+  onSnapshot,
+  orderBy,
+  limit
 };
 
 if (typeof window !== 'undefined') {
@@ -162,6 +168,9 @@ if (typeof window !== 'undefined') {
     fsWhere,
     getDocs,
     serverTimestamp,
+    onSnapshot,
+    orderBy,
+    limit,
     handleFirestoreError
   };
 }

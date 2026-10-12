@@ -96,6 +96,24 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Products collection (read by all customers for store catalog, written by admin)
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Categories collection (read by all for navigation, written by admin)
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Analytics and site metrics
+    match /analytics/{docId} {
+      allow read: if isAdmin();
+      allow write: if true;
+    }
+
     // Test connection document for initial health checks
     match /test/{docId} {
       allow read, write: if true;

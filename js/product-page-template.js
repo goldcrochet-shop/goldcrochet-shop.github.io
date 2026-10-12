@@ -238,7 +238,7 @@ ${schemaJson}
     <!-- Seção 'Você Também Pode Gostar' em Carrossel Infinito com Produtos Aleatórios -->
     <section style="margin-top:90px">
       <div class="gc-carousel-header">
-        <h2 style="font-family:var(--font-display);font-size:1.85rem;color:var(--color-ebony);margin:0">Você Também Pode Gostar</h2>
+        <h2 class="gc-carousel-title" style="font-family:var(--font-display);font-size:clamp(1.2rem, 3.8vw, 1.85rem);color:var(--color-ebony);margin:0">Você Também Pode Gostar</h2>
         <div style="display:flex;gap:8px">
           <button id="relatedPrevBtn" class="gc-carousel-arrow-btn" aria-label="Anterior">&lsaquo;</button>
           <button id="relatedNextBtn" class="gc-carousel-arrow-btn" aria-label="Próximo">&rsaquo;</button>
