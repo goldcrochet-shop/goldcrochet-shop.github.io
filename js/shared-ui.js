@@ -59,6 +59,19 @@
   loadWhatsAppSettings();
   document.addEventListener('DOMContentLoaded', refreshWhatsAppLinks);
 
+  // Inicializador sob demanda do Firebase no site principal
+  async function ensureFirebase() {
+    if (window.GoldFirebase && window.GoldFirebase.auth) return window.GoldFirebase;
+    try {
+      const fbMod = await import(`${root}js/firebase.js?v=2026`);
+      if (window.GoldFirebase) return window.GoldFirebase;
+      return fbMod;
+    } catch(err) {
+      console.warn('⚠️ [Gold Crochet] Falha ao importar módulo do Firebase:', err);
+      return window.GoldFirebase || null;
+    }
+  }
+
   function getRootPath() {
     const path = window.location.pathname;
     if (path.includes('/produtos/')) return '../';
@@ -624,7 +637,10 @@
             <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
           </div>
           <h3 style="font-family:var(--font-display);font-size:1.4rem;color:var(--color-ebony);margin:0 0 4px">${customer.name}</h3>
-          <span style="font-size:0.82rem;color:var(--color-muted)">${customer.email || 'Cliente Ateliê Gold Crochet'}</span>
+          <div style="font-size:0.82rem;color:var(--color-muted);display:flex;flex-direction:column;gap:2px;align-items:center">
+            <span>${customer.email || 'Cliente Ateliê Gold Crochet'}</span>
+            ${customer.phone ? `<span style="color:var(--color-charcoal);font-weight:600">📱 WhatsApp: ${customer.phone}</span>` : ''}
+          </div>
         </div>
 
         <!-- Card do Medidor de Brindes (Circular) -->
@@ -685,26 +701,29 @@
             <img src="${root}assets/buzio-oficial.png" alt="Búzio Dourado Oficial" style="width:36px;height:auto;object-fit:contain;">
           </div>
           <h3 style="font-family:var(--font-display);font-size:1.45rem;color:var(--color-ebony);margin:0 0 4px">Ateliê Gold Crochet</h3>
-          <p style="font-size:0.85rem;color:var(--color-muted);margin:0">Acesse sua conta para salvar sacola e favoritos em todos os seus dispositivos.</p>
+          <p style="font-size:0.85rem;color:var(--color-muted);margin:0">Acesse sua conta para salvar sacola, medidas e acompanhar suas criações.</p>
         </div>
 
         ${customNotice}
 
-        <button class="gc-btn-pill-google" onclick="window.GoldAccount.loginGoogle()" style="white-space:nowrap">
+        <div id="gcAuthErrorMsg" style="display:none;background:rgba(229,62,62,0.1);border:1px solid rgba(229,62,62,0.3);color:#c53030;padding:10px 14px;border-radius:10px;font-size:0.82rem;margin-bottom:14px;text-align:left;line-height:1.4"></div>
+
+        <button id="gcGoogleLoginBtn" class="gc-btn-pill-google" onclick="window.GoldAccount.loginGoogle()" style="white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:10px;">
           <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.41 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.16 0 9.94 0 12s.45 3.84 1.24 5.42l4.04-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.59 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
-          Entrar com Google
+          <span>Entrar com Google</span>
         </button>
 
         <div style="display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--color-muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em">
           <hr style="flex:1;border:none;border-top:1px solid var(--color-border-subtle)">
-          <span>ou com seu e-mail</span>
+          <span>ou cadastro com WhatsApp</span>
           <hr style="flex:1;border:none;border-top:1px solid var(--color-border-subtle)">
         </div>
 
         <form id="gcLoginForm" onsubmit="window.GoldAccount.loginEmail(event)">
-          <input type="text" id="gcInputName" class="gc-input-pill" placeholder="Seu nome completo" required>
-          <input type="email" id="gcInputEmail" class="gc-input-pill" placeholder="Seu e-mail" required>
-          <button type="submit" class="gc-btn-pill-primary" style="white-space:nowrap">Acessar Minha Conta</button>
+          <input type="text" id="gcInputName" class="gc-input-pill" placeholder="Seu nome completo *" required autocomplete="name">
+          <input type="email" id="gcInputEmail" class="gc-input-pill" placeholder="Seu e-mail *" required autocomplete="email">
+          <input type="tel" id="gcInputPhone" class="gc-input-pill" placeholder="Seu WhatsApp / Telefone (com DDD) *" required autocomplete="tel" oninput="this.value = this.value.replace(/[^0-9+\\-\\s()]/g, '')">
+          <button type="submit" id="gcLoginSubmitBtn" class="gc-btn-pill-primary" style="white-space:nowrap">Acessar Minha Conta &rarr;</button>
         </form>
 
         <a href="${root}cliente.html" class="gc-filter-pill" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:12px;font-size:0.85rem;white-space:nowrap">
@@ -754,13 +773,13 @@
   async function syncUserCrossDevice(cust) {
     if (!cust || !cust.email) return;
     try {
-      const fb = window.GoldFirebase;
+      const fb = await ensureFirebase();
       const currentAuthUser = fb && fb.auth && fb.auth.currentUser;
-      const docId = (currentAuthUser && currentAuthUser.uid) ? currentAuthUser.uid : cust.email.toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '_');
+      const cleanDocId = (currentAuthUser && currentAuthUser.uid) ? currentAuthUser.uid : (cust.id || cust.email.toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '_'));
 
-      if (fb && fb.db && currentAuthUser) {
+      if (fb && fb.db) {
         const { db, fsDoc, setDoc, getDoc } = fb;
-        const userRef = fsDoc(db, 'users', docId);
+        const userRef = fsDoc(db, 'users', cleanDocId);
         try {
           const snap = await getDoc(userRef);
           if (snap && snap.exists && snap.exists()) {
@@ -780,14 +799,19 @@
             if (remote.purchasesCount !== undefined) {
               cust.purchasesCount = Math.max(cust.purchasesCount || 0, remote.purchasesCount || 0);
             }
+            if (remote.phone && !cust.phone) {
+              cust.phone = remote.phone;
+            }
             saveCustomer(cust);
           }
         } catch(e) {}
 
-        await setDoc(userRef, {
-          id: cleanId,
+        const userPayload = {
+          id: cleanDocId,
+          uid: cleanDocId,
           name: cust.name || 'Cliente Gold',
           email: cust.email,
+          phone: cust.phone || '',
           role: 'customer',
           cart: getCart(),
           favs: getFavs(),
@@ -795,8 +819,10 @@
           address: cust.address || {},
           purchasesCount: cust.purchasesCount || 0,
           updatedAt: new Date().toISOString()
-        }, { merge: true });
-        console.log('☁️ [Gold Crochet] Dados salvos e sincronizados com Firestore!');
+        };
+
+        await setDoc(userRef, userPayload, { merge: true });
+        console.log('☁️ [Gold Crochet] Dados da cliente sincronizados com o Firestore!');
       }
     } catch(err) {
       console.warn('⚠️ Sincronização offline ou local:', err.message);
@@ -820,17 +846,44 @@
     }
   }
 
+  function showAuthError(msg) {
+    const errBox = document.getElementById('gcAuthErrorMsg');
+    if (errBox) {
+      errBox.textContent = msg;
+      errBox.style.display = 'block';
+    } else {
+      alert(msg);
+    }
+  }
+
   async function loginWithGoogle() {
-    if (window.GoldFirebase && window.GoldFirebase.auth && window.GoldFirebase.signInWithPopup) {
-      try {
-        const { auth, googleProvider, signInWithPopup } = window.GoldFirebase;
+    const googleBtn = document.getElementById('gcGoogleLoginBtn');
+    if (googleBtn) {
+      googleBtn.disabled = true;
+      googleBtn.style.opacity = '0.7';
+    }
+
+    try {
+      const fb = await ensureFirebase();
+      if (fb && fb.auth && fb.googleProvider && fb.signInWithPopup) {
+        const { auth, googleProvider, signInWithPopup } = fb;
         const res = await signInWithPopup(auth, googleProvider);
         if (res && res.user) {
           const u = res.user;
           const existing = getCustomer() || {};
+          let phone = existing.phone || '';
+          if (!phone) {
+            const promptPhone = prompt(`✨ Bem-vinda, ${u.displayName || 'Cliente'}!\nPor favor, informe seu WhatsApp/Telefone para contato do ateliê sobre seus pedidos e entregas:`);
+            if (promptPhone && promptPhone.trim()) {
+              phone = promptPhone.replace(/[^0-9]/g, '');
+            }
+          }
+
           const cust = {
+            id: u.uid,
             name: u.displayName || 'Cliente Gold',
             email: u.email || 'cliente@goldcrochet.com.br',
+            phone: phone || '',
             purchasesCount: existing.purchasesCount || 0,
             giftsClaimed: existing.giftsClaimed || 0,
             measurements: existing.measurements || {},
@@ -839,22 +892,20 @@
           await completeAuth(cust);
           return;
         }
-      } catch(err) {
-        console.warn('Tentando login com fallback ateliê:', err.message);
       }
+    } catch(err) {
+      console.warn('Erro ao autenticar com Google:', err.message);
+      showAuthError('Não foi possível concluir o login com o Google (' + (err.message || 'janela fechada') + '). Tente com nome, e-mail e WhatsApp abaixo.');
+      if (googleBtn) {
+        googleBtn.disabled = false;
+        googleBtn.style.opacity = '1';
+      }
+      return;
     }
-    const fallbackName = prompt('Digite seu nome para acessar a conta do ateliê:', 'Cliente Gold');
-    if (fallbackName) {
-      const cleanEmail = fallbackName.toLowerCase().replace(/[^a-z0-9]/g, '') + '@cliente.goldcrochet.com.br';
-      const cust = {
-        name: fallbackName,
-        email: cleanEmail,
-        purchasesCount: 0,
-        giftsClaimed: 0,
-        measurements: {},
-        address: {}
-      };
-      await completeAuth(cust);
+
+    if (googleBtn) {
+      googleBtn.disabled = false;
+      googleBtn.style.opacity = '1';
     }
   }
 
@@ -862,21 +913,57 @@
     if (e) e.preventDefault();
     const nameEl = document.getElementById('gcInputName');
     const emailEl = document.getElementById('gcInputEmail');
-    if (!nameEl || !emailEl) return;
+    const phoneEl = document.getElementById('gcInputPhone');
+    const submitBtn = document.getElementById('gcLoginSubmitBtn');
+
+    if (!nameEl || !emailEl || !phoneEl) return;
     const name = nameEl.value.trim();
     const email = emailEl.value.trim();
-    if (!name || !email) return;
+    const phoneRaw = phoneEl.value.trim();
+    const phone = phoneRaw.replace(/\D/g, '');
+
+    if (!name) {
+      showAuthError('Por favor, informe seu nome completo.');
+      nameEl.focus();
+      return;
+    }
+    if (!email || !email.includes('@')) {
+      showAuthError('Por favor, informe um e-mail válido.');
+      emailEl.focus();
+      return;
+    }
+    if (!phone || phone.length < 10) {
+      showAuthError('O número de WhatsApp/Telefone é obrigatório (mínimo 10 dígitos com DDD). Ex: (31) 98456-6047.');
+      phoneEl.focus();
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Conectando ao Ateliê...';
+    }
 
     const existing = getCustomer() || {};
+    const cliId = existing.id || ('cli_' + email.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) + Date.now().toString().slice(-4));
     const cust = {
+      id: cliId,
       name: name,
       email: email,
+      phone: phone,
       purchasesCount: existing.purchasesCount !== undefined ? existing.purchasesCount : 0,
       giftsClaimed: existing.giftsClaimed || 0,
       measurements: existing.measurements || {},
       address: existing.address || {}
     };
-    await completeAuth(cust);
+
+    try {
+      await completeAuth(cust);
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Acessar Minha Conta →';
+      }
+    }
   }
 
   function addCustomerPurchase() {
@@ -894,12 +981,18 @@
   function claimCustomerGift() {
     const cust = getCustomer();
     if (!cust) return;
-    const msg = `🎁 *Resgate de Brinde — Ateliê Gold Crochet*\n\nOlá, sou *${cust.name}* e completei minhas compras para resgate do meu brinde exclusivo do ateliê!\n\nEmail da conta: ${cust.email}\nTotal de compras: ${cust.purchasesCount}`;
+    const msg = `🎁 *Resgate de Brinde — Ateliê Gold Crochet*\n\nOlá, sou *${cust.name}* e completei minhas compras para resgate do meu brinde exclusivo do ateliê!\n\nEmail da conta: ${cust.email}\nWhatsApp: ${cust.phone || 'Não informado'}\nTotal de compras: ${cust.purchasesCount}`;
     const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
   }
 
-  function logoutCustomer() {
+  async function logoutCustomer() {
+    try {
+      const fb = await ensureFirebase();
+      if (fb && fb.auth && fb.signOut) {
+        await fb.signOut(fb.auth).catch(() => {});
+      }
+    } catch(e) {}
     localStorage.removeItem(USER_KEY);
     updateUserUI();
     closeUserModal();

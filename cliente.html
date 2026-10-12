@@ -419,29 +419,27 @@
         Acesse sua conta para consultar o status de confecção das suas peças, cadastrar suas medidas sob medida e resgatar brindes do ateliê.
       </p>
 
-      <button class="gc-btn-pill-google" onclick="window.ClientPortal.loginGoogle()">
+      <div id="clientAuthErrorMsg" style="display:none;background:rgba(229,62,62,0.1);border:1px solid rgba(229,62,62,0.3);color:#c53030;padding:12px 16px;border-radius:12px;font-size:0.84rem;margin-bottom:16px;text-align:left;line-height:1.4"></div>
+
+      <button id="clientGoogleBtn" class="gc-btn-pill-google" onclick="window.ClientPortal.loginGoogle()" style="display:flex;align-items:center;justify-content:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.41 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.16 0 9.94 0 12s.45 3.84 1.24 5.42l4.04-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.59 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
-        Entrar com Google
+        <span>Entrar com Google</span>
       </button>
 
       <div style="display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--color-muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em">
         <hr style="flex:1;border:none;border-top:1px solid var(--color-border-subtle)">
-        <span>ou com seu e-mail</span>
+        <span>ou cadastro com WhatsApp</span>
         <hr style="flex:1;border:none;border-top:1px solid var(--color-border-subtle)">
       </div>
 
       <form id="clientLoginForm" onsubmit="window.ClientPortal.loginEmail(event)">
-        <input type="text" id="clientInputName" class="gc-input-pill" placeholder="Seu Nome Completo" required>
-        <input type="email" id="clientInputEmail" class="gc-input-pill" placeholder="Seu E-mail" required>
-        <input type="password" id="clientInputPass" class="gc-input-pill" placeholder="Sua Senha (mínimo 6 caracteres)" required>
-        <button type="submit" class="gc-btn-pill-primary" style="margin-top:6px">
+        <input type="text" id="clientInputName" class="gc-input-pill" placeholder="Seu Nome Completo *" required autocomplete="name">
+        <input type="email" id="clientInputEmail" class="gc-input-pill" placeholder="Seu E-mail *" required autocomplete="email">
+        <input type="tel" id="clientInputPhone" class="gc-input-pill" placeholder="Seu WhatsApp / Telefone (com DDD) *" required autocomplete="tel" oninput="this.value = this.value.replace(/[^0-9+\\-\\s()]/g, '')">
+        <button type="submit" id="clientSubmitBtn" class="gc-btn-pill-primary" style="margin-top:6px">
           Acessar Minha Conta &rarr;
         </button>
       </form>
-
-      <p style="font-size:0.8rem;color:var(--color-muted);margin-top:20px">
-        Esqueceu sua senha? <a href="javascript:void(0)" onclick="window.ClientPortal.resetPass()" style="color:var(--color-gold-deep);font-weight:700">Recuperar via E-mail</a>
-      </p>
     </section>
 
     <!-- TELA 2: PORTAL COMPLETO DA CLIENTE LOGADA -->
@@ -455,7 +453,10 @@
             <span id="clientVipCardNum" class="gc-vip-card-number">#GC-BR-8492</span>
           </div>
           <h2 id="clientDisplayName" class="gc-vip-client-name">Nome da Cliente</h2>
-          <span id="clientDisplayEmail" class="gc-vip-client-email">email@cliente.com</span>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <span id="clientDisplayEmail" class="gc-vip-client-email">email@cliente.com</span>
+            <span id="clientDisplayPhone" class="gc-vip-client-email" style="opacity:0.9">📱 WhatsApp: —</span>
+          </div>
         </div>
         <div style="text-align:right">
           <button class="gc-filter-pill" style="border-color:rgba(255,255,255,0.3);color:#fff;background:rgba(255,255,255,0.08)" onclick="window.ClientPortal.logout()">
@@ -785,14 +786,16 @@
               client.measures = remote.measures || client.measures || {};
               client.address = remote.address || client.address || {};
               client.cardNum = remote.cardNum || client.cardNum;
+              if (remote.phone && !client.phone) client.phone = remote.phone;
               
-              await setDoc(userRef, { lastLogin: new Date() }, { merge: true }).catch(console.warn);
+              await setDoc(userRef, { lastLogin: new Date(), phone: client.phone || '' }, { merge: true }).catch(console.warn);
             } else {
               const newPayload = {
                 id: client.id,
                 uid: client.id,
                 name: client.name || 'Cliente Gold',
                 email: client.email,
+                phone: client.phone || '',
                 role: 'customer',
                 purchasesCount: Number(client.purchasesCount || 0),
                 giftsClaimed: Number(client.giftsClaimed || 0),
@@ -831,6 +834,10 @@
         // Preenche Dados VIP
         document.getElementById('clientDisplayName').textContent = client.name || 'Cliente';
         document.getElementById('clientDisplayEmail').textContent = client.email || '';
+        const phoneEl = document.getElementById('clientDisplayPhone');
+        if (phoneEl) {
+          phoneEl.textContent = client.phone ? `📱 WhatsApp: ${client.phone}` : '📱 WhatsApp: Não cadastrado';
+        }
         document.getElementById('clientVipCardNum').textContent = client.cardNum || '#GC-BR-' + (client.id || Date.now().toString().slice(-4));
 
         const purchases = Number(client.purchasesCount || 0);
@@ -962,22 +969,45 @@
         if (btn) btn.classList.add('active');
       },
 
+      showAuthError: function(msg) {
+        const errBox = document.getElementById('clientAuthErrorMsg');
+        if (errBox) {
+          errBox.textContent = msg;
+          errBox.style.display = 'block';
+        } else {
+          alert(msg);
+        }
+      },
+
       loginGoogle: async function() {
+        const btn = document.getElementById('clientGoogleBtn');
+        if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; }
+
         try {
           if (auth && googleProvider) {
             const res = await signInWithPopup(auth, googleProvider);
             const user = res.user;
+            let existing = getLocalClient() || {};
+            let phone = existing.phone || '';
+            if (!phone) {
+              const promptPhone = prompt(`✨ Bem-vinda, ${user.displayName || 'Cliente'}!\nPor favor, informe seu WhatsApp/Telefone para contato do ateliê sobre seus pedidos e entregas:`);
+              if (promptPhone && promptPhone.trim()) {
+                phone = promptPhone.replace(/[^0-9]/g, '');
+              }
+            }
+
             let client = {
               id: user.uid,
               name: user.displayName || 'Cliente Gold',
               email: user.email,
+              phone: phone || '',
               role: 'customer',
-              purchasesCount: 0,
-              giftsClaimed: 0,
+              purchasesCount: existing.purchasesCount || 0,
+              giftsClaimed: existing.giftsClaimed || 0,
               cardNum: '#GC-BR-' + user.uid.slice(0, 5).toUpperCase(),
-              orders: [],
-              measures: {},
-              address: {}
+              orders: existing.orders || [],
+              measures: existing.measures || {},
+              address: existing.address || {}
             };
             client = await this.syncWithFirestore(client);
             saveLocalClient(client);
@@ -986,95 +1016,77 @@
             return;
           }
         } catch(e) {
-          console.warn('Google Auth fallback:', e);
-          alert('Aviso na autenticação Google: ' + (e.message || 'Tentando fallback local...'));
-        }
-        // Fallback gracioso
-        const name = prompt('Digite seu nome para acessar a conta do ateliê:', 'Cliente Gold');
-        if (name) {
-          const id = 'cli_' + Date.now().toString().slice(-5);
-          let client = {
-            id: id,
-            name: name,
-            email: 'cliente@goldcrochet.com.br',
-            role: 'customer',
-            purchasesCount: 0,
-            giftsClaimed: 0,
-            cardNum: '#GC-BR-' + id.slice(-4),
-            orders: [],
-            measures: {},
-            address: {}
-          };
-          client = await this.syncWithFirestore(client);
-          saveLocalClient(client);
-          this.renderLoggedPortal(client);
+          console.warn('Google Auth error:', e);
+          this.showAuthError('Aviso na autenticação Google: ' + (e.message || 'Janela fechada') + '. Utilize o formulário abaixo.');
+        } finally {
+          if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
         }
       },
 
       loginEmail: async function(e) {
         e.preventDefault();
-        const name = document.getElementById('clientInputName').value.trim();
-        const email = document.getElementById('clientInputEmail').value.trim();
-        const pass = document.getElementById('clientInputPass').value.trim();
+        const nameInput = document.getElementById('clientInputName');
+        const emailInput = document.getElementById('clientInputEmail');
+        const phoneInput = document.getElementById('clientInputPhone');
+        const submitBtn = document.getElementById('clientSubmitBtn');
 
-        if (!name || !email || !pass) return;
+        if (!nameInput || !emailInput || !phoneInput) return;
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const phoneRaw = phoneInput.value.trim();
+        const phone = phoneRaw.replace(/\D/g, '');
+
+        if (!name) {
+          this.showAuthError('Por favor, informe seu nome completo.');
+          nameInput.focus();
+          return;
+        }
+        if (!email || !email.includes('@')) {
+          this.showAuthError('Por favor, informe um e-mail válido.');
+          emailInput.focus();
+          return;
+        }
+        if (!phone || phone.length < 10) {
+          this.showAuthError('O número de WhatsApp/Telefone é obrigatório (mínimo 10 dígitos com DDD). Ex: (31) 98456-6047.');
+          phoneInput.focus();
+          return;
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Conectando ao Ateliê...';
+        }
 
         let userUid = null;
         let displayName = name;
-        let authSuccess = false;
 
         try {
-          if (auth) {
-            try {
-              const res = await signInWithEmailAndPassword(auth, email, pass);
-              userUid = res.user.uid;
-              displayName = res.user.displayName || name;
-              authSuccess = true;
-            } catch(signInErr) {
-              if (signInErr.code === 'auth/operation-not-allowed') {
-                console.info('[Firebase Auth] Provedor de E-mail/Senha requer ativação no Firebase Console ou uso do Google Sign-In. Usando modo resiliente.');
-              } else if (signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-credential' || signInErr.code === 'auth/wrong-password') {
-                try {
-                  const res = await createUserWithEmailAndPassword(auth, email, pass);
-                  userUid = res.user.uid;
-                  displayName = name;
-                  authSuccess = true;
-                } catch(createErr) {
-                  if (createErr.code === 'auth/operation-not-allowed') {
-                    console.info('[Firebase Auth] Provedor E-mail/Senha desativado no Firebase Console. Recomendado login com Google.');
-                  } else {
-                    console.warn('[Firebase Auth] Falha ao criar usuário:', createErr.message);
-                  }
-                }
-              } else {
-                console.warn('[Firebase Auth] Erro login e-mail:', signInErr.message);
-              }
-            }
-          }
-        } catch(authErr) {
-          console.warn('Firebase Auth email err:', authErr.message || authErr);
-        }
+          const id = userUid || ('cli_' + email.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) + Date.now().toString().slice(-4));
+          const existing = getLocalClient() || {};
+          let client = {
+            id: id,
+            name: displayName,
+            email: email,
+            phone: phone,
+            role: 'customer',
+            purchasesCount: existing.purchasesCount !== undefined ? existing.purchasesCount : 0,
+            giftsClaimed: existing.giftsClaimed || 0,
+            cardNum: existing.cardNum || ('#GC-BR-' + id.slice(0, 5).toUpperCase()),
+            orders: existing.orders || [],
+            measures: existing.measures || {},
+            address: existing.address || {}
+          };
 
-        const id = userUid || ('cli_' + email.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) + Date.now().toString().slice(-4));
-        let client = {
-          id: id,
-          name: displayName,
-          email: email,
-          role: 'customer',
-          purchasesCount: 0,
-          giftsClaimed: 0,
-          cardNum: '#GC-BR-' + id.slice(0, 5).toUpperCase(),
-          orders: [],
-          measures: {},
-          address: {}
-        };
-
-        if (auth && auth.currentUser) {
           client = await this.syncWithFirestore(client);
+          saveLocalClient(client);
+          this.renderLoggedPortal(client);
+          alert(`✨ Bem-vinda ao Ateliê Gold Crochet, ${displayName}! Sua conta foi conectada.`);
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Acessar Minha Conta →';
+          }
         }
-        saveLocalClient(client);
-        this.renderLoggedPortal(client);
-        alert(`✨ Bem-vinda ao Ateliê Gold Crochet, ${displayName}! Sua conta foi conectada.`);
       },
 
       resetPass: function() {
