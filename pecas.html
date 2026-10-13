@@ -113,14 +113,9 @@
 
       <div class="gc-filters-bar" id="filtersBar">
         <button class="gc-filter-pill active" data-filter="all">Todas as Peças</button>
-        <button class="gc-filter-pill" data-filter="ela">Para Ela</button>
-        <button class="gc-filter-pill" data-filter="ele">Para Ele</button>
-        <button class="gc-filter-pill" data-filter="noite">Roupas para Noite</button>
         <button class="gc-filter-pill" data-filter="vestuario">Vestuário</button>
         <button class="gc-filter-pill" data-filter="bolsas">Bolsas</button>
-        <button class="gc-filter-pill" data-filter="casa">Casa Gold &amp; Decor</button>
-        <button class="gc-filter-pill" data-filter="pequeninos">Pequeninos</button>
-        <button class="gc-filter-pill" data-filter="bijuterias">Bijuterias &amp; Charms</button>
+        <button class="gc-filter-pill" data-filter="casa">Casa &amp; Mesa</button>
         <button class="gc-filter-pill" data-filter="personalizado">Sob Medida</button>
         <button class="gc-filter-pill" data-filter="favoritos">Meus Favoritos</button>
       </div>
@@ -156,16 +151,11 @@
     document.addEventListener('DOMContentLoaded', async () => {
       allProducts = await window.fetchCatalog();
 
-      // Checa parâmetros de URL (ex: ?cat=ela, ?cat=ele, ?cat=calcas-ele, ?cat=noite-ele)
+      // Checa parâmetros de URL (ex: ?filtro=bolsas ou ?filtro=favoritos)
       const urlParams = new URLSearchParams(window.location.search);
-      const rawFilter = urlParams.get('cat') || urlParams.get('filtro') || urlParams.get('categoria') || 'all';
+      const initialFilter = urlParams.get('filtro') || urlParams.get('categoria') || 'all';
 
-      let normalized = rawFilter.toLowerCase();
-      if (normalized === 'roupas-noite' || normalized === 'roupas para noite') {
-        normalized = 'noite';
-      }
-
-      setFilter(normalized);
+      setFilter(initialFilter);
 
       // Eventos de filtro
       document.querySelectorAll('#filtersBar .gc-filter-pill').forEach(btn => {
@@ -186,57 +176,13 @@
 
     function setFilter(filter) {
       currentFilter = filter;
-      let matchedPill = false;
       document.querySelectorAll('#filtersBar .gc-filter-pill').forEach(btn => {
         if (btn.dataset.filter === filter) {
           btn.classList.add('active');
-          matchedPill = true;
         } else {
           btn.classList.remove('active');
         }
       });
-      // Se for uma categoria específica vinda do mega menu que não tenha pílula exata
-      if (!matchedPill && filter !== 'all') {
-        const allBtn = document.querySelector('#filtersBar .gc-filter-pill[data-filter="all"]');
-        if (allBtn) allBtn.classList.remove('active');
-      }
-
-      // Atualiza textos do Hero de forma sofisticada e personalizada
-      const heroTag = document.querySelector('.gc-page-hero-tag');
-      const heroTitle = document.querySelector('.gc-page-hero-title');
-      const heroDesc = document.querySelector('.gc-page-hero-desc');
-      if (filter === 'ela') {
-        if (heroTag) heroTag.textContent = 'Coleção Feminina';
-        if (heroTitle) heroTitle.textContent = 'Para Ela — Alta-Costura';
-        if (heroDesc) heroDesc.textContent = 'Peças e silhuetas femininas tecidas artesanalmente com caimento impecável e bossa atemporal.';
-      } else if (filter === 'ele') {
-        if (heroTag) heroTag.textContent = 'Coleção Masculina';
-        if (heroTitle) heroTitle.textContent = 'Para Ele — Alfaiataria & Bossa';
-        if (heroDesc) heroDesc.textContent = 'Camisas, calças e bermudas masculinas em crochê estruturado e fios nobres para o homem contemporâneo.';
-      } else if (filter === 'calcas-ele') {
-        if (heroTag) heroTag.textContent = 'Linha Masculina';
-        if (heroTitle) heroTitle.textContent = 'Calças & Bermudas — Para Ele';
-        if (heroDesc) heroDesc.textContent = 'Peças inferiores da alfaiataria em crochê manual masculino.';
-      } else if (filter === 'calcas' || filter === 'calcas-ela') {
-        if (heroTag) heroTag.textContent = 'Linha Feminina';
-        if (heroTitle) heroTitle.textContent = 'Calças & Shorts — Para Ela';
-        if (heroDesc) heroDesc.textContent = 'Shorts e calças autorais com tramas confortáveis e modelagem contemporânea.';
-      } else if (filter === 'jaquetas-ele') {
-        if (heroTag) heroTag.textContent = 'Linha Masculina';
-        if (heroTitle) heroTitle.textContent = 'Jaquetas & Casacos — Para Ele';
-      } else if (filter === 'noite-ele') {
-        if (heroTag) heroTag.textContent = 'Linha Masculina';
-        if (heroTitle) heroTitle.textContent = 'Roupas para Noite — Para Ele';
-      } else if (filter === 'favoritos') {
-        if (heroTag) heroTag.textContent = 'Coleção Exclusiva Salva';
-        if (heroTitle) heroTitle.textContent = 'Meus Favoritos';
-        if (heroDesc) heroDesc.textContent = 'Suas peças do coração salvas para encomendar com o concierge do ateliê.';
-      } else {
-        if (heroTag) heroTag.textContent = 'Catálogo Completo';
-        if (heroTitle) heroTitle.textContent = 'Todas as Peças';
-        if (heroDesc) heroDesc.textContent = 'Explore nosso acervo completo de criações tecidas à mão. Cada ponto, textura e acabamento é desenhado para durar gerações.';
-      }
-
       renderCatalog();
     }
 
@@ -256,85 +202,27 @@
       const favs = window.GoldFav ? window.GoldFav.list() : [];
 
       const filtered = allProducts.filter(p => {
-        // Normalização de campos do produto
-        const cat = (p.category || '').toLowerCase();
-        const sec = (p.section || '').toLowerCase();
-        const gen = (p.gender || '').toLowerCase();
-        const col = (p.collection || '').toLowerCase();
-        const name = (p.name || '').toLowerCase();
-        const desc = (p.desc || '').toLowerCase();
-        const mat = (p.material || '').toLowerCase();
-
-        // 1. Filtro estrito por categoria e gênero
-        if (currentFilter && currentFilter !== 'all') {
-          if (currentFilter === 'noite') {
-            const isNoite = cat.includes('noite') || 
-                            name.includes('noite') || 
-                            desc.includes('noite') || 
-                            desc.includes('gala') || 
-                            desc.includes('festa') ||
-                            (cat === 'saias-vestidos' && (name.includes('vestido') || desc.includes('vestido')));
-            if (!isNoite) return false;
-          } else if (currentFilter === 'noite-ele') {
-            const isNoite = cat.includes('noite') || name.includes('noite') || desc.includes('noite') || desc.includes('gala') || desc.includes('festa') || cat === 'tops';
-            if (!isNoite || gen !== 'masculino') return false;
-          } else if (currentFilter === 'noite-ela') {
-            const isNoite = cat.includes('noite') || name.includes('noite') || desc.includes('noite') || desc.includes('gala') || desc.includes('festa') || (cat === 'saias-vestidos' && (name.includes('vestido') || desc.includes('vestido')));
-            if (!isNoite || gen === 'masculino') return false;
-          } else if (currentFilter === 'vestuario') {
-            const isVest = cat === 'vestuario' || cat === 'saias-vestidos' || cat === 'tops' || cat === 'calcas' || cat === 'jaquetas-casacos' || sec === 'dia-a-dia';
-            if (!isVest) return false;
-          } else if (currentFilter === 'saias-vestidos') {
-            if (cat !== 'saias-vestidos' && !name.includes('vestido') && !name.includes('saia')) return false;
-          } else if (currentFilter === 'tops') {
-            if (cat !== 'tops' && !name.includes('camisa') && !name.includes('regata') && !name.includes('top')) return false;
-          } else if (currentFilter === 'calcas-ele') {
-            const isCalca = cat === 'calcas' || name.includes('calça') || name.includes('bermuda') || name.includes('short');
-            if (!isCalca || gen !== 'masculino') return false;
-          } else if (currentFilter === 'calcas' || currentFilter === 'calcas-ela') {
-            const isCalca = cat === 'calcas' || name.includes('calça') || name.includes('short');
-            if (!isCalca || gen === 'masculino') return false;
-          } else if (currentFilter === 'jaquetas-ele') {
-            const isJaq = cat === 'jaquetas-casacos' || name.includes('jaqueta') || name.includes('casaco');
-            if (!isJaq || gen !== 'masculino') return false;
-          } else if (currentFilter === 'jaquetas-casacos' || currentFilter === 'jaquetas-ela') {
-            const isJaq = cat === 'jaquetas-casacos' || name.includes('jaqueta') || name.includes('casaco');
-            if (!isJaq || gen === 'masculino') return false;
-          } else if (currentFilter === 'ela') {
-            // Estritamente para ela
-            if (gen === 'masculino') return false;
-            if (gen !== 'feminino' && cat !== 'saias-vestidos') return false;
-          } else if (currentFilter === 'ele') {
-            // Estritamente para ele
-            if (gen !== 'masculino') return false;
-          } else if (currentFilter === 'bolsas') {
-            if (cat !== 'bolsas' && !name.includes('bolsa')) return false;
-          } else if (currentFilter === 'casa') {
-            const isCasa = sec === 'casa' || cat === 'decoracoes' || cat === 'mantas' || col.includes('casa gold') || name.includes('jogo americano') || name.includes('celestial');
-            if (!isCasa) return false;
-          } else if (currentFilter === 'pequeninos' || currentFilter === 'bebe' || currentFilter === 'garotas' || currentFilter === 'garotos' || currentFilter === 'presentes') {
-            const isPequenino = cat === 'pequeninos' || cat === 'bebe' || cat === 'garotas' || cat === 'garotos' || cat === 'presentes' || cat === 'amigurumi';
-            if (!isPequenino) return false;
-          } else if (currentFilter === 'bijuterias' || currentFilter === 'charms' || currentFilter === 'brincos' || currentFilter === 'colares' || currentFilter === 'broches' || currentFilter === 'braceletes' || currentFilter === 'aneis') {
-            const isBiju = ['bijuterias', 'charms', 'brincos', 'colares', 'broches', 'braceletes', 'aneis'].includes(cat) || sec === 'bijuterias' || sec === 'acessorios';
-            if (!isBiju) return false;
-          } else if (currentFilter === 'acessorios') {
-            const isAcess = cat === 'bolsas' || sec === 'acessorios' || name.includes('bolsa');
-            if (!isAcess) return false;
-          } else if (currentFilter === 'personalizado') {
-            if (cat !== 'personalizado' && !p.custom) return false;
-          } else if (currentFilter === 'favoritos') {
-            if (!favs.includes(p.id)) return false;
-          } else {
-            if (cat !== currentFilter && col !== currentFilter && sec !== currentFilter) {
-              return false;
-            }
-          }
+        // Filtro por categoria
+        if (currentFilter === 'vestuario') {
+          const isVest = p.category === 'vestuario' || p.category === 'saias-vestidos' || p.category === 'tops' || p.category === 'calcas';
+          if (!isVest) return false;
+        } else if (currentFilter === 'bolsas') {
+          if (p.category !== 'bolsas') return false;
+        } else if (currentFilter === 'casa') {
+          if (p.section !== 'casa' && p.category !== 'decoracoes') return false;
+        } else if (currentFilter === 'personalizado') {
+          if (p.category !== 'personalizado' && !p.custom) return false;
+        } else if (currentFilter === 'favoritos') {
+          if (!favs.includes(p.id)) return false;
         }
 
-        // 2. Filtro por busca
+        // Filtro por busca
         if (searchQuery) {
-          if (!name.includes(searchQuery) && !desc.includes(searchQuery) && !cat.includes(searchQuery) && !mat.includes(searchQuery) && !col.includes(searchQuery)) {
+          const name = (p.name || '').toLowerCase();
+          const desc = (p.desc || '').toLowerCase();
+          const cat = (p.category || '').toLowerCase();
+          const mat = (p.material || '').toLowerCase();
+          if (!name.includes(searchQuery) && !desc.includes(searchQuery) && !cat.includes(searchQuery) && !mat.includes(searchQuery)) {
             return false;
           }
         }
@@ -385,18 +273,17 @@
 
         return `
           <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
-            <div class="gc-product-card-img-wrap" style="position:relative">
-              <div class="gc-img-loader-spinner"></div>
+            <div class="gc-product-card-img-wrap">
               ${badgeHtml}
               <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
               </button>
-              <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onload="this.classList.add('loaded'); this.parentElement.querySelector('.gc-img-loader-spinner')?.remove();" onerror="this.src='./assets/icon.svg'; this.parentElement.querySelector('.gc-img-loader-spinner')?.remove();">
+              <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
             </div>
             <div class="gc-product-card-body">
-              <h3 class="gc-product-card-title">${p.name}</h3>
+              <h3 class="gc-product-title">${p.name}</h3>
               <div class="gc-product-price-row">
                 ${priceHtml}
               </div>

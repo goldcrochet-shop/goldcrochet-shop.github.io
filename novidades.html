@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Novidades &amp; Fashion Gazette — Gold Crochet Brasil</title>
-  <meta name="description" content="Jornal editorial da Gold Crochet: Novidades, tendências do mundo da moda, matérias exclusivas de alta-costura em crochê e inscrição na Newsletter Oficial.">
+  <title>Novidades — Gold Crochet Brasil</title>
+  <meta name="description" content="Descubra os lançamentos mais recentes da Gold Crochet Brasil. Peças recém-saídas do ateliê tecidas à mão em tiragens limitadas.">
   <link rel="canonical" href="https://goldcrochet-shop.github.io/novidades.html">
   <meta name="theme-color" content="#cda434">
 
   <!-- OpenGraph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Novidades &amp; Fashion Gazette — Gold Crochet Brasil">
-  <meta property="og:description" content="Jornal de moda editorial com lançamentos, tendências de alta-costura e inscrição na Newsletter Oficial do Ateliê.">
+  <meta property="og:title" content="Novidades — Gold Crochet Brasil">
+  <meta property="og:description" content="Descubra os lançamentos mais recentes da Gold Crochet Brasil. Peças recém-saídas do ateliê tecidas à mão em tiragens limitadas.">
   <meta property="og:image" content="./assets/logo.png">
   <meta property="og:url" content="https://goldcrochet-shop.github.io/novidades.html">
   <meta property="og:site_name" content="Gold Crochet Brasil">
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Novidades &amp; Fashion Gazette — Gold Crochet Brasil">
-  <meta name="twitter:description" content="Jornal de moda editorial com matérias sobre ateliê e alta costura.">
+  <meta name="twitter:title" content="Novidades — Gold Crochet Brasil">
+  <meta name="twitter:description" content="Descubra os lançamentos mais recentes da Gold Crochet Brasil. Peças recém-saídas do ateliê tecidas à mão em tiragens limitadas.">
   <meta name="twitter:image" content="./assets/logo.png">
 
   <!-- Favicons -->
@@ -37,410 +37,66 @@
   <link rel="stylesheet" href="./css/luxury-core.css?v=2026">
 
   <style>
-    /* Cabeçalho do Jornal de Moda Editorial */
-    .gc-gazette-masthead {
-      text-align: center;
-      border-bottom: 2px solid var(--color-ebony);
-      padding: 30px 20px 20px;
-      margin: 20px auto 40px;
-      max-width: 1400px;
-    }
-    .gc-gazette-edition {
-      font-size: 0.72rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--color-gold-deep);
-      font-weight: 700;
-      margin-bottom: 6px;
-      display: block;
-    }
-    .gc-gazette-main-title {
-      font-family: var(--font-display);
-      font-size: clamp(2.4rem, 6vw, 4.4rem);
-      color: var(--color-ebony);
-      letter-spacing: -0.01em;
-      margin: 0 0 10px;
-      line-height: 1;
-    }
-    .gc-gazette-subbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid var(--color-border);
-      border-bottom: 1px solid var(--color-border);
-      padding: 8px 16px;
-      margin-top: 14px;
-      font-size: 0.78rem;
-      color: var(--color-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 600;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    /* Artigo Principal de Capa (Lead Story) */
-    .gc-lead-story {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 36px;
-      align-items: center;
-      background: var(--color-surface);
+    .gc-spotlight-card {
+      background: linear-gradient(135deg, #fdfbf7 0%, #f7f3e9 100%);
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-card);
-      padding: clamp(24px, 4vw, 44px);
-      margin-bottom: 50px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      margin: 30px auto 60px;
+      box-shadow: var(--shadow-luxury);
     }
-    @media (max-width: 900px) {
-      .gc-lead-story {
+    @media (max-width: 860px) {
+      .gc-spotlight-card {
         grid-template-columns: 1fr;
         padding: 24px;
         gap: 24px;
       }
     }
-    .gc-lead-img-wrap {
-      position: relative;
-      border-radius: 16px;
-      overflow: hidden;
-      aspect-ratio: 16/10;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-    }
-    .gc-lead-img {
+    .gc-spotlight-img {
       width: 100%;
-      height: 100%;
+      height: 420px;
+      border-radius: var(--radius-md);
       object-fit: cover;
-      transition: transform 0.6s ease;
+      box-shadow: var(--shadow-subtle);
     }
-    .gc-lead-story:hover .gc-lead-img {
-      transform: scale(1.03);
-    }
-    .gc-lead-badge {
-      display: inline-block;
-      background: var(--color-gold-deep);
-      color: white;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 5px 14px;
-      border-radius: var(--radius-pill);
+    .gc-spotlight-info h2 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--color-ebony);
       margin-bottom: 12px;
     }
-    .gc-lead-title {
-      font-family: var(--font-display);
-      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
-      line-height: 1.15;
-      color: var(--color-ebony);
-      margin: 0 0 14px;
-    }
-    .gc-lead-excerpt {
-      color: #4a4031;
-      font-size: 1rem;
+    .gc-spotlight-info p {
+      color: var(--color-muted);
       line-height: 1.7;
-      margin-bottom: 22px;
-    }
-
-    /* Grade Editorial de Artigos */
-    .gc-articles-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 28px;
-      margin-bottom: 60px;
-    }
-    .gc-article-card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-card);
-      padding: 28px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-      cursor: pointer;
-    }
-    .gc-article-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 24px rgba(166, 124, 0, 0.1);
-      border-color: rgba(205, 164, 52, 0.4);
-    }
-    .gc-article-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-    .gc-article-tag {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--color-gold-deep);
-      background: #fdfae8;
-      padding: 4px 10px;
-      border-radius: var(--radius-pill);
-    }
-    .gc-article-date {
-      font-size: 0.8rem;
-      color: var(--color-muted);
-    }
-    .gc-article-title {
-      font-family: var(--font-display);
-      font-size: 1.45rem;
-      color: var(--color-ebony);
-      margin: 0 0 10px;
-      line-height: 1.3;
-    }
-    .gc-article-excerpt {
-      font-size: 0.92rem;
-      color: #554a3b;
-      line-height: 1.6;
-      margin-bottom: 18px;
-      flex-grow: 1;
-    }
-    .gc-article-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid var(--color-border-subtle);
-      padding-top: 12px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      color: var(--color-gold-deep);
-    }
-
-    /* Banner Oficial de Inscrição na Newsletter */
-    .gc-gazette-newsletter-box {
-      background: linear-gradient(135deg, #1b1814 0%, #29241d 100%);
-      border: 1px solid rgba(205, 164, 52, 0.35);
-      border-radius: var(--radius-lg);
-      padding: clamp(36px, 5vw, 60px) clamp(24px, 4vw, 50px);
-      margin: 60px auto;
-      text-align: center;
-      color: #fff;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
-      position: relative;
-      overflow: hidden;
-    }
-    .gc-gazette-newsletter-box::before {
-      content: '';
-      position: absolute;
-      bottom: -60px;
-      left: -60px;
-      width: 280px;
-      height: 280px;
-      background: radial-gradient(circle, rgba(205,164,52,0.2) 0%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    .gc-gazette-newsletter-box h2 {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 4vw, 3rem);
-      margin: 0 0 12px;
-      color: #fff9ea;
-    }
-    .gc-gazette-newsletter-box p {
-      color: rgba(255, 255, 255, 0.85);
-      font-size: clamp(0.95rem, 2vw, 1.08rem);
-      max-width: 580px;
-      margin: 0 auto 30px;
-      line-height: 1.6;
-    }
-    .gc-newsletter-form {
-      display: flex;
-      gap: 12px;
-      max-width: 520px;
-      margin: 0 auto;
-      flex-wrap: wrap;
-    }
-    .gc-newsletter-input {
-      flex: 1;
-      min-width: 240px;
-      background: rgba(255, 255, 255, 0.95);
-      border: 1.5px solid rgba(205, 164, 52, 0.5);
-      border-radius: var(--radius-pill);
-      padding: 14px 22px;
-      font-size: 0.95rem;
-      color: #1a1a1a;
-      outline: none;
-      font-family: var(--font-body);
-      transition: all 0.25s ease;
-    }
-    .gc-newsletter-input:focus {
-      background: #ffffff;
-      border-color: var(--color-gold);
-      box-shadow: 0 0 0 3px rgba(205, 164, 52, 0.3);
-    }
-    .gc-newsletter-submit-btn {
-      background: var(--color-gold);
-      color: #1a1610;
-      border: none;
-      border-radius: var(--radius-pill);
-      padding: 14px 28px;
-      font-weight: 700;
-      font-size: 0.92rem;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      font-family: var(--font-body);
-      transition: all 0.25s ease;
-      white-space: nowrap;
-    }
-    .gc-newsletter-submit-btn:hover {
-      background: #ffd866;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(205, 164, 52, 0.3);
-    }
-    .gc-newsletter-msg {
-      margin-top: 14px;
-      font-size: 0.88rem;
-      font-weight: 500;
-    }
-
-    @media (max-width: 640px) {
-      .gc-lead-story button,
-      .gc-lead-story .gc-filter-pill,
-      .gc-filter-pill,
-      button.gc-filter-pill {
-        padding: 8px 16px !important;
-        font-size: 0.8rem !important;
-        min-height: 38px !important;
-        width: auto !important;
-        display: inline-flex !important;
-        align-items: center;
-        justify-content: center;
-      }
-      .gc-newsletter-form {
-        flex-direction: column;
-        gap: 8px;
-        width: 100%;
-      }
-      .gc-newsletter-input {
-        padding: 10px 16px !important;
-        font-size: 0.86rem !important;
-        min-width: 100% !important;
-        box-sizing: border-box;
-      }
-      .gc-newsletter-submit-btn {
-        padding: 10px 20px !important;
-        font-size: 0.84rem !important;
-        width: 100% !important;
-        box-sizing: border-box;
-      }
-      .gc-article-card {
-        padding: 16px !important;
-      }
-      .gc-article-footer {
-        font-size: 0.8rem !important;
-      }
-    }
-
-    /* Modal de Leitura do Artigo */
-    .gc-article-modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(6px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 20px;
-    }
-    .gc-article-modal-backdrop.active {
-      display: flex;
-    }
-    .gc-article-modal-box {
-      background: #fff;
-      border-radius: var(--radius-lg);
-      max-width: 680px;
-      width: 100%;
-      max-height: 85vh;
-      overflow-y: auto;
-      padding: clamp(28px, 4vw, 44px);
-      position: relative;
-      border: 1px solid var(--color-border);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-    }
-    .gc-article-modal-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: none;
-      border: none;
-      font-size: 1.8rem;
-      line-height: 1;
-      cursor: pointer;
-      color: var(--color-muted);
+      margin-bottom: 24px;
     }
   </style>
 </head>
 <body>
 
   <main class="gc-container">
-    <!-- Cabeçalho do Jornal de Moda -->
-    <header class="gc-gazette-masthead">
-      <span class="gc-gazette-edition">Gold Crochet Fashion Gazette • Edição Especial 2026</span>
-      <h1 class="gc-gazette-main-title">Novidades &amp; Caderno de Moda</h1>
-      <div class="gc-gazette-subbar">
-        <span>Ateliê &amp; Alta-Costura Manual</span>
-        <span>Tendências Internacionais &amp; Bossa Tropical</span>
-        <span>Produção Sob Demanda</span>
-      </div>
+    <!-- Hero das Novidades -->
+    <header class="gc-page-hero">
+      <span class="gc-page-hero-tag">Lançamentos da Estação</span>
+      <h1 class="gc-page-hero-title">Recém-Tecidas</h1>
+      <p class="gc-page-hero-desc">
+        Acompanhe em primeira mão as criações que acabam de sair das agulhas das nossas artesãs. Produções em pequenos lotes com acabamento impecável.
+      </p>
     </header>
 
-    <!-- Matéria de Capa (Lead Story) -->
-    <article class="gc-lead-story" id="leadStory">
-      <div class="gc-lead-img-wrap">
-        <img src="https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957537128_0.png" alt="Vestido Trancoso Midi em Alta Costura" class="gc-lead-img">
-      </div>
-      <div>
-        <span class="gc-lead-badge">Capa da Edição</span>
-        <h2 class="gc-lead-title">O Renascimento do Crochê de Gala nos Tapetes Vermelhos</h2>
-        <p class="gc-lead-excerpt">
-          Como a combinação de pontos arquitetônicos vazados e fios de algodão nobre transformou o artesanato brasileiro na maior tendência da moda atemporal. Das noites no litoral aos jantares de gala, o artesanal assume o posto supremo da sofisticação despretensiosa.
-        </p>
-        <button class="gc-filter-pill" style="background:var(--color-gold-deep);color:#fff;border-color:var(--color-gold-deep);padding:10px 22px;cursor:pointer" onclick="openLeadArticle()">
-          Ler Matéria Completa &rarr;
-        </button>
-      </div>
-    </article>
+    <!-- Destaque Especial de Lançamento -->
+    <section id="spotlightSection">
+      <!-- Injetado dinamicamente via JS -->
+    </section>
 
-    <!-- Seção de Artigos Editoriais & Notícias do Ateliê -->
+    <!-- Grade de Todas as Novidades -->
     <section>
-      <div style="border-bottom:1px solid var(--color-border);padding-bottom:14px;margin-bottom:28px;display:flex;justify-content:space-between;align-items:flex-end">
-        <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-ebony);margin:0">Caderno de Notícias &amp; Ensaios</h2>
-        <span style="font-size:0.85rem;color:var(--color-muted);text-transform:uppercase;letter-spacing:0.05em">Edições do Ateliê</span>
-      </div>
-
-      <div class="gc-articles-grid" id="articlesGrid">
-        <!-- Injetado dinamicamente via JS (sincronizado com blogPosts de data.json e admin) -->
-      </div>
-    </section>
-
-    <!-- Seção Oficial de Inscrição no Newsletter -->
-    <section class="gc-gazette-newsletter-box">
-      <span style="font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-gold);font-weight:700;display:block;margin-bottom:8px">Newsletter VIP da Casa Gold</span>
-      <h2>Receba Todas as Novidades do Mundo da Moda</h2>
-      <p>
-        Assine nosso boletim editorial para receber em primeira mão o lançamento de novos lotes de peças, bastidores das artesãs, guias de estilo e convites exclusivos para pré-vendas de coleções.
-      </p>
-
-      <form class="gc-newsletter-form" id="gazetteNewsletterForm" onsubmit="handleGazetteNewsletter(event)">
-        <input type="email" id="gazetteEmailInput" class="gc-newsletter-input" placeholder="Seu melhor e-mail..." required autocomplete="email">
-        <button type="submit" class="gc-newsletter-submit-btn" id="gazetteSubmitBtn">Inscrever-se</button>
-      </form>
-      <div id="gazetteMsg" class="gc-newsletter-msg"></div>
-    </section>
-
-    <!-- Grade de Peças Recém-Chegadas ao Acervo -->
-    <section style="margin-top:60px;">
-      <div style="border-bottom:1px solid var(--color-border);padding-bottom:14px;margin-bottom:28px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px">
-        <div>
-          <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-ebony);margin:0">Peças Recém-Tecidas no Ateliê</h2>
-          <p style="color:var(--color-muted);margin:4px 0 0;font-size:0.9rem">Últimas criações finalizadas pelas nossas artesãs mestras.</p>
-        </div>
-        <a href="./pecas.html" class="gc-portal-pill-link" style="text-decoration:none">Ver Todo o Acervo &rarr;</a>
+      <div style="border-bottom:1px solid var(--color-border);padding-bottom:14px;margin-bottom:28px">
+        <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-ebony)">Últimas Adições ao Ateliê</h2>
       </div>
       <div id="gridNovidades" class="gc-grid-products">
         <!-- Injetado dinamicamente via JS -->
@@ -448,230 +104,79 @@
     </section>
   </main>
 
-  <!-- Modal de Leitura de Artigo -->
-  <div class="gc-article-modal-backdrop" id="articleModal">
-    <div class="gc-article-modal-box">
-      <button class="gc-article-modal-close" onclick="closeArticleModal()" aria-label="Fechar">&times;</button>
-      <div id="articleModalContent"></div>
-    </div>
-  </div>
-
   <!-- Scripts Essenciais de Luxo -->
   <script src="./js/loader.js?v=2026"></script>
   <script src="./js/shared-ui.js?v=2026"></script>
   <script>
-    let currentBlogPosts = [];
-
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1. Carrega dados do catálogo e artigos
-      try {
-        const resp = await fetch('./data.json?t=' + Date.now());
-        if (resp.ok) {
-          const data = await resp.json();
-          currentBlogPosts = data.blogPosts || [];
-        }
-      } catch (err) {
-        console.warn('Erro ao carregar blogPosts:', err);
-      }
-
-      // Se não houver blogPosts carregados, provê matérias ricas do mundo da moda e ateliê
-      if (!currentBlogPosts || !currentBlogPosts.length) {
-        currentBlogPosts = [
-          {
-            id: 1,
-            title: "Nova Coleção Maré D'ouro Desponta na Costa",
-            date: "Março 2026",
-            emoji: "🌊",
-            tag: "Lançamento",
-            excerpt: "Inspirada no balanço das marés e no brilho dourado do sol poente, a nova coleção da Gold Crochet traz silhuetas fluidas e degradês oceânicos.",
-            content: "A coleção Maré D'ouro nasce da observação poética do litoral brasileiro. Unindo o fio de algodão penteado aos pontos arejados, criamos vestidos e conjuntos que transitam com naturalidade absoluta da beira-mar aos eventos mais requintados da temporada. Cada peça consome dias de dedicação cuidadosa de artesãs mestras."
-          },
-          {
-            id: 2,
-            title: "Por Trás dos Pontos: O Silêncio & Ritual do Ateliê",
-            date: "Fevereiro 2026",
-            emoji: "🧶",
-            tag: "Bastidores",
-            excerpt: "Um passeio íntimo pelo espaço onde cada peça nasce da paciência e da nobreza das agulhas manuais.",
-            content: "No ateliê da Gold Crochet, a velocidade dá lugar ao refinamento. Nenhuma máquina ruidosa quebra o ritmo do fio. As artesãs trocam histórias enquanto tecem peças que durarão por gerações, honrando técnicas ancestrais e aprimorando cada acabamento."
-          },
-          {
-            id: 3,
-            title: "O Luxo da Consciência: Produção Sob Demanda",
-            date: "Janeiro 2026",
-            emoji: "🌱",
-            tag: "Sustentabilidade",
-            excerpt: "Por que a alta-costura sustentável escolheu o desperdício zero como sua bandeira máxima de prestígio.",
-            content: "Produzir sob demanda é uma postura de respeito à Terra e às pessoas. Ao recusar estoques mortos e descartes predatórios, a Gold Crochet garante que cada grama de algodão brasileiro seja valorizada em seu potencial máximo de beleza e longevidade."
-          },
-          {
-            id: 4,
-            title: "Guia de Estilo: Como Vestir Crochê em Noites de Gala",
-            date: "Dezembro 2025",
-            emoji: "✨",
-            tag: "Estilo",
-            excerpt: "Acessórios certos, caimento fluído e jóias que complementam a textura nobre da tecelagem manual.",
-            content: "O crochê de gala demanda joias minimalistas que não concorram com a riqueza tátil dos pontos. Sandálias metálicas em tons de ouro velho ou champanhe, bolsas estruturadas e cabelos polidos elevam a peça à categoria de obra de arte viva."
-          }
-        ];
-      }
-
-      renderArticles();
-
-      // 2. Renderiza produtos recém-chegados
       const products = await window.fetchCatalog();
-      if (products && products.length) {
-        const grid = document.getElementById('gridNovidades');
-        if (grid) {
-          const novidades = [...products].sort((a, b) => (b.id || 0) - (a.id || 0));
-          grid.innerHTML = novidades.slice(0, 4).map(p => {
-            const slug = p.slug || 'produto';
-            const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
-            const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
-            const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '<span class="gc-badge-tag">Novidade</span>';
+      if (!products || !products.length) return;
 
-            return `
-              <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
-                <div class="gc-product-card-img-wrap">
-                  ${badge}
-                  <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav && window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                  </button>
-                  <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
-                </div>
-                <div class="gc-product-card-body">
-                  <span class="gc-product-category">${p.category || 'Ateliê'}</span>
-                  <h3 class="gc-product-title">${p.name}</h3>
-                  <p class="gc-product-desc">${p.desc || ''}</p>
-                  <div class="gc-product-price-row">
-                    <span class="gc-product-price">${priceStr}</span>
-                  </div>
+      // Ordenar pelas novidades ou por ID decrescente
+      const novidades = [...products].sort((a, b) => {
+        if (a.badge === 'Novo' && b.badge !== 'Novo') return -1;
+        if (b.badge === 'Novo' && a.badge !== 'Novo') return 1;
+        return (b.id || 0) - (a.id || 0);
+      });
+
+      // Destaque de lançamento
+      const spotlight = novidades[0];
+      const spotEl = document.getElementById('spotlightSection');
+      if (spotlight && spotEl) {
+        const spotPrice = spotlight.price ? `R$ ${Number(spotlight.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+        spotEl.innerHTML = `
+          <div class="gc-spotlight-card">
+            <img src="${spotlight.image || (spotlight.gallery && spotlight.gallery[0]) || './assets/icon.svg'}" alt="${spotlight.name}" class="gc-spotlight-img" onerror="this.src='./assets/icon.svg'">
+            <div class="gc-spotlight-info">
+              <span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:12px">Destaque Exclusivo</span>
+              <h2>${spotlight.name}</h2>
+              <p>${spotlight.desc || 'Peça artesanal recém-adicionada ao catálogo oficial com fio nobre e caimento incomparável.'}</p>
+              <div style="font-family:var(--font-body);font-size:1.6rem;font-weight:700;color:var(--color-gold-deep);margin-bottom:24px">${spotPrice}</div>
+              <a href="./produtos/${spotlight.slug || 'produto'}.html" class="gc-btn-checkout" style="text-decoration:none;display:inline-flex;padding:14px 28px">
+                Conhecer a Peça &rarr;
+              </a>
+            </div>
+          </div>
+        `;
+      }
+
+      // Grade com as outras novidades
+      const grid = document.getElementById('gridNovidades');
+      if (grid) {
+        grid.innerHTML = novidades.slice(1).map(p => {
+          const slug = p.slug || 'produto';
+          const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+          const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
+          const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '<span class="gc-badge-tag">Lançamento</span>';
+
+          return `
+            <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
+              <div class="gc-product-card-img-wrap">
+                ${badge}
+                <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </button>
+                <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
+              </div>
+              <div class="gc-product-card-body">
+                <span class="gc-product-category">${p.category || 'Ateliê'}</span>
+                <h3 class="gc-product-title">${p.name}</h3>
+                <p class="gc-product-desc">${p.desc || ''}</p>
+                <div class="gc-product-price-row">
+                  <span class="gc-product-price">${priceStr}</span>
                 </div>
               </div>
-            `;
-          }).join('');
-        }
+            </div>
+          `;
+        }).join('');
       }
 
       if (window.GoldFav && window.GoldFav.updateUI) {
         window.GoldFav.updateUI();
       }
     });
-
-    function renderArticles() {
-      const container = document.getElementById('articlesGrid');
-      if (!container) return;
-
-      container.innerHTML = currentBlogPosts.map((post, index) => {
-        return `
-          <article class="gc-article-card" onclick="openArticleModal(${index})">
-            <div>
-              <div class="gc-article-top">
-                <span class="gc-article-tag">${post.emoji || '📰'} ${post.tag || 'Moda'}</span>
-                <span class="gc-article-date">${post.date || 'Recente'}</span>
-              </div>
-              <h3 class="gc-article-title">${post.title}</h3>
-              <p class="gc-article-excerpt">${post.excerpt || ''}</p>
-            </div>
-            <div class="gc-article-footer">
-              <span>Ler Ensaio</span>
-              <span>&rarr;</span>
-            </div>
-          </article>
-        `;
-      }).join('');
-    }
-
-    function openLeadArticle() {
-      const modal = document.getElementById('articleModal');
-      const content = document.getElementById('articleModalContent');
-      if (!modal || !content) return;
-
-      content.innerHTML = `
-        <span class="gc-lead-badge">Caderno de Alta-Costura</span>
-        <h2 style="font-family:var(--font-display);font-size:2rem;color:var(--color-ebony);margin:12px 0 16px">O Renascimento do Crochê de Gala nos Tapetes Vermelhos</h2>
-        <p style="color:var(--color-muted);font-size:0.85rem;margin-bottom:20px">Publicado pela Curadoria Gold Crochet Brasil • Edição 2026</p>
-        <p style="line-height:1.8;color:#3d3428;font-size:1rem;margin-bottom:16px">
-          Durante décadas, a alta-costura internacional associou o luxo estritamente a tecidos pesados, brocados rígidos e pedrarias industriais. No entanto, os últimos grandes eventos de moda e festivais globais testemunharam uma virada estética sem precedentes: a celebração das texturas orgânicas, respiráveis e esculturais do crochê manual.
-        </p>
-        <p style="line-height:1.8;color:#3d3428;font-size:1rem;margin-bottom:16px">
-          Na Casa Gold, nossos vestidos para a noite, como o icônico <em>Vestido Bossa Curto</em> e o <em>Vestido Trancoso Midi</em>, equilibram a fluidez sensual com pontos estruturados de sustentação impecável. Cada peça abraça a anatomia com elegância e liberdade de movimento rara no vestuário formal.
-        </p>
-        <div style="background:#fdfae8;border-left:3px solid var(--color-gold);padding:18px;border-radius:0 10px 10px 0;margin:24px 0;color:#4a3f2b">
-          <em>"O crochê de gala não veste uma mulher para disfarçá-la; ele veste para revelar sua autêntica presença poética sob a luz da noite."</em>
-        </div>
-        <p style="line-height:1.8;color:#3d3428;font-size:1rem">
-          Ao escolher uma criação do ateliê para uma ocasião noturna, você veste arte viva — confeccionada por mãos que dominam a arte secular do entrelaçamento nobre.
-        </p>
-      `;
-      modal.classList.add('active');
-    }
-
-    function openArticleModal(idx) {
-      const post = currentBlogPosts[idx];
-      if (!post) return;
-      const modal = document.getElementById('articleModal');
-      const content = document.getElementById('articleModalContent');
-      if (!modal || !content) return;
-
-      content.innerHTML = `
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <span class="gc-article-tag">${post.emoji || '📰'} ${post.tag || 'Moda'}</span>
-          <span style="font-size:0.82rem;color:var(--color-muted);">${post.date || 'Recente'}</span>
-        </div>
-        <h2 style="font-family:var(--font-display);font-size:1.9rem;color:var(--color-ebony);margin:0 0 16px">${post.title}</h2>
-        <p style="line-height:1.8;color:#3d3428;font-size:1rem;margin-bottom:16px">${post.content || post.excerpt}</p>
-        <div style="border-top:1px solid var(--color-border);padding-top:18px;margin-top:24px;display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:0.85rem;color:var(--color-muted);">Gold Crochet Brasil Ateliê</span>
-          <a href="./pecas.html" class="gc-filter-pill" style="text-decoration:none;font-size:0.85rem">Explorar Peças do Acervo &rarr;</a>
-        </div>
-      `;
-      modal.classList.add('active');
-    }
-
-    function closeArticleModal() {
-      const modal = document.getElementById('articleModal');
-      if (modal) modal.classList.remove('active');
-    }
-
-    async function handleGazetteNewsletter(e) {
-      e.preventDefault();
-      const input = document.getElementById('gazetteEmailInput');
-      const btn = document.getElementById('gazetteSubmitBtn');
-      const msg = document.getElementById('gazetteMsg');
-      if (!input || !input.value) return;
-
-      const email = input.value.trim().toLowerCase();
-      btn.disabled = true;
-      btn.textContent = 'Enviando...';
-      msg.textContent = '';
-
-      try {
-        const resp = await fetch('/api/newsletter', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email })
-        });
-        const res = await resp.json();
-        if (resp.ok && res.success) {
-          msg.style.color = '#78e08f';
-          msg.textContent = '✨ Parabéns! Você agora faz parte do círculo de leitores exclusivos da Gold Crochet Fashion Gazette.';
-          input.value = '';
-        } else {
-          msg.style.color = '#ffd866';
-          msg.textContent = res.message || 'Seu e-mail já está inscrito ou foi atualizado com sucesso!';
-        }
-      } catch (err) {
-        msg.style.color = '#ffd866';
-        msg.textContent = '✨ Inscrição recebida com carinho! Bem-vindo(a) ao círculo de leitores da Casa Gold.';
-        input.value = '';
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Inscrever-se';
-      }
-    }
   </script>
 </body>
 </html>

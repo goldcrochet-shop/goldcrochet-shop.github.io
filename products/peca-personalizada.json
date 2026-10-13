@@ -19,11 +19,9 @@
   "badge": "Sob Medida",
   "discount": 0,
   "model3d": "",
-  "image": "assets/peca-personalizada.png",
+  "image": "",
   "custom": true,
-  "gallery": [
-    "assets/peca-personalizada.png"
-  ],
+  "gallery": [],
   "colors": [
     {
       "name": "Dourado",

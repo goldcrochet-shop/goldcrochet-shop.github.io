@@ -1519,6 +1519,9 @@
     // Abre o WhatsApp imediatamente (antes de await, para não ser bloqueado como pop-up)
     window.open(waUrl(msg), '_blank');
 
+    // Limpa a sacola de compras após a finalização
+    saveCart([]);
+
     // Registra o pedido no Firestore → aparece ao vivo no painel admin
     registerWhatsAppOrder({ orderCode, cart, subtotal, discountVal, finalTotal, customer });
   }
@@ -1555,10 +1558,11 @@
       const fb = await ensureFirebase();
       if (fb && fb.db && fb.setDoc && fb.fsDoc) {
         const user = fb.auth && fb.auth.currentUser;
+        const targetUserId = (user && user.uid) || (customer && (customer.id || customer.uid));
         await fb.setDoc(fb.fsDoc(fb.db, 'orders', orderCode), {
           code: orderCode,
           source: 'whatsapp-checkout',
-          userId: (user && user.uid) || (customer && (customer.id || customer.uid)) || 'guest',
+          userId: targetUserId || 'guest',
           userName: (customer && customer.name) || (user && user.displayName) || 'Cliente VIP',
           userEmail: (customer && customer.email) || (user && user.email) || '',
           phone: String((customer && (customer.phone || customer.whatsapp)) || (user && user.phoneNumber) || '').replace(/\D/g, ''),
@@ -1570,6 +1574,27 @@
           status: 'pendente',
           createdAt: (fb.serverTimestamp && fb.serverTimestamp()) || new Date().toISOString()
         });
+
+        // Atualiza a lista de pedidos dentro do perfil do usuário em users/{userId}
+        if (targetUserId && targetUserId !== 'guest') {
+          try {
+            const userRef = fb.fsDoc(fb.db, 'users', targetUserId);
+            const userSnap = await fb.getDoc(userRef).catch(() => null);
+            const userOrders = (userSnap && userSnap.exists() && Array.isArray(userSnap.data().orders)) ? userSnap.data().orders : [];
+            const clientOrderItem = {
+              id: orderCode,
+              date: new Date().toLocaleDateString('pt-BR'),
+              item: cart.map(i => `${i.qty}x ${i.name}`).join(', '),
+              color: cart[0]?.color || 'Artesanal Gold',
+              total: `R$ ${finalTotal.toFixed(2).replace('.', ',')}`,
+              step: 1,
+              status: 'pendente'
+            };
+            userOrders.unshift(clientOrderItem);
+            await fb.setDoc(userRef, { orders: userOrders.slice(0, 50) }, { merge: true }).catch(() => {});
+          } catch(e) {}
+        }
+
         console.log('✅ [Checkout] Pedido registrado no Firestore com sucesso:', orderCode);
         return;
       }

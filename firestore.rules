@@ -31,7 +31,7 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
-        request.auth.token.email in ['goldcrochet.suporte@gmail.com', 'rossipereira2010@gmail.com']
+        (request.auth.token.email in ['goldcrochet.suporte@gmail.com', 'rossipereira2010@gmail.com'] && request.auth.token.email_verified == true)
       );
     }
 
@@ -50,18 +50,17 @@ service cloud.firestore {
       allow delete: if isValidId(userId) && (isOwner(userId) || isAdmin());
     }
 
-    // Orders collection (Pedidos da loja e WhatsApp)
+    // Orders collection
     match /orders/{orderId} {
-      allow get: if isValidId(orderId) && (isAdmin() || (isSignedIn() && existing().userId == request.auth.uid));
-      allow list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow create: if isValidId(orderId)
+      allow get: if isValidId(orderId) && isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isValidId(orderId) && isSignedIn()
+                    && incoming().userId == request.auth.uid
                     && incoming().total is number
                     && incoming().total >= 0
                     && incoming().items is list
                     && incoming().items.size() <= 100
-                    && incoming().status in ['pendente', 'producao', 'enviado', 'entregue', 'cancelado']
-                    && incoming().userName is string
-                    && incoming().userEmail is string;
+                    && incoming().status in ['pendente', 'producao', 'enviado', 'entregue', 'cancelado'];
       allow update: if isValidId(orderId) && (
         isAdmin() ||
         (isSignedIn() && existing().userId == request.auth.uid && incoming().status == 'cancelado' && existing().status == 'pendente')
@@ -83,36 +82,6 @@ service cloud.firestore {
                     && incoming().email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
                     && incoming().active == true;
       allow read, list, update, delete: if isAdmin();
-    }
-
-    // Coupons collection (read by all for checkout discount validation, written by admin)
-    match /coupons/{couponId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // Site settings & Gift Program (read by all, written by admin)
-    match /settings/{settingId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // Products collection (read by all customers for store catalog, written by admin)
-    match /products/{productId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // Categories collection (read by all for navigation, written by admin)
-    match /categories/{categoryId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // Analytics and site metrics
-    match /analytics/{docId} {
-      allow read: if isAdmin();
-      allow write: if true;
     }
 
     // Test connection document for initial health checks

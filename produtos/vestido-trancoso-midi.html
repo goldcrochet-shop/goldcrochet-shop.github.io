@@ -185,8 +185,8 @@
       <div class="gc-carousel-header">
         <h2 style="font-family:var(--font-display);font-size:1.85rem;color:var(--color-ebony);margin:0">Você Também Pode Gostar</h2>
         <div style="display:flex;gap:8px">
-          <button id="relatedPrevBtn" class="gc-carousel-arrow-btn" aria-label="Voltar destaques" title="Anterior">&lt;</button>
-          <button id="relatedNextBtn" class="gc-carousel-arrow-btn" aria-label="Avançar destaques" title="Próximo">&gt;</button>
+          <button id="relatedPrevBtn" class="gc-carousel-arrow-btn" aria-label="Anterior">&lsaquo;</button>
+          <button id="relatedNextBtn" class="gc-carousel-arrow-btn" aria-label="Próximo">&rsaquo;</button>
         </div>
       </div>
       <div class="gc-carousel-viewport">
@@ -276,66 +276,47 @@
       }
     }
 
-    // Carrega o carrossel 'Você Também Pode Gostar' com card idêntico à Home
+    // Carrega o carrossel infinito 'Você Também Pode Gostar'
     (async function initRelatedCarousel() {
       const all = await window.fetchCatalog();
       if (!all || !all.length) return;
       const filtered = all.filter(item => item.id !== productData.id);
       const shuffled = [...filtered].sort(() => 0.5 - Math.random());
       const base = shuffled.slice(0, 8);
+      const infinite = [...base, ...base];
       const track = document.getElementById('gridRelatedCarousel');
       if (!track) return;
 
-      track.innerHTML = base.map(item => {
+      track.innerHTML = infinite.map(item => {
         const pSlug = item.slug || 'produto';
         const pImg = item.image || (item.gallery && item.gallery[0]) || '../assets/icon.svg';
-        const rawPrice = item.price ? Number(item.price) : null;
-        const discountPct = Number(item.discount || 0);
-        let priceHtml = '';
-
-        if (rawPrice) {
-          if (discountPct > 0) {
-            const finalPrice = rawPrice * (1 - discountPct / 100);
-            priceHtml = `
-              <span class="gc-product-price" style="color:var(--color-gold-deep)">R$ ${finalPrice.toFixed(2).replace('.', ',')}</span>
-              <span style="text-decoration:line-through;color:var(--color-muted);font-size:0.82rem;margin-left:6px">R$ ${rawPrice.toFixed(2).replace('.', ',')}</span>
-            `;
-          } else {
-            priceHtml = `<span class="gc-product-price">R$ ${rawPrice.toFixed(2).replace('.', ',')}</span>`;
-          }
-        } else {
-          priceHtml = `<span class="gc-product-price">Sob Consulta</span>`;
-        }
-
-        const badgeHtml = discountPct > 0 
-          ? `<span class="gc-badge-tag" style="background:#e53e3e;color:#fff">-${discountPct}%</span>`
-          : (item.badge ? `<span class="gc-badge-tag">${item.badge}</span>` : '');
-
+        const pPrice = item.price ? `R$ ${Number(item.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
         return `
           <div class="gc-product-card" onclick="window.location.href='./' + '${pSlug}' + '.html'" style="cursor:pointer">
-            <div class="gc-product-card-img-wrap" style="position:relative">
-              <div class="gc-img-loader-spinner"></div>
-              ${badgeHtml}
+            <div class="gc-product-card-img-wrap">
               <button class="gc-card-fav-btn" data-id="${item.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${item.id});" aria-label="Favoritar">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
               </button>
-              <img src="${pImg}" alt="${item.name}" class="gc-product-card-img" loading="lazy" onload="this.classList.add('loaded'); this.parentElement.querySelector('.gc-img-loader-spinner')?.remove();" onerror="this.src='../assets/icon.svg'; this.parentElement.querySelector('.gc-img-loader-spinner')?.remove();">
+              <img src="${pImg}" alt="${item.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='../assets/icon.svg'">
             </div>
             <div class="gc-product-card-body">
-              <span class="gc-product-card-category">${item.category ? item.category.toUpperCase() : 'ALTA-COSTURA'}</span>
-              <h3 class="gc-product-card-title">${item.name}</h3>
+              <h3 class="gc-product-title">${item.name}</h3>
               <div class="gc-product-price-row">
-                ${priceHtml}
+                <span class="gc-product-price">${pPrice}</span>
               </div>
             </div>
           </div>
         `;
       }).join('');
 
+      let autoRelTimer = setInterval(() => {
+        track.scrollBy({ left: 300, behavior: 'smooth' });
+      }, 30000);
+
       const pBtn = document.getElementById('relatedPrevBtn');
       const nBtn = document.getElementById('relatedNextBtn');
-      if (pBtn) pBtn.addEventListener('click', () => { track.scrollBy({ left: -320, behavior: 'smooth' }); });
-      if (nBtn) nBtn.addEventListener('click', () => { track.scrollBy({ left: 320, behavior: 'smooth' }); });
+      if (pBtn) pBtn.addEventListener('click', () => { track.scrollBy({ left: -300, behavior: 'smooth' }); });
+      if (nBtn) nBtn.addEventListener('click', () => { track.scrollBy({ left: 300, behavior: 'smooth' }); });
     })();
   </script>
 </body>

@@ -54,39 +54,6 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["email", "role"]
-    },
-    "Product": {
-      "title": "Product",
-      "description": "Crochet handcrafted product",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "price": { "type": "number" },
-        "originalPrice": { "type": "number" },
-        "category": { "type": "string" },
-        "image": { "type": "string" },
-        "images": { "type": "array" },
-        "stock": { "type": "number" },
-        "description": { "type": "string" },
-        "badge": { "type": "string" },
-        "featured": { "type": "boolean" },
-        "updatedAt": { "type": "string" }
-      },
-      "required": ["name", "price", "category"]
-    },
-    "Category": {
-      "title": "Category",
-      "description": "Product collection category",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "slug": { "type": "string" },
-        "description": { "type": "string" },
-        "icon": { "type": "string" }
-      },
-      "required": ["name", "slug"]
     }
   },
   "firestore": {
@@ -97,14 +64,6 @@
     "/orders/{orderId}": {
       "schema": { "$ref": "#/entities/Order" },
       "description": "Orders created by customers, readable by customer and admin"
-    },
-    "/products/{productId}": {
-      "schema": { "$ref": "#/entities/Product" },
-      "description": "Store products catalog"
-    },
-    "/categories/{categoryId}": {
-      "schema": { "$ref": "#/entities/Category" },
-      "description": "Store product categories"
     },
     "/newsletter/{subscriptionId}": {
       "schema": { "$ref": "#/entities/NewsletterSubscription" },

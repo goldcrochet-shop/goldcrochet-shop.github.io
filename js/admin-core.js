@@ -18,6 +18,7 @@ export const adminState = {
   products: [],
   categories: [],
   orders: [],
+  customers: [],
   coupons: [],
   logs: [],
   metrics: {
@@ -28,8 +29,10 @@ export const adminState = {
     avgTicket: 0
   },
   currentView: 'overview',
+  catalogDisplayMode: localStorage.getItem('gc_catalog_display_mode') || 'cards',
   searchQuery: '',
   selectedCategoryFilter: 'all',
+  customerSearchQuery: '',
   orderStatusFilter: 'all',
   orderSearchQuery: '',
   activeDetailOrderId: null,
@@ -257,7 +260,8 @@ export async function initDashboardData() {
     await Promise.all([
       syncProductsFromFirestore(),
       syncCategoriesFromFirestore(),
-      syncOrdersFromFirestore()
+      syncOrdersFromFirestore(),
+      syncCustomersFromFirestore()
     ]);
     calculateMetrics();
     renderCurrentView();
@@ -420,6 +424,52 @@ export async function syncOrdersFromFirestore() {
     }
   } catch (err) {
     console.warn('[Firestore Orders Read]', err.message);
+  }
+}
+
+export async function syncCustomersFromFirestore() {
+  const fb = window.GoldFirebase;
+  if (!fb || !fb.db) return;
+
+  try {
+    const colRef = fb.fsCollection(fb.db, 'users');
+    const snapshot = await fb.getDocs(colRef).catch(() => null);
+
+    const list = [];
+    if (snapshot && !snapshot.empty) {
+      snapshot.forEach(docSnap => {
+        const u = docSnap.data();
+        if (u.role !== 'admin') {
+          list.push({ id: docSnap.id, ...u });
+        }
+      });
+    }
+
+    // Mescla com compradores identificados nos pedidos para garantir que ninguém fique de fora
+    adminState.orders.forEach(o => {
+      if (o.userEmail && !list.some(c => c.email && c.email.toLowerCase() === o.userEmail.toLowerCase())) {
+        list.push({
+          id: o.userId || ('client_' + Math.abs(o.userEmail.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0))),
+          name: o.userName || 'Cliente Gold',
+          email: o.userEmail,
+          phone: o.phone || '',
+          purchasesCount: 1,
+          giftsClaimed: 0
+        });
+      }
+    });
+
+    adminState.customers = list;
+    try { localStorage.setItem('gc_cached_customers', JSON.stringify(list)); } catch(e) {}
+    
+    const badge = document.getElementById('navBadgeCustomers');
+    if (badge) badge.textContent = list.length;
+
+    if (adminState.currentView === 'customers') {
+      renderCustomersList();
+    }
+  } catch (err) {
+    console.warn('[Firestore Customers Read]', err.message);
   }
 }
 
@@ -737,6 +787,9 @@ export function renderCurrentView() {
     case 'orders':
       renderOrdersList();
       break;
+    case 'customers':
+      renderCustomersList();
+      break;
     case 'sync':
       renderSyncView();
       break;
@@ -795,9 +848,36 @@ function renderOverview() {
   }
 }
 
+export function setCatalogDisplayMode(mode) {
+  adminState.catalogDisplayMode = mode;
+  try { localStorage.setItem('gc_catalog_display_mode', mode); } catch(e) {}
+  
+  const btnCards = document.getElementById('btnViewCards');
+  const btnTable = document.getElementById('btnViewTable');
+  const cardsWrap = document.getElementById('productsCardsContainer');
+  const tableWrap = document.getElementById('productsTableContainer');
+
+  if (btnCards) btnCards.classList.toggle('active', mode === 'cards');
+  if (btnTable) btnTable.classList.toggle('active', mode === 'table');
+  if (cardsWrap) cardsWrap.style.display = mode === 'cards' ? 'grid' : 'none';
+  if (tableWrap) tableWrap.style.display = mode === 'table' ? 'block' : 'none';
+
+  renderProductsList();
+}
+
 export function renderProductsList() {
   const tbody = document.getElementById('productsTableBody');
-  if (!tbody) return;
+  const cardsContainer = document.getElementById('productsCardsContainer');
+  const tableWrap = document.getElementById('productsTableContainer');
+
+  const mode = adminState.catalogDisplayMode || 'cards';
+  if (cardsContainer) cardsContainer.style.display = mode === 'cards' ? 'grid' : 'none';
+  if (tableWrap) tableWrap.style.display = mode === 'table' ? 'block' : 'none';
+
+  const btnCards = document.getElementById('btnViewCards');
+  const btnTable = document.getElementById('btnViewTable');
+  if (btnCards) btnCards.classList.toggle('active', mode === 'cards');
+  if (btnTable) btnTable.classList.toggle('active', mode === 'table');
 
   const query = (adminState.searchQuery || '').toLowerCase();
   const catFilter = adminState.selectedCategoryFilter;
@@ -809,53 +889,103 @@ export function renderProductsList() {
   });
 
   if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Nenhuma criação encontrada para os filtros aplicados.</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Nenhuma criação encontrada para os filtros aplicados.</td></tr>`;
+    if (cardsContainer) cardsContainer.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 20px;" class="empty-state">Nenhuma criação encontrada no catálogo.</div>`;
     return;
   }
 
-  tbody.innerHTML = filtered.map(p => {
-    const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
-    const priceText = p.price ? formatBRL(p.price) : '<span style="color:#8b7a5a">Sob Consulta</span>';
-    const discountBadge = p.discount ? `<span class="badge-discount">-${p.discount}%</span>` : '';
-    const badgeText = p.badge ? `<span class="badge-featured">${p.badge}</span>` : '';
-    const inStock = p.inStock !== false;
-    const stockPill = inStock ? 
-      `<span class="stock-pill in-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Clique para alternar estoque">✓ Em Estoque</span>` : 
-      `<span class="stock-pill out-of-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Clique para alternar estoque">⏳ Sob Medida</span>`;
-    const prodTime = p.prod_time ? `<br><small style="color:var(--text-muted);font-size:0.75rem">${p.prod_time} dias prod.</small>` : '';
+  // 1. Renderiza Cards Vitrine Haute Couture
+  if (cardsContainer) {
+    cardsContainer.innerHTML = filtered.map(p => {
+      const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
+      const priceText = p.price ? formatBRL(p.price) : 'Sob Consulta';
+      const inStock = p.inStock !== false;
+      const stockBadge = inStock ? 
+        `<span class="luxury-product-stock-tag in-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Alternar estoque">✓ Pronta Entrega</span>` : 
+        `<span class="luxury-product-stock-tag out-of-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Alternar estoque">⏳ Sob Medida</span>`;
+      const badgeHtml = p.badge ? `<div class="luxury-product-badge">${p.badge}</div>` : '';
+      const catLabel = (p.category || 'peça').toUpperCase();
 
-    return `
-      <tr>
-        <td style="width:56px">
-          <img src="${img}" alt="${p.name}" class="product-thumb" onerror="this.src='./assets/icon.svg'">
-        </td>
-        <td>
-          <div class="product-name-cell">
-            <strong>${p.name}</strong>
-            <small>ID: ${p.id} ${p.slug ? `· /${p.slug}` : ''}</small>
+      return `
+        <div class="luxury-product-card">
+          <div class="luxury-product-thumb-wrap">
+            <img src="${img}" alt="${p.name}" class="luxury-product-thumb" onerror="this.src='./assets/icon.svg'">
+            ${badgeHtml}
+            ${stockBadge}
           </div>
-        </td>
-        <td>
-          <span class="category-tag">${(p.category || 'vestuario').toUpperCase()}</span>
-        </td>
-        <td>
-          <div class="price-cell">
-            ${priceText} ${discountBadge}
+          <div class="luxury-product-body">
+            <div class="luxury-product-meta">
+              <span class="category-tag">${catLabel}</span>
+              ${p.prod_time ? `<span>⏱ ${p.prod_time} dias</span>` : ''}
+            </div>
+            <h4 class="luxury-product-title">${p.name}</h4>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
+              ${p.desc || p.material || 'Peça autoral tecida à mão em fios nobres.'}
+            </div>
+            <div class="luxury-product-price-row">
+              <div>
+                <span style="font-size:0.7rem;color:var(--text-muted);display:block;text-transform:uppercase;">Valor Ateliê</span>
+                <span class="luxury-product-price">${priceText}</span>
+              </div>
+              <div class="luxury-card-actions">
+                <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar Peça">✏️</button>
+                <button class="btn-action" onclick="window.AdminCore.duplicateProduct('${p.id}')" title="Duplicar Peça">📋</button>
+                <button class="btn-action view" onclick="window.open('./produtos/${p.slug || 'bolsa-paraty'}.html', '_blank')" title="Ver na Loja">👁</button>
+                <button class="btn-action delete" onclick="window.AdminCore.deleteProduct('${p.id}')" title="Excluir Peça">🗑</button>
+              </div>
+            </div>
           </div>
-        </td>
-        <td>${badgeText || '—'}</td>
-        <td>
-          ${stockPill}${prodTime}
-        </td>
-        <td class="table-actions">
-          <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar Peça">✏️</button>
-          <button class="btn-action" onclick="window.AdminCore.duplicateProduct('${p.id}')" title="Duplicar Peça">📋</button>
-          <button class="btn-action view" onclick="window.open('./produtos/${p.slug || 'bolsa-paraty'}.html', '_blank')" title="Ver na Loja ao Vivo">👁</button>
-          <button class="btn-action delete" onclick="window.AdminCore.deleteProduct('${p.id}')" title="Excluir Peça">🗑</button>
-        </td>
-      </tr>
-    `;
-  }).join('');
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 2. Renderiza Tabela Técnica
+  if (tbody) {
+    tbody.innerHTML = filtered.map(p => {
+      const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
+      const priceText = p.price ? formatBRL(p.price) : '<span style="color:#8b7a5a">Sob Consulta</span>';
+      const discountBadge = p.discount ? `<span class="badge-discount">-${p.discount}%</span>` : '';
+      const badgeText = p.badge ? `<span class="badge-featured">${p.badge}</span>` : '';
+      const inStock = p.inStock !== false;
+      const stockPill = inStock ? 
+        `<span class="stock-pill in-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Clique para alternar estoque">✓ Em Estoque</span>` : 
+        `<span class="stock-pill out-of-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Clique para alternar estoque">⏳ Sob Medida</span>`;
+      const prodTime = p.prod_time ? `<br><small style="color:var(--text-muted);font-size:0.75rem">${p.prod_time} dias prod.</small>` : '';
+
+      return `
+        <tr>
+          <td style="width:56px">
+            <img src="${img}" alt="${p.name}" class="product-thumb" onerror="this.src='./assets/icon.svg'">
+          </td>
+          <td>
+            <div class="product-name-cell">
+              <strong>${p.name}</strong>
+              <small>ID: ${p.id} ${p.slug ? `· /${p.slug}` : ''}</small>
+            </div>
+          </td>
+          <td>
+            <span class="category-tag">${(p.category || 'vestuario').toUpperCase()}</span>
+          </td>
+          <td>
+            <div class="price-cell">
+              ${priceText} ${discountBadge}
+            </div>
+          </td>
+          <td>${badgeText || '—'}</td>
+          <td>
+            ${stockPill}${prodTime}
+          </td>
+          <td class="table-actions">
+            <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar Peça">✏️</button>
+            <button class="btn-action" onclick="window.AdminCore.duplicateProduct('${p.id}')" title="Duplicar Peça">📋</button>
+            <button class="btn-action view" onclick="window.open('./produtos/${p.slug || 'bolsa-paraty'}.html', '_blank')" title="Ver na Loja ao Vivo">👁</button>
+            <button class="btn-action delete" onclick="window.AdminCore.deleteProduct('${p.id}')" title="Excluir Peça">🗑</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
 }
 
 export function renderCategoriesList() {
@@ -1000,6 +1130,7 @@ export function renderOrdersList() {
           <a href="${buildCustomerWhatsAppLink(o)}" target="_blank" rel="noopener" class="btn-action whatsapp" title="Avisar cliente pelo WhatsApp">💬</a>
           <button class="btn-action" onclick="window.AdminCore.printSingleOrder('${o.id}')" title="Imprimir Comprovante / Etiqueta">🖨️</button>
           <button class="btn-action edit" onclick="window.AdminCore.editOrderPhone('${o.id}')" title="Editar Telefone">📱</button>
+          <button class="btn-action delete" onclick="window.AdminCore.deleteOrder('${o.id}')" title="Excluir Pedido">🗑</button>
         </td>
       </tr>
     `;
@@ -1312,6 +1443,51 @@ export async function editOrderPhone(orderId) {
   }
 }
 
+export function deleteCurrentOrder() {
+  if (adminState.activeDetailOrderId) {
+    deleteOrder(adminState.activeDetailOrderId);
+  }
+}
+
+export async function deleteOrder(orderId) {
+  const o = adminState.orders.find(x => String(x.id) === String(orderId));
+  if (!o) return;
+
+  const code = orderCode(o);
+  if (!confirm(`Tem certeza de que deseja apagar o pedido ${code} (${o.userName || 'Cliente VIP'})?\nEsta ação não poderá ser desfeita.`)) {
+    return;
+  }
+
+  const idx = adminState.orders.findIndex(x => String(x.id) === String(orderId));
+  if (idx !== -1) {
+    adminState.orders.splice(idx, 1);
+  }
+
+  try {
+    localStorage.setItem('gc_cached_orders', JSON.stringify(adminState.orders));
+  } catch(e) {}
+
+  calculateMetrics();
+  renderOrdersList();
+  if (adminState.activeDetailOrderId === orderId) {
+    closeOrderDetailModal();
+  }
+
+  showToast(`Pedido ${code} excluído com sucesso!`, 'info');
+  logActivity('Excluiu Pedido', code);
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    try {
+      const docRef = fb.fsDoc(fb.db, 'orders', String(orderId));
+      await fb.deleteDoc(docRef);
+      console.log(`[Firestore] Pedido ${orderId} removido do Firestore.`);
+    } catch (err) {
+      console.warn('[Firestore Delete Order Error]', err);
+    }
+  }
+}
+
 export function duplicateProduct(productId) {
   const p = adminState.products.find(x => String(x.id) === String(productId));
   if (!p) return;
@@ -1449,10 +1625,188 @@ export function testWhatsAppNumber() {
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-function renderSyncView() {
-  const tokenInput = document.getElementById('ghTokenInput');
-  if (tokenInput && !tokenInput.value) {
-    tokenInput.value = localStorage.getItem('gh_token') || DEFAULT_GH_TOKEN;
+// ════════════════════════════════════════
+// MÓDULO DE CLIENTES & ACOMPANHAMENTO DE BRINDES
+// ════════════════════════════════════════
+
+export function renderCustomersList() {
+  const tbody = document.getElementById('customersTableBody');
+  if (!tbody) return;
+
+  const query = (adminState.customerSearchQuery || '').toLowerCase().trim();
+  let filtered = [...adminState.customers];
+
+  if (query) {
+    filtered = filtered.filter(c => {
+      const name = String(c.name || '').toLowerCase();
+      const email = String(c.email || '').toLowerCase();
+      const phone = String(c.phone || '').replace(/\D/g, '');
+      return name.includes(query) || email.includes(query) || phone.includes(query);
+    });
+  }
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Nenhum cliente encontrado.</td></tr>`;
+    return;
+  }
+
+  // Ordena por maior número de compras
+  filtered.sort((a, b) => (Number(b.purchasesCount) || 0) - (Number(a.purchasesCount) || 0));
+
+  tbody.innerHTML = filtered.map(c => {
+    const purchases = Number(c.purchasesCount) || 0;
+    const giftsClaimed = Number(c.giftsClaimed) || 0;
+    const phoneClean = String(c.phone || '').replace(/\D/g, '');
+    const phoneDisplay = phoneClean ? `📱 (${phoneClean.slice(0,2)}) ${phoneClean.slice(2)}` : `<span style="color:var(--text-muted)">Sem telefone</span>`;
+
+    const mod3 = purchases % 3;
+    const remaining = 3 - mod3;
+    const giftsEarnedTotal = Math.floor(purchases / 3);
+    const giftsAvailableToClaim = Math.max(0, giftsEarnedTotal - giftsClaimed);
+
+    let giftStatusBadge = '';
+    if (giftsAvailableToClaim > 0) {
+      giftStatusBadge = `<span class="gift-level-badge gift-ready">🎁 ${giftsAvailableToClaim} ${giftsAvailableToClaim === 1 ? 'brinde pronto' : 'brindes prontos'}!</span>`;
+    } else {
+      giftStatusBadge = `<span class="gift-level-badge gift-progress">⏳ Faltam ${remaining} ${remaining === 1 ? 'compra' : 'compras'}</span>`;
+    }
+
+    const waMsg = `Olá, ${c.name ? c.name.split(' ')[0] : 'Cliente'}! ✨ Aqui é do Ateliê Gold Crochet! Vimos que você já tem ${purchases} compras computadas no seu perfil e queríamos falar sobre seu brinde exclusivo de alta-costura feito à mão! 🎁`;
+    const waLink = phoneClean ? `https://wa.me/55${phoneClean}?text=${encodeURIComponent(waMsg)}` : `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+
+    return `
+      <tr>
+        <td>
+          <div class="customer-gift-row">
+            <div class="gift-mini-circle" title="${purchases} compras computadas">${purchases}</div>
+            <div>
+              <strong>${c.name || 'Cliente Gold'}</strong>
+              <div style="font-size:0.75rem;color:var(--text-muted)">ID: ${String(c.id).slice(0, 10)}...</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div>${c.email || 'Não informado'}</div>
+          <small>${phoneDisplay}</small>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px">
+            <strong style="font-size:1.1rem;color:var(--gold-deep)">${purchases}</strong>
+            <button class="btn-action" style="width:24px;height:24px;font-size:0.75rem" onclick="window.AdminCore.adjustCustomerPurchases('${c.id}', 1)" title="Adicionar 1 compra">+1</button>
+            <button class="btn-action" style="width:24px;height:24px;font-size:0.75rem" onclick="window.AdminCore.adjustCustomerPurchases('${c.id}', -1)" title="Remover 1 compra">-1</button>
+          </div>
+        </td>
+        <td>
+          <div style="font-size:0.85rem">
+            ${giftsEarnedTotal} ${giftsEarnedTotal === 1 ? 'mimo conquistado' : 'mimos conquistados'}<br>
+            <small style="color:var(--text-muted)">(${giftsClaimed} entregues / ${giftsAvailableToClaim} pendentes)</small>
+          </div>
+        </td>
+        <td>
+          ${giftStatusBadge}
+        </td>
+        <td class="table-actions">
+          <button class="btn-action edit" onclick="window.AdminCore.editCustomer('${c.id}')" title="Editar Perfil e Brindes">✏️</button>
+          <button class="btn-action" onclick="window.AdminCore.adjustCustomerGiftsClaimed('${c.id}', 1)" title="Marcar +1 Brinde Entregue">🎁+1</button>
+          <a href="${waLink}" target="_blank" rel="noopener" class="btn-action whatsapp" title="Falar no WhatsApp sobre o Brinde">💬</a>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+export function openManualCustomerModal() {
+  document.getElementById('customerForm').reset();
+  document.getElementById('custModalId').value = '';
+  document.getElementById('customerModalTitle').textContent = 'Novo Cliente';
+  document.getElementById('custModalPurchases').value = 0;
+  document.getElementById('custModalGiftsClaimed').value = 0;
+  document.getElementById('customerModal').classList.remove('hidden');
+}
+
+export function closeCustomerModal() {
+  document.getElementById('customerModal').classList.add('hidden');
+}
+
+export function editCustomer(customerId) {
+  const c = adminState.customers.find(x => String(x.id) === String(customerId));
+  if (!c) return;
+
+  document.getElementById('custModalId').value = c.id;
+  document.getElementById('customerModalTitle').textContent = `Editar: ${c.name || 'Cliente'}`;
+  document.getElementById('custModalName').value = c.name || '';
+  document.getElementById('custModalEmail').value = c.email || '';
+  document.getElementById('custModalPhone').value = c.phone || '';
+  document.getElementById('custModalPurchases').value = Number(c.purchasesCount) || 0;
+  document.getElementById('custModalGiftsClaimed').value = Number(c.giftsClaimed) || 0;
+
+  document.getElementById('customerModal').classList.remove('hidden');
+}
+
+export async function saveCustomer(data) {
+  const id = data.id || ('cli_' + Date.now().toString(36));
+  const payload = {
+    id,
+    uid: id,
+    name: data.name.trim(),
+    email: data.email.trim(),
+    phone: data.phone.replace(/\D/g, ''),
+    purchasesCount: Number(data.purchasesCount) || 0,
+    giftsClaimed: Number(data.giftsClaimed) || 0,
+    role: 'customer',
+    updatedAt: new Date().toISOString()
+  };
+
+  const existingIdx = adminState.customers.findIndex(c => String(c.id) === String(id));
+  if (existingIdx !== -1) {
+    adminState.customers[existingIdx] = { ...adminState.customers[existingIdx], ...payload };
+  } else {
+    adminState.customers.unshift(payload);
+  }
+
+  try { localStorage.setItem('gc_cached_customers', JSON.stringify(adminState.customers)); } catch(e) {}
+  renderCustomersList();
+  closeCustomerModal();
+  showToast(`Cliente ${payload.name} e brindes salvos!`, 'success');
+  logActivity('Atualizou Cliente/Brindes', `${payload.name} (${payload.purchasesCount} compras)`);
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    try {
+      await fb.setDoc(fb.fsDoc(fb.db, 'users', String(id)), payload, { merge: true });
+    } catch(err) {
+      console.warn('[Firestore Customer Save Error]', err);
+    }
+  }
+}
+
+export async function adjustCustomerPurchases(customerId, delta) {
+  const c = adminState.customers.find(x => String(x.id) === String(customerId));
+  if (!c) return;
+
+  c.purchasesCount = Math.max(0, (Number(c.purchasesCount) || 0) + delta);
+  try { localStorage.setItem('gc_cached_customers', JSON.stringify(adminState.customers)); } catch(e) {}
+  renderCustomersList();
+  showToast(`Compras de ${c.name} atualizadas para ${c.purchasesCount}!`, 'info');
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    fb.setDoc(fb.fsDoc(fb.db, 'users', String(c.id)), { purchasesCount: c.purchasesCount }, { merge: true }).catch(() => {});
+  }
+}
+
+export async function adjustCustomerGiftsClaimed(customerId, delta) {
+  const c = adminState.customers.find(x => String(x.id) === String(customerId));
+  if (!c) return;
+
+  c.giftsClaimed = Math.max(0, (Number(c.giftsClaimed) || 0) + delta);
+  try { localStorage.setItem('gc_cached_customers', JSON.stringify(adminState.customers)); } catch(e) {}
+  renderCustomersList();
+  showToast(`Brindes entregues de ${c.name}: ${c.giftsClaimed}`, 'success');
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    fb.setDoc(fb.fsDoc(fb.db, 'users', String(c.id)), { giftsClaimed: c.giftsClaimed }, { merge: true }).catch(() => {});
   }
 }
 
@@ -1460,11 +1814,25 @@ function renderSyncView() {
 // MODAIS DE EDIÇÃO DE PRODUTO
 // ════════════════════════════════════════
 
+export function switchProdModalTab(tabId, btn) {
+  document.querySelectorAll('.editor-tab-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.editor-tab-btn').forEach(b => b.classList.remove('active'));
+
+  const target = document.getElementById(tabId);
+  if (target) target.classList.remove('hidden');
+  if (btn) btn.classList.add('active');
+}
+
 export function openNewProductModal() {
   adminState.editingProductId = null;
   document.getElementById('modalTitle').textContent = 'Nova Criação Autoral';
-  document.getElementById('productForm').reset();
+  const form = document.getElementById('productForm');
+  if (form) form.reset();
   document.getElementById('prodPreviewImg').src = './assets/icon.svg';
+  
+  // Reseta para a primeira aba
+  switchProdModalTab('prodTabGeneral', document.querySelector('.editor-tab-btn[data-tab="prodTabGeneral"]'));
+
   document.getElementById('productModal').classList.remove('hidden');
 }
 
@@ -1473,7 +1841,7 @@ export function editProduct(productId) {
   if (!p) return;
 
   adminState.editingProductId = productId;
-  document.getElementById('modalTitle').textContent = `Editar: ${p.name}`;
+  document.getElementById('modalTitle').textContent = `Editar Criação: ${p.name}`;
   document.getElementById('prodName').value = p.name || '';
   document.getElementById('prodSlug').value = p.slug || '';
   document.getElementById('prodPrice').value = p.price || '';
@@ -1481,12 +1849,23 @@ export function editProduct(productId) {
   document.getElementById('prodCategory').value = p.category || 'bolsas';
   document.getElementById('prodBadge').value = p.badge || '';
   document.getElementById('prodProdTime').value = p.prod_time || 8;
-  document.getElementById('prodMaterial').value = p.material || 'Fio de Algodão 100% Puro';
+  document.getElementById('prodMaterial').value = p.material || 'Fio 100% Algodão Nobre';
   document.getElementById('prodDesc').value = p.desc || '';
   document.getElementById('prodImageUrl').value = p.image || '';
+  
+  const inStockEl = document.getElementById('prodInStock');
+  if (inStockEl) inStockEl.value = p.inStock === false ? 'false' : 'true';
+
+  const colorsEl = document.getElementById('prodColors');
+  if (colorsEl) {
+    colorsEl.value = Array.isArray(p.colors) ? p.colors.join(', ') : (p.colors || '');
+  }
 
   const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
   document.getElementById('prodPreviewImg').src = img;
+
+  // Abre na primeira aba
+  switchProdModalTab('prodTabGeneral', document.querySelector('.editor-tab-btn[data-tab="prodTabGeneral"]'));
 
   document.getElementById('productModal').classList.remove('hidden');
 }
@@ -1536,7 +1915,17 @@ if (typeof window !== 'undefined') {
     toggleAudioAlert,
     toggleSidebar,
     clearLogs,
-    filterOrdersByStatus
+    filterOrdersByStatus,
+    deleteOrder,
+    deleteCurrentOrder,
+    setCatalogDisplayMode,
+    switchProdModalTab,
+    openManualCustomerModal,
+    closeCustomerModal,
+    editCustomer,
+    saveCustomer,
+    adjustCustomerPurchases,
+    adjustCustomerGiftsClaimed
   };
 
   // Inicializa quando o DOM estiver pronto
@@ -1593,6 +1982,10 @@ if (typeof window !== 'undefined') {
     if (prodForm) {
       prodForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        const colorsRaw = document.getElementById('prodColors') ? document.getElementById('prodColors').value : '';
+        const colorsArr = colorsRaw ? colorsRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
+        const inStockVal = document.getElementById('prodInStock') ? document.getElementById('prodInStock').value !== 'false' : true;
+
         const pData = {
           name: document.getElementById('prodName').value.trim(),
           slug: document.getElementById('prodSlug').value.trim() || document.getElementById('prodName').value.toLowerCase().replace(/[^a-z0-9]/g, '-'),
@@ -1603,6 +1996,8 @@ if (typeof window !== 'undefined') {
           prod_time: document.getElementById('prodProdTime').value,
           material: document.getElementById('prodMaterial').value,
           desc: document.getElementById('prodDesc').value,
+          inStock: inStockVal,
+          colors: colorsArr,
           image: document.getElementById('prodImageUrl').value || document.getElementById('prodPreviewImg').src,
           gallery: [document.getElementById('prodImageUrl').value || document.getElementById('prodPreviewImg').src]
         };
@@ -1667,6 +2062,24 @@ if (typeof window !== 'undefined') {
           document.getElementById('prodImageUrl').value = re.target.result;
         };
         reader.readAsDataURL(file);
+      });
+    }
+
+    // Input de busca de clientes em tempo real
+    const customerSearchInput = document.getElementById('customerSearchInput');
+    if (customerSearchInput) {
+      customerSearchInput.addEventListener('input', (e) => {
+        adminState.customerSearchQuery = e.target.value;
+        renderCustomersList();
+      });
+    }
+
+    // Formulário de Cliente & Brindes
+    const customerForm = document.getElementById('customerForm');
+    if (customerForm) {
+      customerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        saveCustomer();
       });
     }
   });

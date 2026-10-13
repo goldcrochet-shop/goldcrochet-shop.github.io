@@ -735,19 +735,205 @@
     .status-select.status-entregue { background: #e8f5e9; color: var(--success); border-color: #a5d6a7; }
     .status-select.status-cancelado { background: #ffebee; color: var(--danger); border-color: #ef9a9a; }
 
-    /* Status Chip */
-    .status-chip {
-      display: inline-block;
+    /* Visualização em Cards Luxuosos do Catálogo */
+    .catalog-view-toggle {
+      display: inline-flex;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 3px;
+      gap: 3px;
+    }
+    .view-toggle-btn {
+      border: none;
+      background: none;
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .view-toggle-btn.active {
+      background: var(--surface);
+      color: var(--ebony);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      font-weight: 700;
+    }
+    .products-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 24px;
+    }
+    .luxury-product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-subtle);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .luxury-product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card);
+      border-color: var(--gold-deep);
+    }
+    .luxury-product-thumb-wrap {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      background: #faf8f5;
+      overflow: hidden;
+    }
+    [data-theme="dark"] .luxury-product-thumb-wrap { background: #221f1a; }
+    .luxury-product-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .luxury-product-card:hover .luxury-product-thumb {
+      transform: scale(1.06);
+    }
+    .luxury-product-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--gradient-gold);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
       padding: 4px 10px;
       border-radius: var(--radius-pill);
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: capitalize;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-    .status-chip.status-pendente { background: #fff8e1; color: var(--warning); }
-    .status-chip.status-producao { background: #e1f5fe; color: var(--info); }
-    .status-chip.status-enviado { background: #f3e5f5; color: #7b1fa2; }
-    .status-chip.status-entregue { background: #e8f5e9; color: var(--success); }
+    .luxury-product-stock-tag {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+    }
+    .luxury-product-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .luxury-product-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      color: var(--ebony);
+      margin: 0 0 6px;
+      line-height: 1.3;
+    }
+    .luxury-product-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .luxury-product-price-row {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .luxury-product-price {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--gold-deep);
+    }
+    .luxury-card-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* Tabs no Editor de Produtos */
+    .editor-tabs-nav {
+      display: flex;
+      gap: 8px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--surface-subtle);
+    }
+    .editor-tab-btn {
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .editor-tab-btn.active {
+      color: var(--gold-deep);
+      border-bottom-color: var(--gold-deep);
+      font-weight: 700;
+      background: var(--surface);
+    }
+    .editor-tab-content {
+      padding: 20px 24px;
+    }
+    .editor-tab-content.hidden { display: none; }
+
+    /* Seção de Clientes e Brindes */
+    .customer-gift-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .gift-mini-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--gradient-gold);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 10px rgba(205,164,52,0.3);
+      flex-shrink: 0;
+    }
+    .gift-level-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .gift-ready {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+    .gift-progress {
+      background: #fff8e1;
+      color: #b78103;
+      border: 1px solid #ffe082;
+    }
     .status-chip.status-cancelado { background: #ffebee; color: var(--danger); }
 
     /* Log Item */
@@ -964,6 +1150,10 @@
           <div class="admin-nav-item-inner"><span class="nav-icon">📦</span> Pedidos &amp; Atendimento</div>
           <span class="nav-badge-pill" id="navBadgeOrders">0</span>
         </button>
+        <button class="admin-nav-item" data-view="customers" onclick="window.AdminCore.switchView('customers')">
+          <div class="admin-nav-item-inner"><span class="nav-icon">🎁</span> Clientes &amp; Brindes</div>
+          <span class="nav-badge-pill" id="navBadgeCustomers">0</span>
+        </button>
         <button class="admin-nav-item" data-view="whatsapp" onclick="window.AdminCore.switchView('whatsapp')">
           <div class="admin-nav-item-inner"><span class="nav-icon">💬</span> WhatsApp Oficial</div>
         </button>
@@ -1096,7 +1286,15 @@
                 <option value="personalizado">Personalizados</option>
               </select>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <div class="catalog-view-toggle">
+                <button type="button" class="view-toggle-btn active" id="btnViewCards" onclick="window.AdminCore.setCatalogDisplayMode('cards')">
+                  🖼️ Cards
+                </button>
+                <button type="button" class="view-toggle-btn" id="btnViewTable" onclick="window.AdminCore.setCatalogDisplayMode('table')">
+                  📋 Tabela
+                </button>
+              </div>
               <button class="btn-secondary-action" onclick="window.AdminCore.exportCatalogJSON()">
                 📥 Baixar JSON
               </button>
@@ -1106,7 +1304,13 @@
             </div>
           </div>
 
-          <div class="data-table-wrapper">
+          <!-- Modo 1: Cards Vitrine Haute Couture -->
+          <div id="productsCardsContainer" class="products-cards-grid">
+            <!-- Injetado dinamicamente via JS -->
+          </div>
+
+          <!-- Modo 2: Tabela Técnica Tradicional -->
+          <div id="productsTableContainer" class="data-table-wrapper" style="display:none">
             <table class="data-table">
               <thead>
                 <tr>
@@ -1191,6 +1395,42 @@
         </div>
       </section>
 
+      <!-- VIEW 5: CLIENTES & ACOMPANHAMENTO DE BRINDES DO ATELIÊ -->
+      <section id="viewCustomers" class="view-container hidden">
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <div>
+              <h3 class="card-panel-title">Acompanhamento de Clientes &amp; Brindes</h3>
+              <span style="font-size:0.82rem;color:var(--text-muted)">Controle direto das compras computadas e resgate de brindes no Ateliê Gold Crochet</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input type="text" id="customerSearchInput" class="form-input" placeholder="🔍 Buscar cliente, e-mail ou WhatsApp..." style="width:260px;padding:8px 12px;font-size:0.85rem">
+              <button class="btn-primary-action" onclick="window.AdminCore.openManualCustomerModal()">
+                <span>+</span> Novo Cliente
+              </button>
+            </div>
+          </div>
+
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Contato (WhatsApp &amp; E-mail)</th>
+                  <th>Compras Computadas</th>
+                  <th>Progresso do Brinde</th>
+                  <th>Status do Brinde</th>
+                  <th>Gerenciar Brindes</th>
+                </tr>
+              </thead>
+              <tbody id="customersTableBody">
+                <tr><td colspan="6" class="empty-state">Carregando clientes e brindes...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <!-- VIEW: WHATSAPP -->
       <section id="viewWhatsapp" class="view-container hidden">
         <div class="card-panel">
@@ -1269,83 +1509,121 @@
       </div>
 
       <form id="productForm">
-        <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label">Nome da Peça *</label>
-            <input type="text" id="prodName" class="form-input" placeholder="Ex: Bolsa Paraty Dourada" required>
-          </div>
+        <!-- Navegação por Abas do Editor Moderno -->
+        <div class="editor-tabs-nav">
+          <button type="button" class="editor-tab-btn active" data-tab="prodTabGeneral" onclick="window.AdminCore.switchProdModalTab('prodTabGeneral', this)">
+            ✨ Informações Gerais
+          </button>
+          <button type="button" class="editor-tab-btn" data-tab="prodTabPricing" onclick="window.AdminCore.switchProdModalTab('prodTabPricing', this)">
+            💰 Preço &amp; Produção
+          </button>
+          <button type="button" class="editor-tab-btn" data-tab="prodTabMedia" onclick="window.AdminCore.switchProdModalTab('prodTabMedia', this)">
+            📸 Mídia &amp; Detalhes
+          </button>
+        </div>
 
-          <div class="modal-grid-2">
+        <div class="modal-body" style="padding:0">
+          <!-- ABA 1: INFORMAÇÕES GERAIS -->
+          <div id="prodTabGeneral" class="editor-tab-content">
             <div class="form-group">
-              <label class="form-label">Slug da URL</label>
-              <input type="text" id="prodSlug" class="form-input" placeholder="bolsa-paraty-dourada">
+              <label class="form-label">Nome da Peça *</label>
+              <input type="text" id="prodName" class="form-input" placeholder="Ex: Bolsa Paraty Dourada" required oninput="if(!adminState.editingProductId) { const s=document.getElementById('prodSlug'); if(s) s.value = this.value.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'); }">
             </div>
-            <div class="form-group">
-              <label class="form-label">Categoria *</label>
-              <select id="prodCategory" class="form-input" required>
-                <option value="bolsas">Bolsas</option>
-                <option value="vestuario">Vestuário</option>
-                <option value="casa-gold">Casa Gold</option>
-                <option value="amigurumi">Amigurumi</option>
-                <option value="personalizado">Personalizado</option>
-              </select>
-            </div>
-          </div>
 
-          <div class="modal-grid-2">
-            <div class="form-group">
-              <label class="form-label">Preço (R$) *</label>
-              <input type="number" id="prodPrice" class="form-input" step="0.01" placeholder="85.00" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Desconto Promocional (%)</label>
-              <input type="number" id="prodDiscount" class="form-input" min="0" max="100" placeholder="0">
-            </div>
-          </div>
-
-          <div class="modal-grid-2">
-            <div class="form-group">
-              <label class="form-label">Selo de Destaque</label>
-              <select id="prodBadge" class="form-input">
-                <option value="">Sem selo</option>
-                <option value="Novo">Novo</option>
-                <option value="Destaque">Destaque</option>
-                <option value="Popular">Popular</option>
-                <option value="Exclusivo">Exclusivo</option>
-                <option value="Sob Medida">Sob Medida</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Tempo de Confecção (dias)</label>
-              <input type="number" id="prodProdTime" class="form-input" placeholder="8">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Material / Fio Selecionado</label>
-            <input type="text" id="prodMaterial" class="form-input" placeholder="Fio 100% Algodão Mercerizado Premium">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Descrição Editorial da Peça</label>
-            <textarea id="prodDesc" class="form-input" rows="3" placeholder="Detalhes dos pontos manuais, toque e caimento..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Foto Principal da Peça</label>
-            <div style="display:flex;gap:14px;align-items:center;">
-              <img id="prodPreviewImg" src="./assets/icon.svg" style="width:64px;height:64px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid var(--border)">
-              <div style="flex:1">
-                <input type="text" id="prodImageUrl" class="form-input" placeholder="URL da foto (GitHub, CDN ou Web)..." style="margin-bottom:8px">
-                <input type="file" id="prodImageFileInput" accept="image/*" class="form-input" style="padding:8px">
+            <div class="modal-grid-2">
+              <div class="form-group">
+                <label class="form-label">Slug da URL (link permanente)</label>
+                <input type="text" id="prodSlug" class="form-input" placeholder="bolsa-paraty-dourada">
               </div>
+              <div class="form-group">
+                <label class="form-label">Categoria / Linha *</label>
+                <select id="prodCategory" class="form-input" required>
+                  <option value="bolsas">Bolsas</option>
+                  <option value="vestuario">Vestuário</option>
+                  <option value="casa-gold">Casa Gold</option>
+                  <option value="amigurumi">Amigurumi</option>
+                  <option value="personalizado">Personalizado</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Material &amp; Fios Nobres</label>
+              <input type="text" id="prodMaterial" class="form-input" placeholder="Ex: Fio 100% Algodão Mercerizado Premium & Detalhes Dourados">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Descrição Editorial da Peça</label>
+              <textarea id="prodDesc" class="form-input" rows="4" placeholder="Descreva os pontos manuais, toque nobre, história da peça e ocasiões de uso..."></textarea>
+            </div>
+          </div>
+
+          <!-- ABA 2: PREÇO & PRODUÇÃO -->
+          <div id="prodTabPricing" class="editor-tab-content hidden">
+            <div class="modal-grid-2">
+              <div class="form-group">
+                <label class="form-label">Preço da Peça (R$) *</label>
+                <input type="number" id="prodPrice" class="form-input" step="0.01" placeholder="380.00" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Desconto Promocional (%)</label>
+                <input type="number" id="prodDiscount" class="form-input" min="0" max="100" placeholder="0">
+              </div>
+            </div>
+
+            <div class="modal-grid-2">
+              <div class="form-group">
+                <label class="form-label">Selo de Destaque na Vitrine</label>
+                <select id="prodBadge" class="form-input">
+                  <option value="">Sem selo</option>
+                  <option value="Novo">✨ Novo</option>
+                  <option value="Destaque">⭐ Destaque</option>
+                  <option value="Popular">🔥 Mais Desejado</option>
+                  <option value="Exclusivo">👑 Peça Exclusiva</option>
+                  <option value="Sob Medida">✂️ Sob Medida</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Prazo de Confecção Artesanal (dias)</label>
+                <input type="number" id="prodProdTime" class="form-input" placeholder="7">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Disponibilidade no Catálogo</label>
+              <select id="prodInStock" class="form-input">
+                <option value="true">✓ Pronta Entrega (Em Estoque)</option>
+                <option value="false">⏳ Confecção Sob Encomenda</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ABA 3: MÍDIA & FOTOS -->
+          <div id="prodTabMedia" class="editor-tab-content hidden">
+            <div class="form-group">
+              <label class="form-label">Foto Principal da Peça (URL ou Upload)</label>
+              <div style="display:flex;gap:18px;align-items:flex-start;">
+                <div style="position:relative;width:110px;height:110px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--border);background:#faf8f5;flex-shrink:0;">
+                  <img id="prodPreviewImg" src="./assets/icon.svg" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div style="flex:1">
+                  <input type="text" id="prodImageUrl" class="form-input" placeholder="Cole a URL da foto (https://...)" style="margin-bottom:10px" oninput="document.getElementById('prodPreviewImg').src = this.value || './assets/icon.svg'">
+                  <label class="form-label" style="font-size:0.75rem">Ou selecione uma foto do computador:</label>
+                  <input type="file" id="prodImageFileInput" accept="image/*" class="form-input" style="padding:8px">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cores Disponíveis (separadas por vírgula)</label>
+              <input type="text" id="prodColors" class="form-input" placeholder="Ex: Cru, Dourado Ouro, Areia, Terracota">
             </div>
           </div>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeProductModal()">Cancelar</button>
-          <button type="submit" class="btn-primary-action">Salvar no Catálogo &rarr;</button>
+          <button type="submit" class="btn-primary-action">✨ Salvar Criação &rarr;</button>
         </div>
       </form>
     </div>
@@ -1425,7 +1703,10 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+        <button type="button" class="btn-action delete" style="width:auto;padding:8px 16px;gap:6px;color:var(--danger);font-size:0.85rem;" onclick="window.AdminCore.deleteCurrentOrder()" title="Excluir este pedido definitivamente">
+          🗑️ Excluir Pedido
+        </button>
         <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeOrderDetailModal()">Fechar</button>
       </div>
     </div>
@@ -1485,6 +1766,62 @@
         <div class="modal-footer">
           <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeCreateOrderModal()">Cancelar</button>
           <button type="submit" class="btn-primary-action">Criar Pedido no Firestore &rarr;</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       MODAL DE GERENCIAMENTO DE CLIENTE & BRINDES
+       ════════════════════════════════════════ -->
+  <div id="customerModal" class="modal-backdrop hidden">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="customerModalTitle">Gerenciar Cliente &amp; Brindes</h3>
+          <span style="font-size:0.8rem;color:var(--text-muted)">Altere o número de compras ou resgates para atualizar o status do brinde</span>
+        </div>
+        <button class="modal-close-btn" onclick="window.AdminCore.closeCustomerModal()">&times;</button>
+      </div>
+      <form id="customerForm">
+        <div class="modal-body">
+          <input type="hidden" id="custModalId">
+          <div class="form-group">
+            <label class="form-label">Nome Completo *</label>
+            <input type="text" id="custModalName" class="form-input" placeholder="Ex: Patrícia Rossi" required>
+          </div>
+          <div class="modal-grid-2">
+            <div class="form-group">
+              <label class="form-label">E-mail *</label>
+              <input type="email" id="custModalEmail" class="form-input" placeholder="cliente@email.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">WhatsApp com DDD</label>
+              <input type="tel" id="custModalPhone" class="form-input" placeholder="(31) 98456-6047">
+            </div>
+          </div>
+
+          <div style="background:var(--surface-subtle);padding:16px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);margin-top:10px">
+            <h4 style="margin:0 0 10px;font-size:0.92rem;color:var(--gold-deep);display:flex;align-items:center;gap:6px">
+              🎁 Controle de Compras &amp; Brindes do Ateliê
+            </h4>
+            <div class="modal-grid-2">
+              <div class="form-group">
+                <label class="form-label">Total de Compras Computadas</label>
+                <input type="number" id="custModalPurchases" class="form-input" min="0" value="0" required>
+                <small style="font-size:0.72rem;color:var(--text-muted)">A cada 3 compras libera 1 brinde (porta-copos/ecobag).</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Brindes Já Entregues / Resgatados</label>
+                <input type="number" id="custModalGiftsClaimed" class="form-input" min="0" value="0">
+                <small style="font-size:0.72rem;color:var(--text-muted)">Quantidade de mimos já enviados à cliente.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeCustomerModal()">Cancelar</button>
+          <button type="submit" class="btn-primary-action">💾 Salvar Alterações &rarr;</button>
         </div>
       </form>
     </div>

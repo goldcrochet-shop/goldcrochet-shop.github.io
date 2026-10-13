@@ -808,6 +808,52 @@
               };
               await setDoc(userRef, newPayload, { merge: true }).catch(console.warn);
             }
+
+            // Consulta também diretamente na coleção global 'orders' do Firestore para trazer todos os pedidos desse cliente
+            try {
+              if (fsCollection && getDocs) {
+                const ordersCol = fsCollection(db, 'orders');
+                const ordersSnap = await getDocs(ordersCol).catch(() => null);
+                if (ordersSnap && !ordersSnap.empty) {
+                  const userRemoteOrders = [];
+                  ordersSnap.forEach(docD => {
+                    const oData = docD.data();
+                    const isUser = (oData.userId && (oData.userId === client.id || oData.userId === auth.currentUser.uid)) ||
+                                   (oData.userEmail && client.email && oData.userEmail.toLowerCase() === client.email.toLowerCase()) ||
+                                   (client.phone && oData.phone && oData.phone.replace(/\D/g,'') === client.phone.replace(/\D/g,''));
+                    if (isUser) {
+                      const itemsText = Array.isArray(oData.items) ? oData.items.map(i => `${i.qty || 1}x ${i.name || ''}`).join(', ') : 'Peça Artesanal Gold';
+                      let step = 1;
+                      if (oData.status === 'producao') step = 3;
+                      else if (oData.status === 'enviado') step = 5;
+                      else if (oData.status === 'entregue') step = 5;
+
+                      userRemoteOrders.push({
+                        id: oData.code || docD.id,
+                        date: oData.createdAt ? (typeof oData.createdAt === 'string' ? oData.createdAt.split('T')[0] : 'Recente') : 'Recente',
+                        item: itemsText,
+                        color: (oData.items && oData.items[0] && oData.items[0].color) || 'Artesanal',
+                        total: oData.total ? `R$ ${(Number(oData.total)).toFixed(2).replace('.', ',')}` : 'Sob consulta',
+                        step: step,
+                        status: oData.status || 'pendente',
+                        trackingCode: oData.trackingCode || ''
+                      });
+                    }
+                  });
+
+                  if (userRemoteOrders.length > 0) {
+                    // Mescla sem duplicatas
+                    const existingMap = new Map();
+                    (client.orders || []).forEach(o => existingMap.set(o.id, o));
+                    userRemoteOrders.forEach(o => existingMap.set(o.id, o));
+                    client.orders = Array.from(existingMap.values());
+                  }
+                }
+              }
+            } catch(errOrd) {
+              console.warn('[Cliente] Consulta de pedidos Firestore:', errOrd);
+            }
+
             saveLocalClient(client);
           }
         } catch(err) {
