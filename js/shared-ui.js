@@ -723,11 +723,11 @@
           <input type="text" id="gcInputName" class="gc-input-pill" placeholder="Seu nome completo *" required autocomplete="name">
           <input type="email" id="gcInputEmail" class="gc-input-pill" placeholder="Seu e-mail *" required autocomplete="email">
           <input type="tel" id="gcInputPhone" class="gc-input-pill" placeholder="Seu WhatsApp / Telefone (com DDD) *" required autocomplete="tel" oninput="this.value = this.value.replace(/[^0-9+\\-\\s()]/g, '')">
-          <button type="submit" id="gcLoginSubmitBtn" class="gc-btn-pill-primary" style="white-space:nowrap">Acessar Minha Conta &rarr;</button>
+          <button type="submit" id="gcLoginSubmitBtn" class="gc-btn-pill-primary" style="white-space:nowrap">Acessar Minha Conta &gt;</button>
         </form>
 
         <a href="${root}cliente.html" class="gc-filter-pill" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-top:12px;font-size:0.85rem;white-space:nowrap">
-          Abrir Portal Completo da Cliente &rarr;
+          Abrir Portal Completo da Cliente &gt;
         </a>
       `;
     }
@@ -900,7 +900,7 @@
             class="gc-btn-pill-primary" 
             style="width:100%;margin-top:10px;padding:14px;font-size:0.92rem;letter-spacing:0.04em;display:flex;align-items:center;justify-content:center;gap:8px;"
           >
-            <span>Salvar e Continuar</span> &rarr;
+            <span>Salvar e Continuar</span> &gt;
           </button>
         </form>
         <p style="font-size:0.74rem;color:var(--color-muted);margin:14px 0 0;">
@@ -2068,6 +2068,61 @@
     close: closeMobileNav
   };
 
+  // ════════════════════════════════════════
+  // 8. POP-UP DE COOKIES HAUTE COUTURE (LGPD)
+  // ════════════════════════════════════════
+  function renderCookieBanner() {
+    if (document.getElementById('gcCookieBanner')) return;
+    if (localStorage.getItem('goldcrochet_cookies_consent')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'gcCookieBanner';
+    banner.className = 'gc-cookie-banner';
+    banner.innerHTML = `
+      <div class="gc-cookie-content">
+        <span class="gc-cookie-icon">✨</span>
+        <div class="gc-cookie-text">
+          <h4>Privacidade &amp; Experiência Exclusiva</h4>
+          <p>Utilizamos cookies e dados de navegação para personalizar sua curadoria de peças, lembrar sua sacola de compras e aprimorar sua experiência no Ateliê Gold Crochet.</p>
+        </div>
+      </div>
+      <div class="gc-cookie-actions">
+        <button type="button" id="gcCookiePrefBtn" class="gc-cookie-btn-pref">Apenas Essenciais</button>
+        <button type="button" id="gcCookieAcceptBtn" class="gc-cookie-btn-accept">Aceitar &amp; Continuar &gt;</button>
+      </div>
+    `;
+
+    document.body.appendChild(banner);
+
+    // Exibe suavemente após 1.5s
+    setTimeout(() => {
+      banner.classList.add('show');
+    }, 1500);
+
+    const acceptBtn = document.getElementById('gcCookieAcceptBtn');
+    const prefBtn = document.getElementById('gcCookiePrefBtn');
+
+    const handleConsent = (mode) => {
+      localStorage.setItem('goldcrochet_cookies_consent', mode);
+      banner.classList.remove('show');
+      setTimeout(() => banner.remove(), 500);
+    };
+
+    if (acceptBtn) acceptBtn.addEventListener('click', () => handleConsent('all'));
+    if (prefBtn) prefBtn.addEventListener('click', () => handleConsent('essential'));
+  }
+
+  window.GoldCookies = {
+    accept: () => {
+      localStorage.setItem('goldcrochet_cookies_consent', 'all');
+      const b = document.getElementById('gcCookieBanner');
+      if (b) {
+        b.classList.remove('show');
+        setTimeout(() => b.remove(), 500);
+      }
+    }
+  };
+
   function init() {
     renderHeader();
     renderMobileNavDrawer();
@@ -2076,6 +2131,7 @@
     renderCartDrawer();
     renderWishlistDrawer();
     renderFooter();
+    renderCookieBanner();
     setupEvents();
   }
 

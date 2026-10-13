@@ -338,40 +338,53 @@ ${schemaJson}
       const filtered = all.filter(item => item.id !== productData.id);
       const shuffled = [...filtered].sort(() => 0.5 - Math.random());
       const base = shuffled.slice(0, 8);
-      const infinite = [...base, ...base];
+      const infinite = [...base, ...base, ...base];
       const track = document.getElementById('gridRelatedCarousel');
       if (!track) return;
 
       track.innerHTML = infinite.map(item => {
         const pSlug = item.slug || 'produto';
         const pImg = item.image || (item.gallery && item.gallery[0]) || '../assets/icon.svg';
-        const pPrice = item.price ? `R$ ${Number(item.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
-        return `
-          <div class="gc-product-card" onclick="window.location.href='./' + '${pSlug}' + '.html'" style="cursor:pointer">
-            <div class="gc-product-card-img-wrap">
-              <button class="gc-card-fav-btn" data-id="${item.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${item.id});" aria-label="Favoritar">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-              </button>
-              <img src="${pImg}" alt="${item.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='../assets/icon.svg'">
-            </div>
-            <div class="gc-product-card-body">
-              <h3 class="gc-product-title">${item.name}</h3>
-              <div class="gc-product-price-row">
-                <span class="gc-product-price">${pPrice}</span>
-              </div>
-            </div>
-          </div>
-        `;
+        const pPrice = item.price ? ('R$ ' + Number(item.price).toFixed(2).replace('.', ',')) : 'Sob Consulta';
+        return '<div class="gc-product-card" onclick="window.location.href=\\'./\\' + \\'' + pSlug + '\\' + \\'.html\\'" style="cursor:pointer">' +
+          '<div class="gc-product-card-img-wrap">' +
+            '<button class="gc-card-fav-btn" data-id="' + item.id + '" onclick="event.stopPropagation(); window.GoldFav.toggle(' + item.id + ');" aria-label="Favoritar">' +
+              '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' +
+            '</button>' +
+            '<img src="' + pImg + '" alt="' + item.name + '" class="gc-product-card-img" loading="lazy" onerror="this.src=\\'../assets/icon.svg\\'">' +
+          '</div>' +
+          '<div class="gc-product-card-body">' +
+            '<h3 class="gc-product-title">' + item.name + '</h3>' +
+            '<div class="gc-product-price-row">' +
+              '<span class="gc-product-price">' + pPrice + '</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
       }).join('');
 
+      const oneThird = track.scrollWidth / 3;
+      track.scrollLeft = oneThird;
+
+      function checkRelLoop() {
+        const third = track.scrollWidth / 3;
+        if (track.scrollLeft >= third * 2) {
+          track.scrollLeft -= third;
+        } else if (track.scrollLeft <= 10) {
+          track.scrollLeft += third;
+        }
+      }
+
+      track.addEventListener('scroll', checkRelLoop, { passive: true });
+
       let autoRelTimer = setInterval(() => {
+        checkRelLoop();
         track.scrollBy({ left: 300, behavior: 'smooth' });
       }, 30000);
 
       const pBtn = document.getElementById('relatedPrevBtn');
       const nBtn = document.getElementById('relatedNextBtn');
-      if (pBtn) pBtn.addEventListener('click', () => { track.scrollBy({ left: -300, behavior: 'smooth' }); });
-      if (nBtn) nBtn.addEventListener('click', () => { track.scrollBy({ left: 300, behavior: 'smooth' }); });
+      if (pBtn) pBtn.addEventListener('click', () => { checkRelLoop(); track.scrollBy({ left: -300, behavior: 'smooth' }); });
+      if (nBtn) nBtn.addEventListener('click', () => { checkRelLoop(); track.scrollBy({ left: 300, behavior: 'smooth' }); });
     })();
   </script>
 </body>

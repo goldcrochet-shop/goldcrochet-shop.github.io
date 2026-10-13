@@ -64,15 +64,16 @@
       z-index: 2;
     }
 
-    /* A barra translúcida branca ocupa todo o espaço do canto esquerdo até onde foi delimitado */
+    /* A barra translúcida elegante ocupa o espaço com requinte sem ser branco sólido */
     .gc-hero-text-col {
-      background: rgba(255, 255, 255, 0.78) !important;
-      backdrop-filter: blur(20px) !important;
-      -webkit-backdrop-filter: blur(20px) !important;
-      border: none !important;
+      background: rgba(255, 255, 255, 0.65) !important;
+      backdrop-filter: blur(28px) saturate(160%) !important;
+      -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.5) !important;
+      border-right: 1.5px solid var(--color-border) !important;
       border-radius: 0 !important;
       padding: 70px 48px 70px 80px !important;
-      box-shadow: none !important;
+      box-shadow: 10px 0 35px rgba(0, 0, 0, 0.05) !important;
       width: 46%;
       max-width: 620px;
       min-width: 320px;
@@ -96,14 +97,23 @@
 
     @media (max-width: 960px) {
       .gc-hero-organic {
-        padding: 0;
+        padding: 16px !important;
+        align-items: center;
+      }
+      .gc-hero-grid {
+        justify-content: center;
       }
       .gc-hero-text-col {
         width: 100%;
         max-width: 100%;
-        padding: 50px 24px !important;
-        border: none !important;
-        box-shadow: none !important;
+        margin: 10px auto !important;
+        padding: 40px 22px !important;
+        background: rgba(255, 255, 255, 0.72) !important;
+        backdrop-filter: blur(24px) saturate(150%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
+        border: 1.5px solid rgba(205, 164, 52, 0.35) !important;
+        border-radius: 24px !important;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12) !important;
       }
     }
 
@@ -487,28 +497,28 @@
         <div class="gc-portal-icon-circle">🌊</div>
         <h3>Coleções</h3>
         <p>Curadorias temáticas: Essenciais, Alto Verão e Casa Brasil.</p>
-        <span class="gc-portal-pill-link">Descobrir &rarr;</span>
+        <span class="gc-portal-pill-link">Descobrir &gt;</span>
       </a>
 
       <a href="./pecas.html" class="gc-organic-portal-card">
         <div class="gc-portal-icon-circle">🧶</div>
         <h3>Todas as Peças</h3>
         <p>Vestuário, saias, tops e acessórios com modelagens fluidas.</p>
-        <span class="gc-portal-pill-link">Ver Catálogo &rarr;</span>
+        <span class="gc-portal-pill-link">Ver Catálogo &gt;</span>
       </a>
 
       <a href="./novidades.html" class="gc-organic-portal-card">
         <div class="gc-portal-icon-circle">✨</div>
         <h3>Novidades</h3>
         <p>Peças recém-saídas das agulhas em pequenos lotes autorais.</p>
-        <span class="gc-portal-pill-link">Conferir &rarr;</span>
+        <span class="gc-portal-pill-link">Conferir &gt;</span>
       </a>
 
       <a href="./casa-gold.html" class="gc-organic-portal-card">
         <div class="gc-portal-icon-circle">🏡</div>
         <h3>Casa Gold</h3>
         <p>Mesa posta, trilhos botânicos e sousplats em algodão puro.</p>
-        <span class="gc-portal-pill-link">Acessar &rarr;</span>
+        <span class="gc-portal-pill-link">Acessar &gt;</span>
       </a>
     </section>
 
@@ -626,8 +636,8 @@
             baseList = baseList.concat(shuffled);
           }
         }
-        // Duplicação para loop infinito transparente onde o início é o fim
-        const infiniteList = [...baseList, ...baseList];
+        // Triplicação para loop infinito transparente onde o início e fim se encontram
+        const infiniteList = [...baseList, ...baseList, ...baseList];
 
         track.innerHTML = infiniteList.map((p, idx) => {
           const slug = p.slug || 'produto';
@@ -698,12 +708,17 @@
           autoPlayTimer = setInterval(advanceCarousel, 30000);
         }
 
+        // Garante que o track inicie no terço central para rolar livremente para esquerda e direita
+        const singleSetWidth = track.scrollWidth / 3;
+        track.scrollLeft = singleSetWidth;
+
         function checkInfiniteLoop() {
-          const half = track.scrollWidth / 2;
-          if (track.scrollLeft >= half) {
-            track.scrollLeft -= half;
-          } else if (track.scrollLeft <= 5) {
-            track.scrollLeft += half;
+          const oneThird = track.scrollWidth / 3;
+          // Se passou do 2º terço (fim da lista original), retorna instantaneamente para o 1º terço mantendo o offset
+          if (track.scrollLeft >= oneThird * 2) {
+            track.scrollLeft -= oneThird;
+          } else if (track.scrollLeft <= 10) {
+            track.scrollLeft += oneThird;
           }
         }
 

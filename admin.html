@@ -1093,7 +1093,7 @@
         </div>
 
         <button type="submit" id="loginSubmitBtn" class="btn-login-primary">
-          Entrar no Ateliê &rarr;
+          Entrar no Ateliê &gt;
         </button>
       </form>
 
@@ -1145,6 +1145,10 @@
         <button class="admin-nav-item" data-view="categories" onclick="window.AdminCore.switchView('categories')">
           <div class="admin-nav-item-inner"><span class="nav-icon">🏷️</span> Categorias &amp; Linhas</div>
           <span class="nav-badge-pill" id="navBadgeCategories">0</span>
+        </button>
+        <button class="admin-nav-item" data-view="collections" onclick="window.AdminCore.switchView('collections')">
+          <div class="admin-nav-item-inner"><span class="nav-icon">✨</span> Coleções do Ateliê</div>
+          <span class="nav-badge-pill" id="navBadgeCollections">0</span>
         </button>
         <button class="admin-nav-item" data-view="orders" onclick="window.AdminCore.switchView('orders')">
           <div class="admin-nav-item-inner"><span class="nav-icon">📦</span> Pedidos &amp; Atendimento</div>
@@ -1241,7 +1245,7 @@
         <div class="card-panel">
           <div class="card-panel-header">
             <h3 class="card-panel-title">Pedidos Recentes</h3>
-            <button class="btn-secondary-action" onclick="window.AdminCore.switchView('orders')">Ver Todos os Pedidos &rarr;</button>
+            <button class="btn-secondary-action" onclick="window.AdminCore.switchView('orders')">Ver Todos os Pedidos &gt;</button>
           </div>
           <div class="data-table-wrapper">
             <table class="data-table">
@@ -1286,6 +1290,13 @@
                 <option value="personalizado">Personalizados</option>
               </select>
             </div>
+              <select id="productSortFilter" class="form-input" style="width:170px;padding:8px 12px;font-size:0.85rem" onchange="window.AdminCore.setProductSort(this.value)">
+                <option value="newest">🕒 Mais Recentes</option>
+                <option value="price-asc">💵 Menor Preço</option>
+                <option value="price-desc">💎 Maior Preço</option>
+                <option value="name">🔤 Nome (A-Z)</option>
+              </select>
+            </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
               <div class="catalog-view-toggle">
                 <button type="button" class="view-toggle-btn active" id="btnViewCards" onclick="window.AdminCore.setCatalogDisplayMode('cards')">
@@ -1295,6 +1306,9 @@
                   📋 Tabela
                 </button>
               </div>
+              <button class="btn-secondary-action" onclick="window.AdminCore.exportFullBackup()" title="Download de backup completo do ateliê (produtos, coleções, pedidos, clientes)">
+                📦 Backup Geral
+              </button>
               <button class="btn-secondary-action" onclick="window.AdminCore.exportCatalogJSON()">
                 📥 Baixar JSON
               </button>
@@ -1335,12 +1349,30 @@
       <section id="viewCategories" class="view-container hidden">
         <div class="card-panel">
           <div class="card-panel-header">
-            <h3 class="card-panel-title">Linhas e Coleções do Ateliê</h3>
+            <h3 class="card-panel-title">Linhas e Categorias do Catálogo</h3>
             <button class="btn-primary-action" onclick="const n=prompt('Nome da nova categoria:'); if(n) window.AdminCore.saveCategory(n, n.toLowerCase().replace(/\s+/g,'-'))">
               <span>+</span> Nova Categoria
             </button>
           </div>
           <div class="categories-grid" id="categoriesGrid">
+            <!-- Injetado dinamicamente via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: COLEÇÕES DO ATELIÊ -->
+      <section id="viewCollections" class="view-container hidden">
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <div>
+              <h3 class="card-panel-title">Coleções Exclusivas &amp; Narrativas</h3>
+              <span style="font-size:0.82rem;color:var(--text-muted)">Sincronizado automaticamente com a página colecoes.html e os carrosséis do site</span>
+            </div>
+            <button class="btn-primary-action" onclick="window.AdminCore.openCollectionModal()">
+              <span>+</span> Nova Coleção
+            </button>
+          </div>
+          <div class="categories-grid" id="collectionsGrid">
             <!-- Injetado dinamicamente via JS -->
           </div>
         </div>
@@ -1598,20 +1630,37 @@
             </div>
           </div>
 
-          <!-- ABA 3: MÍDIA & FOTOS -->
+          <!-- ABA 3: MÍDIA, CAPA & GALERIA DRAG & DROP -->
           <div id="prodTabMedia" class="editor-tab-content hidden">
+            <!-- Zona de Drag & Drop -->
             <div class="form-group">
-              <label class="form-label">Foto Principal da Peça (URL ou Upload)</label>
-              <div style="display:flex;gap:18px;align-items:flex-start;">
-                <div style="position:relative;width:110px;height:110px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--border);background:#faf8f5;flex-shrink:0;">
-                  <img id="prodPreviewImg" src="./assets/icon.svg" style="width:100%;height:100%;object-fit:cover;">
-                </div>
-                <div style="flex:1">
-                  <input type="text" id="prodImageUrl" class="form-input" placeholder="Cole a URL da foto (https://...)" style="margin-bottom:10px" oninput="document.getElementById('prodPreviewImg').src = this.value || './assets/icon.svg'">
-                  <label class="form-label" style="font-size:0.75rem">Ou selecione uma foto do computador:</label>
-                  <input type="file" id="prodImageFileInput" accept="image/*" class="form-input" style="padding:8px">
-                </div>
+              <label class="form-label">Upload de Fotos (Arraste e Solte ou Selecione)</label>
+              <div id="prodDropZone" style="border:2px dashed var(--gold-primary);border-radius:var(--radius-md);background:var(--surface-subtle);padding:26px 20px;text-align:center;cursor:pointer;transition:all 0.25s ease;" onclick="document.getElementById('prodImageFileInput').click()">
+                <div style="font-size:2.2rem;margin-bottom:6px">📸</div>
+                <strong style="color:var(--gold-deep);font-size:0.95rem;display:block">Arraste as imagens da peça aqui</strong>
+                <span style="font-size:0.8rem;color:var(--text-muted)">ou clique para selecionar fotos do computador (PNG, JPG, WEBP)</span>
+                <input type="file" id="prodImageFileInput" accept="image/*" multiple class="form-input" style="display:none">
               </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Adicionar Foto por Link / URL Externa</label>
+              <div style="display:flex;gap:8px">
+                <input type="text" id="prodImageUrl" class="form-input" placeholder="Cole a URL da foto (https://...)" style="flex:1">
+                <button type="button" class="btn-secondary-action" onclick="window.AdminCore.addMediaUrlToGallery()" style="white-space:nowrap">+ Adicionar URL</button>
+              </div>
+            </div>
+
+            <!-- Grade da Galeria com Ordenação e Botão de Capa -->
+            <div class="form-group">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <label class="form-label" style="margin:0">Galeria da Peça (<span id="galleryCount">0</span> fotos)</label>
+                <small style="color:var(--text-muted);font-size:0.75rem">Clique em ⭐ para definir como Capa Principal</small>
+              </div>
+              <div id="prodGalleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));gap:12px;min-height:110px;padding:12px;background:#faf8f5;border-radius:var(--radius-sm);border:1px solid var(--border-subtle)">
+                <!-- Miniaturas renderizadas dinamicamente via JS -->
+              </div>
+              <input type="hidden" id="prodCoverImgUrl">
             </div>
 
             <div class="form-group">
@@ -1623,7 +1672,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeProductModal()">Cancelar</button>
-          <button type="submit" class="btn-primary-action">✨ Salvar Criação &rarr;</button>
+          <button type="submit" class="btn-primary-action">✨ Salvar Criação &gt;</button>
         </div>
       </form>
     </div>
@@ -1765,7 +1814,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeCreateOrderModal()">Cancelar</button>
-          <button type="submit" class="btn-primary-action">Criar Pedido no Firestore &rarr;</button>
+          <button type="submit" class="btn-primary-action">Criar Pedido no Firestore &gt;</button>
         </div>
       </form>
     </div>
@@ -1821,7 +1870,53 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeCustomerModal()">Cancelar</button>
-          <button type="submit" class="btn-primary-action">💾 Salvar Alterações &rarr;</button>
+          <button type="submit" class="btn-primary-action">💾 Salvar Alterações &gt;</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       MODAL DE EDIÇÃO DE COLEÇÃO DO ATELIÊ
+       ════════════════════════════════════════ -->
+  <div id="collectionModal" class="modal-backdrop hidden">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="collectionModalTitle">Nova Coleção Exclusiva</h3>
+          <span style="font-size:0.8rem;color:var(--text-muted)">Configure nome, descrição editorial e capa para a página de coleções</span>
+        </div>
+        <button class="modal-close-btn" onclick="window.AdminCore.closeCollectionModal()">&times;</button>
+      </div>
+      <form id="collectionForm">
+        <div class="modal-body">
+          <input type="hidden" id="colModalId">
+          <div class="form-group">
+            <label class="form-label">Nome da Coleção *</label>
+            <input type="text" id="colModalName" class="form-input" placeholder="Ex: Alto Verão & Resort" required oninput="const s=document.getElementById('colModalSlug'); if(s && !document.getElementById('colModalId').value) s.value = this.value.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');">
+          </div>
+          <div class="modal-grid-2">
+            <div class="form-group">
+              <label class="form-label">Slug / Identificador *</label>
+              <input type="text" id="colModalSlug" class="form-input" placeholder="alto-verao" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ícone / Emoji Representativo</label>
+              <input type="text" id="colModalIcon" class="form-input" placeholder="✨">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subtítulo / Descrição Editorial</label>
+            <textarea id="colModalDesc" class="form-input" rows="3" placeholder="Narrativa da coleção, inspiração e sensações do crochê..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Imagem de Capa / Banner da Coleção</label>
+            <input type="text" id="colModalImage" class="form-input" placeholder="URL da foto de capa (https://...)">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeCollectionModal()">Cancelar</button>
+          <button type="submit" class="btn-primary-action">✨ Salvar Coleção &gt;</button>
         </div>
       </form>
     </div>

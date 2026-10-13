@@ -118,47 +118,10 @@
       </p>
     </header>
 
-    <!-- Coleção 1: Essenciais -->
-    <section class="gc-collection-section" id="colecao-essenciais">
-      <div class="gc-collection-section-header">
-        <div>
-          <h2>Coleção Essenciais</h2>
-          <p style="color:var(--color-muted);font-size:0.9rem">O luxo despretensioso das formas puras e peças atemporais para qualquer ocasião.</p>
-        </div>
-        <a href="./pecas.html?colecao=Essenciais">Ver Coleção Completa &rarr;</a>
-      </div>
-      <div id="gridEssenciais" class="gc-grid-products">
-        <!-- Injetado dinamicamente via JS -->
-      </div>
-    </section>
-
-    <!-- Coleção 2: Alto Verão & Resort -->
-    <section class="gc-collection-section" id="colecao-verao">
-      <div class="gc-collection-section-header">
-        <div>
-          <h2>Alto Verão &amp; Resort</h2>
-          <p style="color:var(--color-muted);font-size:0.9rem">Leveza e fluidez sob a luz tropical: vestidos, regatas e bolsas de palha e algodão.</p>
-        </div>
-        <a href="./pecas.html?categoria=vestuario">Explorar Resort &rarr;</a>
-      </div>
-      <div id="gridVerao" class="gc-grid-products">
-        <!-- Injetado dinamicamente via JS -->
-      </div>
-    </section>
-
-    <!-- Coleção 3: Casa Brasil & Decoração -->
-    <section class="gc-collection-section" id="colecao-casa">
-      <div class="gc-collection-section-header">
-        <div>
-          <h2>Coleção Casa Brasil</h2>
-          <p style="color:var(--color-muted);font-size:0.9rem">Aconchego botânico e requinte à mesa posta em peças de puro algodão.</p>
-        </div>
-        <a href="./casa-gold.html">Ir para Casa Gold &rarr;</a>
-      </div>
-      <div id="gridCasa" class="gc-grid-products">
-        <!-- Injetado dinamicamente via JS -->
-      </div>
-    </section>
+    <!-- Contêiner Dinâmico de Coleções Sincronizado com o Admin -->
+    <div id="collectionsDynamicContainer">
+      <!-- Injetado dinamicamente via JS -->
+    </div>
   </main>
 
   <!-- Scripts Essenciais de Luxo -->
@@ -169,6 +132,21 @@
       const products = await window.fetchCatalog();
       if (!products || !products.length) return;
 
+      // Busca coleções do Firestore ou Cache Local
+      let collections = [];
+      try {
+        const cached = localStorage.getItem('gc_cached_collections');
+        if (cached) collections = JSON.parse(cached);
+      } catch(e) {}
+
+      if (!collections.length) {
+        collections = [
+          { id: 'essenciais', slug: 'Essenciais', name: 'Coleção Essenciais', icon: '🧶', desc: 'O luxo despretensioso das formas puras e peças atemporais para qualquer ocasião.' },
+          { id: 'alto-verao', slug: 'alto-verao', name: 'Alto Verão & Resort', icon: '☀️', desc: 'Leveza e fluidez sob a luz tropical: vestidos, regatas e bolsas de palha e algodão.' },
+          { id: 'casa-brasil', slug: 'casa-brasil', name: 'Coleção Casa Brasil', icon: '🏡', desc: 'Aconchego botânico e requinte à mesa posta em peças de puro algodão.' }
+        ];
+      }
+
       function renderCard(p) {
         const slug = p.slug || 'produto';
         const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
@@ -176,7 +154,7 @@
         const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '';
 
         return `
-          <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
+          <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer;flex:0 0 280px;scroll-snap-align:start;">
             <div class="gc-product-card-img-wrap">
               ${badge}
               <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
@@ -198,20 +176,66 @@
         `;
       }
 
-      // Essenciais
-      const essenciais = products.filter(p => p.collection === 'Essenciais' || p.category === 'bolsas');
-      const elEss = document.getElementById('gridEssenciais');
-      if (elEss) elEss.innerHTML = essenciais.slice(0, 4).map(renderCard).join('');
+      const container = document.getElementById('collectionsDynamicContainer');
+      if (!container) return;
 
-      // Alto Verão
-      const verao = products.filter(p => p.category === 'saias-vestidos' || p.category === 'tops' || p.slug.includes('noronha') || p.slug.includes('bossa'));
-      const elVer = document.getElementById('gridVerao');
-      if (elVer) elVer.innerHTML = verao.slice(0, 4).map(renderCard).join('');
+      container.innerHTML = collections.map((col, cIdx) => {
+        // Filtra peças pertencentes à coleção
+        let colProducts = products.filter(p => {
+          if (p.collection && (p.collection.toLowerCase() === col.name.toLowerCase() || p.collection.toLowerCase() === col.slug.toLowerCase())) return true;
+          if (col.slug === 'Essenciais' && p.category === 'bolsas') return true;
+          if (col.slug === 'alto-verao' && (p.category === 'vestuario' || p.category === 'saias-vestidos' || p.category === 'tops')) return true;
+          if (col.slug === 'casa-brasil' && (p.category === 'casa-gold' || p.category === 'decoracoes' || p.section === 'casa')) return true;
+          return false;
+        });
 
-      // Casa Brasil
-      const casa = products.filter(p => p.section === 'casa' || p.category === 'decoracoes');
-      const elCasa = document.getElementById('gridCasa');
-      if (elCasa) elCasa.innerHTML = casa.slice(0, 4).map(renderCard).join('');
+        if (!colProducts.length) {
+          colProducts = products.slice(cIdx * 2, (cIdx * 2) + 4);
+        }
+
+        // Duplicação para loop infinito no carrossel
+        const infiniteItems = colProducts.length >= 2 ? [...colProducts, ...colProducts, ...colProducts] : colProducts;
+        const trackId = `trackCol_${cIdx}`;
+
+        return `
+          <section class="gc-collection-section" style="margin-bottom:70px">
+            <div class="gc-collection-section-header" style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:16px;border-bottom:1px solid var(--color-border);margin-bottom:24px;flex-wrap:wrap;gap:12px">
+              <div>
+                <h2 style="font-family:var(--font-display);font-size:1.85rem;color:var(--color-ebony);margin:0 0 6px">${col.name}</h2>
+                <p style="color:var(--color-muted);font-size:0.9rem;margin:0;max-width:650px">${col.desc || ''}</p>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <a href="./pecas.html?colecao=${encodeURIComponent(col.slug)}" style="color:var(--color-gold-deep);text-decoration:none;font-weight:700;font-size:0.86rem;letter-spacing:0.04em">
+                  Ver Coleção Completa &gt;
+                </a>
+                <div style="display:flex;gap:6px">
+                  <button class="gc-carousel-arrow-btn" onclick="const t=document.getElementById('${trackId}'); if(t) t.scrollBy({left:-300,behavior:'smooth'});" aria-label="Voltar">&lt;</button>
+                  <button class="gc-carousel-arrow-btn" onclick="const t=document.getElementById('${trackId}'); if(t) t.scrollBy({left:300,behavior:'smooth'});" aria-label="Avançar">&gt;</button>
+                </div>
+              </div>
+            </div>
+            <div class="gc-carousel-viewport" style="position:relative;overflow:hidden;width:100%;padding-bottom:16px">
+              <div id="${trackId}" class="gc-carousel-track" style="display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch">
+                ${infiniteItems.map(renderCard).join('')}
+              </div>
+            </div>
+          </section>
+        `;
+      }).join('');
+
+      // Adiciona listener de loop infinito para cada carrossel de coleção
+      collections.forEach((col, cIdx) => {
+        const track = document.getElementById(`trackCol_${cIdx}`);
+        if (!track) return;
+        track.addEventListener('scroll', () => {
+          const half = track.scrollWidth / 2;
+          if (track.scrollLeft >= half) {
+            track.scrollLeft -= half;
+          } else if (track.scrollLeft <= 5) {
+            track.scrollLeft += half;
+          }
+        }, { passive: true });
+      });
 
       if (window.GoldFav && window.GoldFav.updateUI) {
         window.GoldFav.updateUI();

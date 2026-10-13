@@ -17,6 +17,8 @@ export const adminState = {
   isAuthenticated: false,
   products: [],
   categories: [],
+  collections: [],
+  activeGallery: [],
   orders: [],
   customers: [],
   coupons: [],
@@ -260,6 +262,7 @@ export async function initDashboardData() {
     await Promise.all([
       syncProductsFromFirestore(),
       syncCategoriesFromFirestore(),
+      syncCollectionsFromFirestore(),
       syncOrdersFromFirestore(),
       syncCustomersFromFirestore()
     ]);
@@ -654,6 +657,170 @@ export async function deleteCategory(categorySlug) {
 }
 
 // ════════════════════════════════════════
+// CRUD DE COLEÇÕES EXCLUSIVAS DO ATELIÊ
+// ════════════════════════════════════════
+
+export async function syncCollectionsFromFirestore() {
+  try {
+    const fb = window.GoldFirebase;
+    if (fb && fb.db && fb.getDocs && fb.fsCollection) {
+      const snap = await fb.getDocs(fb.fsCollection(fb.db, 'collections')).catch(() => null);
+      if (snap && !snap.empty) {
+        const list = [];
+        snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+        adminState.collections = list;
+        localStorage.setItem('gc_cached_collections', JSON.stringify(list));
+        return;
+      }
+    }
+  } catch(e) {
+    console.warn('[Collections Firestore Error]', e);
+  }
+
+  // Fallback padrão se não houver coleções no Firestore
+  if (!adminState.collections.length) {
+    const cached = localStorage.getItem('gc_cached_collections');
+    if (cached) {
+      try { adminState.collections = JSON.parse(cached); } catch(e) {}
+    }
+    if (!adminState.collections.length) {
+      adminState.collections = [
+        { id: 'essenciais', slug: 'Essenciais', name: 'Coleção Essenciais', icon: '🧶', desc: 'O luxo despretensioso das formas puras e peças atemporais para qualquer ocasião.', image: './assets/hero-tropical-bg.jpg' },
+        { id: 'alto-verao', slug: 'alto-verao', name: 'Alto Verão & Resort', icon: '☀️', desc: 'Leveza e fluidez sob a luz tropical: vestidos, regatas e bolsas de palha e algodão.', image: './assets/peca-personalizada.png' },
+        { id: 'casa-brasil', slug: 'casa-brasil', name: 'Coleção Casa Brasil', icon: '🏡', desc: 'Aconchego botânico e requinte à mesa posta em peças de puro algodão.', image: './assets/hero-tropical-bg.jpg' }
+      ];
+      localStorage.setItem('gc_cached_collections', JSON.stringify(adminState.collections));
+    }
+  }
+}
+
+export function openCollectionModal(col = null) {
+  const modal = document.getElementById('collectionModal');
+  if (!modal) return;
+
+  const idInput = document.getElementById('colModalId');
+  const nameInput = document.getElementById('colModalName');
+  const slugInput = document.getElementById('colModalSlug');
+  const iconInput = document.getElementById('colModalIcon');
+  const descInput = document.getElementById('colModalDesc');
+  const imageInput = document.getElementById('colModalImage');
+  const title = document.getElementById('collectionModalTitle');
+
+  if (col) {
+    if (title) title.textContent = `Editar Coleção: ${col.name}`;
+    if (idInput) idInput.value = col.id || col.slug;
+    if (nameInput) nameInput.value = col.name || '';
+    if (slugInput) slugInput.value = col.slug || '';
+    if (iconInput) iconInput.value = col.icon || '✨';
+    if (descInput) descInput.value = col.desc || '';
+    if (imageInput) imageInput.value = col.image || '';
+  } else {
+    if (title) title.textContent = 'Nova Coleção Exclusiva';
+    if (idInput) idInput.value = '';
+    if (nameInput) nameInput.value = '';
+    if (slugInput) slugInput.value = '';
+    if (iconInput) iconInput.value = '✨';
+    if (descInput) descInput.value = '';
+    if (imageInput) imageInput.value = '';
+  }
+
+  modal.classList.remove('hidden');
+}
+
+export function closeCollectionModal() {
+  const modal = document.getElementById('collectionModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+export async function saveCollection(data) {
+  const slug = (data.slug || data.name).toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+  const id = data.id || slug;
+  const colObj = {
+    id,
+    name: data.name.trim(),
+    slug: data.slug.trim() || slug,
+    icon: data.icon || '✨',
+    desc: data.desc || '',
+    image: data.image || '',
+    updatedAt: new Date().toISOString()
+  };
+
+  const idx = adminState.collections.findIndex(c => c.id === id || c.slug === colObj.slug);
+  if (idx !== -1) {
+    adminState.collections[idx] = colObj;
+  } else {
+    adminState.collections.push(colObj);
+  }
+
+  localStorage.setItem('gc_cached_collections', JSON.stringify(adminState.collections));
+  renderCollectionsList();
+  closeCollectionModal();
+  showToast(`Coleção "${colObj.name}" salva com sucesso!`, 'success');
+  logActivity('Salvou Coleção', colObj.name);
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    try {
+      await fb.setDoc(fb.fsDoc(fb.db, 'collections', String(id)), colObj, { merge: true });
+    } catch(err) {
+      console.warn('[Firestore Collection Save Error]', err);
+    }
+  }
+}
+
+export async function deleteCollection(idOrSlug) {
+  if (!confirm(`Deseja excluir a coleção "${idOrSlug}"?`)) return;
+
+  adminState.collections = adminState.collections.filter(c => c.id !== idOrSlug && c.slug !== idOrSlug);
+  localStorage.setItem('gc_cached_collections', JSON.stringify(adminState.collections));
+  renderCollectionsList();
+  showToast('Coleção excluída.', 'info');
+  logActivity('Removeu Coleção', idOrSlug);
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    try {
+      await fb.deleteDoc(fb.fsDoc(fb.db, 'collections', String(idOrSlug)));
+    } catch(e) {}
+  }
+}
+
+export function renderCollectionsList() {
+  const grid = document.getElementById('collectionsGrid');
+  if (!grid) return;
+
+  const badge = document.getElementById('navBadgeCollections');
+  if (badge) badge.textContent = adminState.collections.length;
+
+  if (!adminState.collections.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Nenhuma coleção cadastrada no momento.</div>';
+    return;
+  }
+
+  grid.innerHTML = adminState.collections.map(col => {
+    const productsInCol = adminState.products.filter(p => p.collection === col.name || p.collection === col.slug || (p.category && p.category.toLowerCase() === col.slug.toLowerCase())).length;
+
+    return `
+      <div class="category-card" style="display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;background:var(--surface)">
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <span style="font-size:2rem">${col.icon || '✨'}</span>
+            <span class="status-pill status-online" style="font-size:0.75rem">${productsInCol} peças ativas</span>
+          </div>
+          <h4 style="font-family:var(--font-display);font-size:1.15rem;margin:0 0 4px">${col.name}</h4>
+          <span style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono)">slug: ${col.slug}</span>
+          <p style="font-size:0.83rem;color:var(--text-muted);margin:10px 0 0;line-height:1.4">${col.desc || 'Sem descrição editorial.'}</p>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end">
+          <button class="btn-action edit" onclick="window.AdminCore.editCollection('${col.id || col.slug}')" title="Editar Coleção">✏️</button>
+          <button class="btn-action delete" onclick="window.AdminCore.deleteCollection('${col.id || col.slug}')" title="Excluir Coleção">🗑️</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ════════════════════════════════════════
 // GESTÃO DE PEDIDOS
 // ════════════════════════════════════════
 
@@ -784,6 +951,9 @@ export function renderCurrentView() {
     case 'categories':
       renderCategoriesList();
       break;
+    case 'collections':
+      renderCollectionsList();
+      break;
     case 'orders':
       renderOrdersList();
       break;
@@ -882,11 +1052,21 @@ export function renderProductsList() {
   const query = (adminState.searchQuery || '').toLowerCase();
   const catFilter = adminState.selectedCategoryFilter;
 
-  const filtered = adminState.products.filter(p => {
+  let filtered = adminState.products.filter(p => {
     const matchName = (p.name || '').toLowerCase().includes(query) || String(p.id).includes(query);
     const matchCat = catFilter === 'all' || p.category === catFilter;
     return matchName && matchCat;
   });
+
+  // Ordenação configurável
+  const sortMode = adminState.productSort || 'newest';
+  if (sortMode === 'price-asc') {
+    filtered.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+  } else if (sortMode === 'price-desc') {
+    filtered.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+  } else if (sortMode === 'name') {
+    filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  }
 
   if (!filtered.length) {
     if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Nenhuma criação encontrada para os filtros aplicados.</td></tr>`;
@@ -1405,6 +1585,7 @@ export function exportCatalogJSON() {
   const data = {
     products: adminState.products,
     categories: adminState.categories,
+    collections: adminState.collections,
     exportedAt: new Date().toISOString()
   };
   const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
@@ -1415,6 +1596,31 @@ export function exportCatalogJSON() {
   link.click();
   document.body.removeChild(link);
   showToast('Catálogo baixado em formato JSON!', 'success');
+}
+
+export function exportFullBackup() {
+  const backup = {
+    products: adminState.products,
+    categories: adminState.categories,
+    collections: adminState.collections,
+    orders: adminState.orders,
+    customers: adminState.customers,
+    version: '2026.1',
+    exportedAt: new Date().toISOString()
+  };
+  const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backup, null, 2));
+  const link = document.createElement('a');
+  link.setAttribute('href', jsonStr);
+  link.setAttribute('download', `backup-geral-goldcrochet-${new Date().toISOString().slice(0,10)}.json`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast('📦 Backup geral completo baixado com sucesso!', 'success');
+}
+
+export function setProductSort(sortType) {
+  adminState.productSort = sortType;
+  renderProductsList();
 }
 
 export function editCurrentOrderPhone() {
@@ -1823,13 +2029,84 @@ export function switchProdModalTab(tabId, btn) {
   if (btn) btn.classList.add('active');
 }
 
+export function renderProdGalleryUI() {
+  const grid = document.getElementById('prodGalleryGrid');
+  const countEl = document.getElementById('galleryCount');
+  const coverInput = document.getElementById('prodCoverImgUrl');
+  if (!grid) return;
+
+  const list = adminState.activeGallery || [];
+  if (countEl) countEl.textContent = list.length;
+
+  const currentCover = coverInput ? coverInput.value : (list[0] || '');
+
+  if (!list.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:0.8rem">Nenhuma imagem adicionada. Arraste arquivos para cá.</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map((url, idx) => {
+    const isCover = url === currentCover || (!currentCover && idx === 0);
+    return `
+      <div style="position:relative;width:100%;padding-top:100%;border-radius:var(--radius-sm);overflow:hidden;border:2px solid ${isCover ? 'var(--gold-primary)' : 'var(--border-subtle)'};background:#fff;">
+        <img src="${url}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.src='./assets/icon.svg'">
+        <button type="button" onclick="event.stopPropagation(); window.AdminCore.setProdCover('${url}')" style="position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:${isCover ? 'var(--gold-primary)' : 'rgba(0,0,0,0.5)'};color:#fff;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;" title="${isCover ? 'Capa Principal' : 'Definir como Capa'}">
+          ${isCover ? '★' : '☆'}
+        </button>
+        <button type="button" onclick="event.stopPropagation(); window.AdminCore.removeGalleryItem(${idx})" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(229,62,62,0.85);color:#fff;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;" title="Remover Foto">
+          ✕
+        </button>
+        ${isCover ? '<span style="position:absolute;bottom:0;inset-x:0;background:var(--gold-primary);color:#fff;font-size:9px;text-align:center;font-weight:700;padding:2px 0;width:100%">CAPA</span>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+export function setProdCover(url) {
+  const coverInput = document.getElementById('prodCoverImgUrl');
+  if (coverInput) coverInput.value = url;
+  renderProdGalleryUI();
+  showToast('Foto definida como capa principal da peça!', 'info');
+}
+
+export function removeGalleryItem(index) {
+  if (adminState.activeGallery && adminState.activeGallery[index]) {
+    adminState.activeGallery.splice(index, 1);
+    const coverInput = document.getElementById('prodCoverImgUrl');
+    if (coverInput && !adminState.activeGallery.includes(coverInput.value)) {
+      coverInput.value = adminState.activeGallery[0] || '';
+    }
+    renderProdGalleryUI();
+  }
+}
+
+export function addMediaUrlToGallery() {
+  const input = document.getElementById('prodImageUrl');
+  const url = input ? input.value.trim() : '';
+  if (!url) return;
+
+  if (!adminState.activeGallery) adminState.activeGallery = [];
+  if (!adminState.activeGallery.includes(url)) {
+    adminState.activeGallery.push(url);
+    const coverInput = document.getElementById('prodCoverImgUrl');
+    if (coverInput && !coverInput.value) coverInput.value = url;
+    renderProdGalleryUI();
+    showToast('Imagem adicionada à galeria!', 'success');
+  }
+  if (input) input.value = '';
+}
+
 export function openNewProductModal() {
   adminState.editingProductId = null;
+  adminState.activeGallery = [];
   document.getElementById('modalTitle').textContent = 'Nova Criação Autoral';
   const form = document.getElementById('productForm');
   if (form) form.reset();
-  document.getElementById('prodPreviewImg').src = './assets/icon.svg';
   
+  const coverInput = document.getElementById('prodCoverImgUrl');
+  if (coverInput) coverInput.value = '';
+  renderProdGalleryUI();
+
   // Reseta para a primeira aba
   switchProdModalTab('prodTabGeneral', document.querySelector('.editor-tab-btn[data-tab="prodTabGeneral"]'));
 
@@ -1851,8 +2128,18 @@ export function editProduct(productId) {
   document.getElementById('prodProdTime').value = p.prod_time || 8;
   document.getElementById('prodMaterial').value = p.material || 'Fio 100% Algodão Nobre';
   document.getElementById('prodDesc').value = p.desc || '';
-  document.getElementById('prodImageUrl').value = p.image || '';
   
+  const coverInput = document.getElementById('prodCoverImgUrl');
+  const mainImg = p.image || (p.gallery && p.gallery[0]) || '';
+  if (coverInput) coverInput.value = mainImg;
+
+  // Carrega galeria
+  adminState.activeGallery = Array.isArray(p.gallery) && p.gallery.length ? [...p.gallery] : (mainImg ? [mainImg] : []);
+  if (mainImg && !adminState.activeGallery.includes(mainImg)) {
+    adminState.activeGallery.unshift(mainImg);
+  }
+  renderProdGalleryUI();
+
   const inStockEl = document.getElementById('prodInStock');
   if (inStockEl) inStockEl.value = p.inStock === false ? 'false' : 'true';
 
@@ -1860,9 +2147,6 @@ export function editProduct(productId) {
   if (colorsEl) {
     colorsEl.value = Array.isArray(p.colors) ? p.colors.join(', ') : (p.colors || '');
   }
-
-  const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
-  document.getElementById('prodPreviewImg').src = img;
 
   // Abre na primeira aba
   switchProdModalTab('prodTabGeneral', document.querySelector('.editor-tab-btn[data-tab="prodTabGeneral"]'));
@@ -1873,6 +2157,7 @@ export function editProduct(productId) {
 export function closeProductModal() {
   document.getElementById('productModal').classList.add('hidden');
   adminState.editingProductId = null;
+  adminState.activeGallery = [];
 }
 
 // Inicializador Global no window
@@ -1923,9 +2208,22 @@ if (typeof window !== 'undefined') {
     openManualCustomerModal,
     closeCustomerModal,
     editCustomer,
-    saveCustomer,
     adjustCustomerPurchases,
-    adjustCustomerGiftsClaimed
+    adjustCustomerGiftsClaimed,
+    openCollectionModal,
+    closeCollectionModal,
+    saveCollection,
+    deleteCollection,
+    renderCollectionsList,
+    editCollection: (id) => {
+      const col = adminState.collections.find(c => c.id === id || c.slug === id);
+      if (col) openCollectionModal(col);
+    },
+    setProdCover,
+    removeGalleryItem,
+    addMediaUrlToGallery,
+    exportFullBackup,
+    setProductSort
   };
 
   // Inicializa quando o DOM estiver pronto
@@ -1986,6 +2284,11 @@ if (typeof window !== 'undefined') {
         const colorsArr = colorsRaw ? colorsRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
         const inStockVal = document.getElementById('prodInStock') ? document.getElementById('prodInStock').value !== 'false' : true;
 
+        const coverInput = document.getElementById('prodCoverImgUrl');
+        const mainCover = (coverInput && coverInput.value) || (adminState.activeGallery && adminState.activeGallery[0]) || document.getElementById('prodImageUrl').value || './assets/icon.svg';
+        const finalGallery = (adminState.activeGallery && adminState.activeGallery.length) ? [...adminState.activeGallery] : [mainCover];
+        if (!finalGallery.includes(mainCover)) finalGallery.unshift(mainCover);
+
         const pData = {
           name: document.getElementById('prodName').value.trim(),
           slug: document.getElementById('prodSlug').value.trim() || document.getElementById('prodName').value.toLowerCase().replace(/[^a-z0-9]/g, '-'),
@@ -1998,8 +2301,8 @@ if (typeof window !== 'undefined') {
           desc: document.getElementById('prodDesc').value,
           inStock: inStockVal,
           colors: colorsArr,
-          image: document.getElementById('prodImageUrl').value || document.getElementById('prodPreviewImg').src,
-          gallery: [document.getElementById('prodImageUrl').value || document.getElementById('prodPreviewImg').src]
+          image: mainCover,
+          gallery: finalGallery
         };
         saveProduct(pData);
       });
@@ -2050,18 +2353,55 @@ if (typeof window !== 'undefined') {
       });
     }
 
-    // Upload de Imagem Local com Preview Otimizado
+    // Suporte a Múltiplos Arquivos e Drag & Drop na Galeria
+    const handleFiles = (files) => {
+      if (!files || !files.length) return;
+      Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (re) => {
+          const b64 = re.target.result;
+          if (!adminState.activeGallery) adminState.activeGallery = [];
+          adminState.activeGallery.push(b64);
+          const coverInput = document.getElementById('prodCoverImgUrl');
+          if (coverInput && !coverInput.value) coverInput.value = b64;
+          renderProdGalleryUI();
+        };
+        reader.readAsDataURL(file);
+      });
+      showToast(`${files.length} foto(s) adicionada(s) à galeria!`, 'success');
+    };
+
     const fileInput = document.getElementById('prodImageFileInput');
     if (fileInput) {
       fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (re) => {
-          document.getElementById('prodPreviewImg').src = re.target.result;
-          document.getElementById('prodImageUrl').value = re.target.result;
-        };
-        reader.readAsDataURL(file);
+        handleFiles(e.target.files);
+      });
+    }
+
+    const dropZone = document.getElementById('prodDropZone');
+    if (dropZone) {
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.style.borderColor = 'var(--gold-deep)';
+          dropZone.style.background = 'rgba(205, 164, 52, 0.12)';
+        });
+      });
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.style.borderColor = 'var(--gold-primary)';
+          dropZone.style.background = 'var(--surface-subtle)';
+        });
+      });
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        if (dt && dt.files && dt.files.length) {
+          handleFiles(dt.files);
+        }
       });
     }
 
@@ -2079,7 +2419,30 @@ if (typeof window !== 'undefined') {
     if (customerForm) {
       customerForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        saveCustomer();
+        saveCustomer({
+          id: document.getElementById('custModalId').value,
+          name: document.getElementById('custModalName').value,
+          email: document.getElementById('custModalEmail').value,
+          phone: document.getElementById('custModalPhone').value,
+          purchasesCount: document.getElementById('custModalPurchases').value,
+          giftsClaimed: document.getElementById('custModalGiftsClaimed').value
+        });
+      });
+    }
+
+    // Formulário de Coleções
+    const collectionForm = document.getElementById('collectionForm');
+    if (collectionForm) {
+      collectionForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        saveCollection({
+          id: document.getElementById('colModalId').value,
+          name: document.getElementById('colModalName').value,
+          slug: document.getElementById('colModalSlug').value,
+          icon: document.getElementById('colModalIcon').value,
+          desc: document.getElementById('colModalDesc').value,
+          image: document.getElementById('colModalImage').value
+        });
       });
     }
   });
