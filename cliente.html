@@ -990,9 +990,11 @@
             let existing = getLocalClient() || {};
             let phone = existing.phone || '';
             if (!phone) {
-              const promptPhone = prompt(`✨ Bem-vinda, ${user.displayName || 'Cliente'}!\nPor favor, informe seu WhatsApp/Telefone para contato do ateliê sobre seus pedidos e entregas:`);
-              if (promptPhone && promptPhone.trim()) {
-                phone = promptPhone.replace(/[^0-9]/g, '');
+              if (window.GoldAccount && window.GoldAccount.promptPhone) {
+                phone = await window.GoldAccount.promptPhone({
+                  name: user.displayName || 'Cliente Gold',
+                  email: user.email || ''
+                });
               }
             }
 

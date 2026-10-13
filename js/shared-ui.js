@@ -856,6 +856,163 @@
     }
   }
 
+  // ════════════════════════════════════════
+  // 6.1 MODAL DE ALTA-COSTURA PARA TELEFONE/WHATSAPP (GOOGLE LOGIN & CHECKOUT)
+  // ════════════════════════════════════════
+  function renderPhoneModal() {
+    if (document.getElementById('gcPhonePromptModal')) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'gcPhonePromptModal';
+    modal.className = 'gc-modal-backdrop';
+    modal.innerHTML = `
+      <div class="gc-user-modal-box" style="max-width:440px;text-align:center;">
+        <button id="gcPhoneModalClose" class="gc-modal-close-btn" aria-label="Fechar">&times;</button>
+        <div style="margin-bottom:18px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--color-secondary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:1.5px solid var(--color-border);box-shadow:0 6px 18px rgba(205,164,52,0.18);">
+            <img src="${root}assets/buzio-oficial.png" alt="Búzio Dourado Oficial" style="width:40px;height:auto;object-fit:contain;">
+          </div>
+          <span style="font-size:0.75rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--color-gold-deep);font-weight:700;">Alta-Costura Ateliê</span>
+          <h3 id="gcPhoneModalTitle" style="font-family:var(--font-display);font-size:1.45rem;color:var(--color-ebony);margin:6px 0 6px;">Complete seu Contato</h3>
+          <p id="gcPhoneModalDesc" style="font-size:0.86rem;color:var(--color-muted);line-height:1.45;margin:0 0 16px;">
+            Para acompanhar o envio das suas peças e receber atualizações personalizadas das nossas estilistas, informe seu WhatsApp.
+          </p>
+        </div>
+
+        <div id="gcPhoneModalError" style="display:none;background:rgba(229,62,62,0.1);border:1px solid rgba(229,62,62,0.3);color:#c53030;padding:10px 14px;border-radius:10px;font-size:0.82rem;margin-bottom:14px;text-align:left;line-height:1.4;"></div>
+
+        <form id="gcPhonePromptForm" onsubmit="return false;">
+          <div style="text-align:left;margin-bottom:6px;">
+            <label for="gcPhonePromptInput" style="font-size:0.76rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-charcoal);font-weight:700;">WhatsApp / Telefone com DDD *</label>
+          </div>
+          <input 
+            type="tel" 
+            id="gcPhonePromptInput" 
+            class="gc-input-pill" 
+            placeholder="(31) 98456-6047" 
+            autocomplete="tel" 
+            required 
+            style="font-size:1rem;text-align:center;letter-spacing:0.04em;font-weight:600;"
+          >
+          <button 
+            type="submit" 
+            id="gcPhonePromptSubmitBtn" 
+            class="gc-btn-pill-primary" 
+            style="width:100%;margin-top:10px;padding:14px;font-size:0.92rem;letter-spacing:0.04em;display:flex;align-items:center;justify-content:center;gap:8px;"
+          >
+            <span>Salvar e Continuar</span> &rarr;
+          </button>
+        </form>
+        <p style="font-size:0.74rem;color:var(--color-muted);margin:14px 0 0;">
+          🔒 Seus dados são protegidos e utilizados exclusivamente para contato sobre suas encomendas.
+        </p>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const closeBtn = document.getElementById('gcPhoneModalClose');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        closePhoneModal('');
+      });
+    }
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closePhoneModal('');
+      }
+    });
+
+    const input = document.getElementById('gcPhonePromptInput');
+    if (input) {
+      // Máscara dinâmica de telefone brasileiro (DDD + 8 ou 9 dígitos)
+      input.addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+        if (v.length > 10) {
+          v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+        } else if (v.length > 6) {
+          v = v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
+        } else if (v.length > 2) {
+          v = v.replace(/^(\d{2})(\d{0,5})$/, '($1) $2');
+        } else if (v.length > 0) {
+          v = v.replace(/^(\d*)$/, '($1');
+        }
+        e.target.value = v;
+      });
+    }
+  }
+
+  let phonePromptResolver = null;
+
+  function closePhoneModal(resolvedValue = '') {
+    const modal = document.getElementById('gcPhonePromptModal');
+    if (modal) {
+      modal.classList.remove('open');
+      document.body.classList.remove('gc-scroll-locked');
+    }
+    if (phonePromptResolver) {
+      const fn = phonePromptResolver;
+      phonePromptResolver = null;
+      fn(resolvedValue);
+    }
+  }
+
+  function promptLuxuryPhoneModal({ name = '', email = '', message = '', title = '' } = {}) {
+    return new Promise((resolve) => {
+      renderPhoneModal();
+      const modal = document.getElementById('gcPhonePromptModal');
+      const titleEl = document.getElementById('gcPhoneModalTitle');
+      const descEl = document.getElementById('gcPhoneModalDesc');
+      const inputEl = document.getElementById('gcPhonePromptInput');
+      const errEl = document.getElementById('gcPhoneModalError');
+      const formEl = document.getElementById('gcPhonePromptForm');
+
+      if (!modal || !inputEl || !formEl) {
+        resolve('');
+        return;
+      }
+
+      phonePromptResolver = resolve;
+
+      if (titleEl) {
+        titleEl.textContent = title || (name ? `Bem-vinda, ${name.split(' ')[0]}!` : 'Complete seu Contato');
+      }
+      if (descEl) {
+        descEl.textContent = message || 'Para que nossa estilista confirme seu pedido e acompanhe a confecção sob medida, informe seu WhatsApp com DDD.';
+      }
+      if (errEl) {
+        errEl.style.display = 'none';
+        errEl.textContent = '';
+      }
+
+      inputEl.value = '';
+      modal.classList.add('open');
+      document.body.classList.add('gc-scroll-locked');
+
+      setTimeout(() => {
+        inputEl.focus();
+      }, 100);
+
+      formEl.onsubmit = (e) => {
+        if (e) e.preventDefault();
+        const raw = inputEl.value.trim();
+        const digits = raw.replace(/\D/g, '');
+
+        if (!digits || digits.length < 10) {
+          if (errEl) {
+            errEl.textContent = 'Por favor, informe seu número completo de WhatsApp (DDD + 8 ou 9 dígitos). Ex: (31) 98456-6047.';
+            errEl.style.display = 'block';
+          }
+          inputEl.focus();
+          return;
+        }
+
+        closePhoneModal(digits);
+      };
+    });
+  }
+
   async function loginWithGoogle() {
     const googleBtn = document.getElementById('gcGoogleLoginBtn');
     if (googleBtn) {
@@ -872,11 +1029,13 @@
           const u = res.user;
           const existing = getCustomer() || {};
           let phone = existing.phone || '';
+          // Se não tem telefone cadastrado, abre o modal de alta-costura in-site para capturar obrigatoriamente
           if (!phone) {
-            const promptPhone = prompt(`✨ Bem-vinda, ${u.displayName || 'Cliente'}!\nPor favor, informe seu WhatsApp/Telefone para contato do ateliê sobre seus pedidos e entregas:`);
-            if (promptPhone && promptPhone.trim()) {
-              phone = promptPhone.replace(/[^0-9]/g, '');
-            }
+            phone = await promptLuxuryPhoneModal({
+              name: u.displayName || 'Cliente Gold',
+              email: u.email || '',
+              photo: u.photoURL || ''
+            });
           }
 
           const cust = {
@@ -1288,7 +1447,7 @@
     }
   }
 
-  function checkoutWhatsApp(ev) {
+  async function checkoutWhatsApp(ev) {
     // O botão é um <a href>; evita abrir 2 abas (href + window.open)
     if (ev && ev.preventDefault) ev.preventDefault();
     const cart = getCart();
@@ -1297,13 +1456,35 @@
       return;
     }
 
-    const customer = getCustomer();
+    let customer = getCustomer();
+    if (!customer || !customer.email) {
+      openUserModal('Por favor, faça login ou cadastre seu WhatsApp para finalizar seu pedido com o ateliê.');
+      return;
+    }
+
+    if (!customer.phone || customer.phone.length < 10) {
+      const phoneEntered = await promptLuxuryPhoneModal({
+        name: customer.name || 'Cliente Gold',
+        email: customer.email || '',
+        title: 'Confirmação do WhatsApp',
+        message: 'Para finalizarmos seu pedido e nossa estilista te contatar sobre o prazo e envio, confirme seu WhatsApp com DDD:'
+      });
+      if (!phoneEntered || phoneEntered.length < 10) {
+        return; // Usuário cancelou ou não digitou o número
+      }
+      customer.phone = phoneEntered;
+      saveCustomer(customer);
+      syncUserCrossDevice(customer);
+    }
+
     const orderCode = 'GC' + Date.now().toString(36).toUpperCase().slice(-6);
     let subtotal = 0;
     let msg = `✨ *Pedido Gold Crochet Brasil — Alta-Costura*\n`;
     msg += `🧾 Código: *${orderCode}*\n\n`;
     if (customer && customer.name) {
-      msg += `👤 Cliente: *${customer.name}*\n\n`;
+      msg += `👤 Cliente: *${customer.name}*\n`;
+      if (customer.phone) msg += `📱 WhatsApp: *${customer.phone}*\n`;
+      msg += `\n`;
     }
     msg += `Gostaria de encomendar os seguintes itens:\n\n`;
 
@@ -1848,6 +2029,7 @@
   window.GoldAccount = {
     open: openUserModal,
     close: closeUserModal,
+    promptPhone: promptLuxuryPhoneModal,
     loginGoogle: loginWithGoogle,
     loginEmail: loginWithEmail,
     addPurchase: addCustomerPurchase,
