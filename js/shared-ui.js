@@ -1344,24 +1344,97 @@
 
   async function registerWhatsAppOrder({ orderCode, cart, subtotal, discountVal, finalTotal, customer }) {
     try {
-      const fb = window.GoldFirebase;
-      const user = fb && fb.auth && fb.auth.currentUser;
-      if (!fb || !fb.db || !user) return; // regras exigem login
-      await fb.setDoc(fb.fsDoc(fb.db, 'orders', orderCode), {
+      // 1. Salva imediatamente no histórico local do cliente e na fila local
+      const localOrder = {
+        id: orderCode,
         code: orderCode,
         source: 'whatsapp-checkout',
-        userId: user.uid,
-        userName: (customer && customer.name) || user.displayName || '',
-        userEmail: (customer && customer.email) || user.email || '',
-        phone: String((customer && (customer.phone || customer.whatsapp)) || user.phoneNumber || '').replace(/\D/g, ''),
+        userId: (customer && (customer.id || customer.uid)) || 'guest-' + Date.now(),
+        userName: (customer && customer.name) || 'Cliente VIP',
+        userEmail: (customer && customer.email) || '',
+        phone: String((customer && (customer.phone || customer.whatsapp)) || '').replace(/\D/g, ''),
         items: cart.slice(0, 100).map(i => ({ name: i.name || '', qty: Number(i.qty) || 1, price: Number(i.price) || 0, color: i.color || '' })),
         subtotal: Number(subtotal.toFixed(2)),
         discount: Number(discountVal.toFixed(2)),
         coupon: appliedCoupon ? appliedCoupon.code : '',
         total: Number(finalTotal.toFixed(2)),
         status: 'pendente',
-        createdAt: fb.serverTimestamp()
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        const cachedOrders = JSON.parse(localStorage.getItem('gc_cached_orders') || '[]');
+        const existingIdx = cachedOrders.findIndex(o => (o.code === orderCode || o.id === orderCode));
+        if (existingIdx !== -1) cachedOrders[existingIdx] = localOrder;
+        else cachedOrders.unshift(localOrder);
+        localStorage.setItem('gc_cached_orders', JSON.stringify(cachedOrders.slice(0, 100)));
+      } catch (errCache) {}
+
+      // 2. Garante inicialização do Firebase
+      const fb = await ensureFirebase();
+      if (fb && fb.db && fb.setDoc && fb.fsDoc) {
+        const user = fb.auth && fb.auth.currentUser;
+        await fb.setDoc(fb.fsDoc(fb.db, 'orders', orderCode), {
+          code: orderCode,
+          source: 'whatsapp-checkout',
+          userId: (user && user.uid) || (customer && (customer.id || customer.uid)) || 'guest',
+          userName: (customer && customer.name) || (user && user.displayName) || 'Cliente VIP',
+          userEmail: (customer && customer.email) || (user && user.email) || '',
+          phone: String((customer && (customer.phone || customer.whatsapp)) || (user && user.phoneNumber) || '').replace(/\D/g, ''),
+          items: cart.slice(0, 100).map(i => ({ name: i.name || '', qty: Number(i.qty) || 1, price: Number(i.price) || 0, color: i.color || '' })),
+          subtotal: Number(subtotal.toFixed(2)),
+          discount: Number(discountVal.toFixed(2)),
+          coupon: appliedCoupon ? appliedCoupon.code : '',
+          total: Number(finalTotal.toFixed(2)),
+          status: 'pendente',
+          createdAt: (fb.serverTimestamp && fb.serverTimestamp()) || new Date().toISOString()
+        });
+        console.log('✅ [Checkout] Pedido registrado no Firestore com sucesso:', orderCode);
+        return;
+      }
+
+      // 3. Fallback Direto via Firestore REST API se o SDK não estiver carregado
+      const projectId = 'lucky-dolphin-861jg';
+      const databaseId = 'ai-studio-goldcrochetshop-0e84b9ac-6dbb-400f-9959-fc455c1c4776';
+      const restUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${databaseId}/documents/orders/${orderCode}`;
+      
+      const restPayload = {
+        fields: {
+          code: { stringValue: orderCode },
+          source: { stringValue: 'whatsapp-checkout' },
+          userId: { stringValue: (customer && (customer.id || customer.uid)) || 'guest' },
+          userName: { stringValue: (customer && customer.name) || 'Cliente VIP' },
+          userEmail: { stringValue: (customer && customer.email) || '' },
+          phone: { stringValue: String((customer && (customer.phone || customer.whatsapp)) || '').replace(/\D/g, '') },
+          items: {
+            arrayValue: {
+              values: cart.slice(0, 100).map(i => ({
+                mapValue: {
+                  fields: {
+                    name: { stringValue: i.name || '' },
+                    qty: { integerValue: String(Number(i.qty) || 1) },
+                    price: { doubleValue: Number(i.price) || 0 },
+                    color: { stringValue: i.color || '' }
+                  }
+                }
+              }))
+            }
+          },
+          subtotal: { doubleValue: Number(subtotal.toFixed(2)) },
+          discount: { doubleValue: Number(discountVal.toFixed(2)) },
+          coupon: { stringValue: appliedCoupon ? appliedCoupon.code : '' },
+          total: { doubleValue: Number(finalTotal.toFixed(2)) },
+          status: { stringValue: 'pendente' },
+          createdAt: { timestampValue: new Date().toISOString() }
+        }
+      };
+
+      await fetch(restUrl, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(restPayload)
       });
+      console.log('✅ [Checkout] Pedido registrado via Firestore REST:', orderCode);
     } catch (err) {
       console.warn('[Checkout] Pedido não registrado no Firestore:', err && err.message);
     }

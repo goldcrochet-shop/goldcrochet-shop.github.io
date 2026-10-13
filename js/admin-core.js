@@ -24,13 +24,19 @@ export const adminState = {
     totalRevenue: 0,
     activeOrders: 0,
     totalProducts: 0,
-    totalCategories: 0
+    totalCategories: 0,
+    avgTicket: 0
   },
   currentView: 'overview',
   searchQuery: '',
   selectedCategoryFilter: 'all',
+  orderStatusFilter: 'all',
+  orderSearchQuery: '',
+  activeDetailOrderId: null,
   editingProductId: null,
-  isSyncing: false
+  isSyncing: false,
+  audioAlertsEnabled: localStorage.getItem('gc_admin_audio') !== 'false',
+  theme: localStorage.getItem('gc_admin_theme') || 'light'
 };
 
 // Utilitários de Formatação
@@ -392,11 +398,20 @@ export async function syncOrdersFromFirestore() {
 
     // Ouvinte em tempo real para novos pedidos
     if (fb.onSnapshot) {
+      let isFirstSnapshot = true;
       fb.onSnapshot(colRef, (liveSnap) => {
         const liveList = [];
         liveSnap.forEach(d => liveList.push({ id: d.id, ...d.data() }));
+        
+        // Verifica se há pedido novo após o carregamento inicial
+        if (!isFirstSnapshot && liveList.length > adminState.orders.length) {
+          playOrderNotificationChime();
+          showToast('🔔 Novo pedido recebido no Ateliê!', 'success');
+        }
+        isFirstSnapshot = false;
+
         adminState.orders = liveList;
-        localStorage.setItem('gc_cached_orders', JSON.stringify(liveList));
+        try { localStorage.setItem('gc_cached_orders', JSON.stringify(liveList)); } catch(e) {}
         calculateMetrics();
         if (adminState.currentView === 'orders' || adminState.currentView === 'overview') {
           renderCurrentView();
@@ -408,22 +423,66 @@ export async function syncOrdersFromFirestore() {
   }
 }
 
+export function playOrderNotificationChime() {
+  if (!adminState.audioAlertsEnabled) return;
+  try {
+    const audio = document.getElementById('gcOrderAudioNotification');
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    }
+  } catch(e) {}
+}
+
 export function calculateMetrics() {
   let rev = 0;
   let active = 0;
+  let validOrdersCount = 0;
 
   adminState.orders.forEach(o => {
     const val = Number(o.total) || 0;
-    if (o.status !== 'cancelado') rev += val;
+    if (o.status !== 'cancelado') {
+      rev += val;
+      validOrdersCount++;
+    }
     if (o.status === 'pendente' || o.status === 'producao') active++;
   });
+
+  const avg = validOrdersCount > 0 ? (rev / validOrdersCount) : 0;
 
   adminState.metrics = {
     totalRevenue: rev,
     activeOrders: active,
     totalProducts: adminState.products.length,
-    totalCategories: adminState.categories.length || 6
+    totalCategories: adminState.categories.length || 6,
+    avgTicket: avg
   };
+
+  updateSidebarBadges();
+}
+
+export function updateSidebarBadges() {
+  const pBadge = document.getElementById('navBadgeProducts');
+  const cBadge = document.getElementById('navBadgeCategories');
+  const oBadge = document.getElementById('navBadgeOrders');
+  const activeCounter = document.getElementById('adminActiveOrdersCounter');
+
+  if (pBadge) pBadge.textContent = adminState.products.length;
+  if (cBadge) cBadge.textContent = adminState.categories.length;
+  if (oBadge) oBadge.textContent = adminState.orders.length;
+  if (activeCounter) activeCounter.textContent = `${adminState.metrics.activeOrders} pedidos em andamento`;
+
+  // Atualiza contadores nas abas de filtros de pedidos
+  const counts = { all: adminState.orders.length, pendente: 0, producao: 0, enviado: 0, entregue: 0, cancelado: 0 };
+  adminState.orders.forEach(o => {
+    const st = o.status || 'pendente';
+    if (counts[st] !== undefined) counts[st]++;
+  });
+
+  ['All', 'Pendente', 'Producao', 'Enviado', 'Entregue', 'Cancelado'].forEach(st => {
+    const el = document.getElementById('countOrder' + st);
+    if (el) el.textContent = counts[st.toLowerCase()] || 0;
+  });
 }
 
 // ════════════════════════════════════════
@@ -759,6 +818,11 @@ export function renderProductsList() {
     const priceText = p.price ? formatBRL(p.price) : '<span style="color:#8b7a5a">Sob Consulta</span>';
     const discountBadge = p.discount ? `<span class="badge-discount">-${p.discount}%</span>` : '';
     const badgeText = p.badge ? `<span class="badge-featured">${p.badge}</span>` : '';
+    const inStock = p.inStock !== false;
+    const stockPill = inStock ? 
+      `<span class="stock-pill in-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Clique para alternar estoque">✓ Em Estoque</span>` : 
+      `<span class="stock-pill out-of-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Clique para alternar estoque">⏳ Sob Medida</span>`;
+    const prodTime = p.prod_time ? `<br><small style="color:var(--text-muted);font-size:0.75rem">${p.prod_time} dias prod.</small>` : '';
 
     return `
       <tr>
@@ -781,12 +845,13 @@ export function renderProductsList() {
         </td>
         <td>${badgeText || '—'}</td>
         <td>
-          <span class="stock-pill in-stock">Ateliê Ativo</span>
+          ${stockPill}${prodTime}
         </td>
         <td class="table-actions">
-          <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar">✏️</button>
-          <button class="btn-action view" onclick="window.open('./produtos/${p.slug || 'bolsa-paraty'}.html', '_blank')" title="Ver na Loja">👁</button>
-          <button class="btn-action delete" onclick="window.AdminCore.deleteProduct('${p.id}')" title="Excluir">🗑</button>
+          <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar Peça">✏️</button>
+          <button class="btn-action" onclick="window.AdminCore.duplicateProduct('${p.id}')" title="Duplicar Peça">📋</button>
+          <button class="btn-action view" onclick="window.open('./produtos/${p.slug || 'bolsa-paraty'}.html', '_blank')" title="Ver na Loja ao Vivo">👁</button>
+          <button class="btn-action delete" onclick="window.AdminCore.deleteProduct('${p.id}')" title="Excluir Peça">🗑</button>
         </td>
       </tr>
     `;
@@ -860,12 +925,31 @@ export function renderOrdersList() {
   const tbody = document.getElementById('ordersTableBody');
   if (!tbody) return;
 
-  if (!adminState.orders.length) {
-    tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Nenhum pedido registrado no Firestore ainda.</td></tr>`;
+  const searchQuery = (adminState.orderSearchQuery || '').toLowerCase().trim();
+  const statusFilter = adminState.orderStatusFilter || 'all';
+
+  let filtered = [...adminState.orders];
+
+  if (statusFilter !== 'all') {
+    filtered = filtered.filter(o => (o.status || 'pendente') === statusFilter);
+  }
+
+  if (searchQuery) {
+    filtered = filtered.filter(o => {
+      const code = String(orderCode(o)).toLowerCase();
+      const name = String(o.userName || '').toLowerCase();
+      const email = String(o.userEmail || '').toLowerCase();
+      const phone = String(o.phone || '').replace(/\D/g, '');
+      return code.includes(searchQuery) || name.includes(searchQuery) || email.includes(searchQuery) || phone.includes(searchQuery);
+    });
+  }
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Nenhum pedido encontrado para os filtros selecionados.</td></tr>`;
     return;
   }
 
-  const sorted = [...adminState.orders].sort((a, b) => {
+  const sorted = filtered.sort((a, b) => {
     const ta = (a.createdAt && (a.createdAt.seconds || Date.parse(a.createdAt) / 1000)) || 0;
     const tb = (b.createdAt && (b.createdAt.seconds || Date.parse(b.createdAt) / 1000)) || 0;
     return tb - ta;
@@ -877,21 +961,31 @@ export function renderOrdersList() {
     const items = Array.isArray(o.items) ? o.items : [];
     const itemsCount = items.reduce((s, i) => s + (Number(i.qty) || 1), 0) || 1;
     const itemsTitle = items.map(i => `${i.qty || 1}x ${i.name || ''}${i.color ? ` (${i.color})` : ''}`).join('\n').replace(/"/g, '&quot;');
-    const sourceBadge = o.source === 'whatsapp-checkout' ? '<small title="Pedido feito pela sacola → WhatsApp">💬 via WhatsApp</small>' : '';
-    const phoneInfo = o.phone ? `<small>📱 ${o.phone}</small>` : `<small style="color:var(--warning)">sem telefone</small>`;
+    const sourceBadge = o.source === 'whatsapp-checkout' ? '<small style="color:var(--gold-deep)">💬 via WhatsApp</small>' : '';
+    const phoneClean = String(o.phone || '').replace(/\D/g, '');
+    const phoneDisplay = phoneClean ? `📱 (${phoneClean.slice(0,2)}) ${phoneClean.slice(2)}` : `<span style="color:var(--warning)">sem telefone</span>`;
+    const trackingBadge = o.trackingCode ? `<br><small style="color:var(--info);font-family:var(--font-mono)">📦 ${o.trackingCode}</small>` : '';
 
     return `
       <tr>
-        <td><strong>${orderCode(o)}</strong><br>${sourceBadge}</td>
+        <td>
+          <a href="javascript:void(0)" onclick="window.AdminCore.viewOrderDetail('${o.id}')" style="font-weight:800;color:var(--gold-deep);text-decoration:none">
+            ${orderCode(o)}
+          </a>
+          <br>${sourceBadge}${trackingBadge}
+        </td>
         <td>
           <div class="customer-cell">
             <strong>${o.userName || 'Cliente VIP'}</strong>
             <small>${o.userEmail || '—'}</small>
-            ${phoneInfo}
+            <small>${phoneDisplay}</small>
           </div>
         </td>
-        <td>${dateStr}</td>
-        <td title="${itemsTitle}"><strong>${totalStr}</strong> <small>(${itemsCount} ${itemsCount === 1 ? 'item' : 'itens'})</small></td>
+        <td><small>${dateStr}</small></td>
+        <td title="${itemsTitle}" style="cursor:help">
+          <strong>${totalStr}</strong><br>
+          <small style="color:var(--text-muted)">${itemsCount} ${itemsCount === 1 ? 'peça' : 'peças'}</small>
+        </td>
         <td>
           <select class="status-select status-${o.status || 'pendente'}" onchange="window.AdminCore.updateOrderStatus('${o.id}', this.value)">
             <option value="pendente" ${o.status === 'pendente' ? 'selected' : ''}>⏳ Pendente</option>
@@ -902,12 +996,300 @@ export function renderOrdersList() {
           </select>
         </td>
         <td class="table-actions">
-          <a href="${buildCustomerWhatsAppLink(o)}" data-wa-customer="1" target="_blank" rel="noopener" class="btn-action whatsapp" title="Avisar cliente sobre o status atual">💬</a>
-          <button class="btn-action edit" onclick="window.AdminCore.editOrderPhone('${o.id}')" title="Editar telefone da cliente">📱</button>
+          <button class="btn-action" onclick="window.AdminCore.viewOrderDetail('${o.id}')" title="Ver Detalhes do Pedido">🔍</button>
+          <a href="${buildCustomerWhatsAppLink(o)}" target="_blank" rel="noopener" class="btn-action whatsapp" title="Avisar cliente pelo WhatsApp">💬</a>
+          <button class="btn-action" onclick="window.AdminCore.printSingleOrder('${o.id}')" title="Imprimir Comprovante / Etiqueta">🖨️</button>
+          <button class="btn-action edit" onclick="window.AdminCore.editOrderPhone('${o.id}')" title="Editar Telefone">📱</button>
         </td>
       </tr>
     `;
   }).join('');
+}
+
+export function filterOrdersByStatus(status) {
+  adminState.orderStatusFilter = status;
+  document.querySelectorAll('#orderStatusFilters .filter-tab-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-filter') === status);
+  });
+  renderOrdersList();
+}
+
+export function viewOrderDetail(orderId) {
+  const o = adminState.orders.find(x => String(x.id) === String(orderId));
+  if (!o) return;
+
+  adminState.activeDetailOrderId = orderId;
+  document.getElementById('orderDetailTitle').textContent = `Pedido ${orderCode(o)}`;
+  document.getElementById('orderDetailDate').textContent = formatDate(o.createdAt);
+  
+  const statusBadge = document.getElementById('orderDetailStatusBadge');
+  if (statusBadge) {
+    statusBadge.innerHTML = `<span class="status-chip status-${o.status || 'pendente'}">${(o.status || 'pendente').toUpperCase()}</span>`;
+  }
+
+  document.getElementById('orderDetailCustomerName').textContent = o.userName || 'Cliente VIP';
+  document.getElementById('orderDetailCustomerEmail').textContent = o.userEmail || 'Não informado';
+  
+  const phone = String(o.phone || '').replace(/\D/g, '');
+  document.getElementById('orderDetailCustomerPhone').textContent = phone ? `+55 ${phone}` : 'Não cadastrado';
+  
+  const waBtn = document.getElementById('orderDetailWhatsAppBtn');
+  if (waBtn) {
+    waBtn.href = buildCustomerWhatsAppLink(o);
+  }
+
+  const trackInput = document.getElementById('orderTrackingInput');
+  if (trackInput) trackInput.value = o.trackingCode || '';
+
+  // Renderiza Itens
+  const itemsList = document.getElementById('orderDetailItemsList');
+  if (itemsList) {
+    const items = Array.isArray(o.items) && o.items.length ? o.items : [
+      { name: 'Peça Artesanal Autoral', qty: 1, price: o.total || 0, color: 'Padrão' }
+    ];
+    itemsList.innerHTML = items.map(i => `
+      <div class="order-item-row">
+        <div>
+          <strong>${i.name || 'Peça Gold Crochet'}</strong>
+          ${i.color ? `<div style="font-size:0.75rem;color:var(--text-muted)">Cor/Fio: ${i.color}</div>` : ''}
+        </div>
+        <div style="text-align:right">
+          <div>${i.qty || 1}x ${formatBRL(i.price || 0)}</div>
+          <strong style="color:var(--gold-deep)">${formatBRL((Number(i.qty) || 1) * (Number(i.price) || 0))}</strong>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('orderDetailSubtotal').textContent = formatBRL(o.subtotal || o.total || 0);
+  document.getElementById('orderDetailDiscount').textContent = o.discount ? `- ${formatBRL(o.discount)}` : 'R$ 0,00';
+  document.getElementById('orderDetailTotal').textContent = formatBRL(o.total || 0);
+
+  document.getElementById('orderDetailModal').classList.remove('hidden');
+}
+
+export function closeOrderDetailModal() {
+  document.getElementById('orderDetailModal').classList.add('hidden');
+  adminState.activeDetailOrderId = null;
+}
+
+export async function saveOrderTracking() {
+  const orderId = adminState.activeDetailOrderId;
+  if (!orderId) return;
+  const o = adminState.orders.find(x => String(x.id) === String(orderId));
+  if (!o) return;
+
+  const trackInput = document.getElementById('orderTrackingInput');
+  const code = (trackInput && trackInput.value || '').trim().toUpperCase();
+  o.trackingCode = code;
+
+  try {
+    const fb = window.GoldFirebase;
+    if (fb && fb.db) {
+      await fb.updateDoc(fb.fsDoc(fb.db, 'orders', String(orderId)), { trackingCode: code });
+    }
+    localStorage.setItem('gc_cached_orders', JSON.stringify(adminState.orders));
+    showToast('Código de rastreio gravado com sucesso!', 'success');
+    logActivity('Rastreio Atualizado', `${orderCode(o)}: ${code}`);
+    renderOrdersList();
+  } catch(e) {
+    showToast('Erro ao salvar rastreio: ' + e.message, 'error');
+  }
+}
+
+export function sendTrackingWhatsApp() {
+  const orderId = adminState.activeDetailOrderId;
+  if (!orderId) return;
+  const o = adminState.orders.find(x => String(x.id) === String(orderId));
+  if (!o) return;
+
+  const code = o.trackingCode || (document.getElementById('orderTrackingInput') || {}).value || '';
+  if (!code) {
+    showToast('Informe o código de rastreio primeiro.', 'error');
+    return;
+  }
+
+  const firstName = (o.userName || 'Cliente').split(' ')[0];
+  const msg = `Olá, ${firstName}! ✨ Seu pedido ${orderCode(o)} da Gold Crochet foi postado com carinho! 📦\n\nCódigo de rastreio: *${code}*\nAcompanhe pelo site dos Correios. Gratidão por valorizar nossa arte manual!`;
+  
+  let phone = String(o.phone || '').replace(/\D/g, '');
+  if (phone && phone.length <= 11) phone = '55' + phone;
+
+  const url = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
+export function copyOrderSummary() {
+  const orderId = adminState.activeDetailOrderId;
+  if (!orderId) return;
+  const o = adminState.orders.find(x => String(x.id) === String(orderId));
+  if (!o) return;
+
+  const items = Array.isArray(o.items) ? o.items.map(i => `• ${i.qty || 1}x ${i.name || ''} (${formatBRL(i.price || 0)})`).join('\n') : '';
+  const text = `🧾 RESUMO DE PEDIDO — GOLD CROCHET\nCódigo: ${orderCode(o)}\nData: ${formatDate(o.createdAt)}\nCliente: ${o.userName || 'VIP'} (${o.phone || 'Sem fone'})\nStatus: ${(o.status || 'pendente').toUpperCase()}\n\nItens:\n${items}\n\nTOTAL: ${formatBRL(o.total || 0)}`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Resumo copiado para a área de transferência!', 'success');
+  }).catch(() => {
+    showToast('Não foi possível copiar automaticamente.', 'info');
+  });
+}
+
+export function printOrderSlip() {
+  const orderId = adminState.activeDetailOrderId;
+  if (!orderId) return;
+  printSingleOrder(orderId);
+}
+
+export function printSingleOrder(orderId) {
+  const o = adminState.orders.find(x => String(x.id) === String(orderId));
+  if (!o) return;
+
+  const slip = document.getElementById('printableSlip');
+  if (!slip) return;
+
+  const items = Array.isArray(o.items) ? o.items.map(i => `
+    <tr>
+      <td style="padding:8px 0;border-bottom:1px solid #ddd">${i.qty || 1}x ${i.name || 'Peça'} ${i.color ? `(${i.color})` : ''}</td>
+      <td style="padding:8px 0;border-bottom:1px solid #ddd;text-align:right">${formatBRL(i.price || 0)}</td>
+    </tr>
+  `).join('') : '';
+
+  slip.innerHTML = `
+    <div style="font-family:sans-serif;max-width:400px;margin:20px auto;padding:24px;border:1px solid #cda434;border-radius:12px;background:#fff;color:#181614">
+      <div style="text-align:center;border-bottom:2px dashed #cda434;padding-bottom:12px;margin-bottom:16px">
+        <h2 style="margin:0;font-size:1.4rem;color:#a67c00">ATELIÊ GOLD CROCHET</h2>
+        <small style="color:#666">Alta-Costura &amp; Peças Autorais Feitas à Mão</small><br>
+        <strong style="font-size:1.1rem;margin-top:6px;display:inline-block">COMPROVANTE DE PEDIDO ${orderCode(o)}</strong>
+      </div>
+      <p style="margin:4px 0"><strong>Data:</strong> ${formatDate(o.createdAt)}</p>
+      <p style="margin:4px 0"><strong>Cliente:</strong> ${o.userName || 'Cliente VIP'}</p>
+      <p style="margin:4px 0"><strong>Contato:</strong> ${o.phone || '—'} ${o.userEmail ? `• ${o.userEmail}` : ''}</p>
+      <p style="margin:4px 0"><strong>Status:</strong> ${(o.status || 'pendente').toUpperCase()}</p>
+      ${o.trackingCode ? `<p style="margin:4px 0"><strong>Rastreio:</strong> ${o.trackingCode}</p>` : ''}
+
+      <div style="margin:16px 0">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+          <thead>
+            <tr style="border-bottom:1px solid #000;text-align:left">
+              <th>Item</th>
+              <th style="text-align:right">Valor</th>
+            </tr>
+          </thead>
+          <tbody>${items}</tbody>
+        </table>
+      </div>
+
+      <div style="text-align:right;border-top:2px solid #000;padding-top:8px;font-size:1.15rem">
+        <strong>TOTAL: ${formatBRL(o.total || 0)}</strong>
+      </div>
+
+      <div style="text-align:center;margin-top:24px;font-size:0.75rem;color:#888">
+        Gold Crochet Brasil • Peça autêntica tecida à mão com afeto e exclusividade ✨
+      </div>
+    </div>
+  `;
+
+  slip.style.display = 'block';
+  window.print();
+  setTimeout(() => { slip.style.display = 'none'; }, 1000);
+}
+
+export function openCreateOrderModal() {
+  document.getElementById('createOrderForm').reset();
+  document.getElementById('createOrderModal').classList.remove('hidden');
+}
+
+export function closeCreateOrderModal() {
+  document.getElementById('createOrderModal').classList.add('hidden');
+}
+
+export async function createManualOrder(data) {
+  const code = 'GC-' + Math.floor(100000 + Math.random() * 900000);
+  const newOrder = {
+    id: code,
+    code,
+    source: 'admin-manual',
+    userId: 'manual-' + Date.now(),
+    userName: data.name.trim(),
+    userEmail: (data.email || '').trim(),
+    phone: data.phone.replace(/\D/g, ''),
+    items: [{ name: data.itemName.trim(), qty: Number(data.qty) || 1, price: Number(data.total) || 0, color: 'Autoral' }],
+    subtotal: Number(data.total) || 0,
+    discount: 0,
+    total: Number(data.total) || 0,
+    status: data.status || 'pendente',
+    createdAt: new Date().toISOString()
+  };
+
+  adminState.orders.unshift(newOrder);
+  try { localStorage.setItem('gc_cached_orders', JSON.stringify(adminState.orders)); } catch(e) {}
+  calculateMetrics();
+  renderOrdersList();
+  closeCreateOrderModal();
+  showToast(`Pedido ${code} criado com sucesso!`, 'success');
+  logActivity('Criou Pedido Manual', `${code} para ${data.name}`);
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    try {
+      await fb.setDoc(fb.fsDoc(fb.db, 'orders', code), newOrder);
+      showToast('☁️ Salvo no Firestore!', 'success');
+    } catch(e) {
+      console.warn('Erro ao salvar pedido manual no Firestore:', e);
+    }
+  }
+}
+
+export function exportOrdersCSV() {
+  if (!adminState.orders.length) {
+    showToast('Nenhum pedido para exportar.', 'info');
+    return;
+  }
+
+  const header = ['Codigo', 'Cliente', 'Email', 'Telefone', 'Data', 'Status', 'Rastreio', 'Total'];
+  const rows = adminState.orders.map(o => [
+    orderCode(o),
+    `"${(o.userName || '').replace(/"/g, '""')}"`,
+    `"${(o.userEmail || '').replace(/"/g, '""')}"`,
+    `"${o.phone || ''}"`,
+    `"${formatDate(o.createdAt)}"`,
+    o.status || 'pendente',
+    `"${o.trackingCode || ''}"`,
+    (Number(o.total) || 0).toFixed(2)
+  ]);
+
+  const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [header.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', `pedidos-goldcrochet-${new Date().toISOString().slice(0,10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast('📊 Planilha CSV gerada e baixada com sucesso!', 'success');
+}
+
+export function exportCatalogJSON() {
+  const data = {
+    products: adminState.products,
+    categories: adminState.categories,
+    exportedAt: new Date().toISOString()
+  };
+  const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
+  const link = document.createElement('a');
+  link.setAttribute('href', jsonStr);
+  link.setAttribute('download', `catalogo-goldcrochet-${new Date().toISOString().slice(0,10)}.json`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast('Catálogo baixado em formato JSON!', 'success');
+}
+
+export function editCurrentOrderPhone() {
+  if (adminState.activeDetailOrderId) {
+    editOrderPhone(adminState.activeDetailOrderId);
+  }
 }
 
 export async function editOrderPhone(orderId) {
@@ -918,12 +1300,91 @@ export async function editOrderPhone(orderId) {
   o.phone = val.replace(/\D/g, '');
   try {
     const fb = window.GoldFirebase;
-    if (fb && fb.db) await fb.updateDoc(fb.fsDoc(fb.db, 'orders', orderId), { phone: o.phone });
+    if (fb && fb.db) await fb.updateDoc(fb.fsDoc(fb.db, 'orders', String(orderId)), { phone: o.phone });
+    localStorage.setItem('gc_cached_orders', JSON.stringify(adminState.orders));
     showToast('Telefone atualizado!', 'success');
   } catch (err) {
     showToast('Erro ao salvar telefone: ' + err.message, 'error');
   }
   renderOrdersList();
+  if (adminState.activeDetailOrderId === orderId) {
+    viewOrderDetail(orderId);
+  }
+}
+
+export function duplicateProduct(productId) {
+  const p = adminState.products.find(x => String(x.id) === String(productId));
+  if (!p) return;
+
+  const clone = {
+    ...p,
+    id: Date.now(),
+    name: `${p.name} (Cópia)`,
+    slug: `${p.slug || 'produto'}-copia-${Math.floor(Math.random()*1000)}`,
+    createdAt: new Date().toISOString()
+  };
+
+  adminState.products.unshift(clone);
+  try { localStorage.setItem('gc_cached_products', JSON.stringify(adminState.products)); } catch(e) {}
+  calculateMetrics();
+  renderProductsList();
+  showToast(`Peça "${clone.name}" duplicada com sucesso!`, 'success');
+  logActivity('Duplicou Produto', clone.name);
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    fb.setDoc(fb.fsDoc(fb.db, 'products', String(clone.id)), clone, { merge: true }).catch(() => {});
+  }
+}
+
+export function toggleProductStock(productId) {
+  const p = adminState.products.find(x => String(x.id) === String(productId));
+  if (!p) return;
+
+  p.inStock = p.inStock === false ? true : false;
+  try { localStorage.setItem('gc_cached_products', JSON.stringify(adminState.products)); } catch(e) {}
+  renderProductsList();
+  showToast(`Estoque de "${p.name}": ${p.inStock ? 'Em estoque' : 'Sob Encomenda'}`, 'info');
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    fb.setDoc(fb.fsDoc(fb.db, 'products', String(p.id)), { inStock: p.inStock }, { merge: true }).catch(() => {});
+  }
+}
+
+export function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', newTheme);
+  localStorage.setItem('gc_admin_theme', newTheme);
+  adminState.theme = newTheme;
+
+  const icon = document.getElementById('themeToggleIcon');
+  const text = document.getElementById('themeToggleText');
+  if (icon) icon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+  if (text) text.textContent = newTheme === 'dark' ? 'Modo Dia' : 'Modo Noite';
+}
+
+export function toggleAudioAlert() {
+  adminState.audioAlertsEnabled = !adminState.audioAlertsEnabled;
+  localStorage.setItem('gc_admin_audio', adminState.audioAlertsEnabled);
+  const icon = document.getElementById('audioToggleIcon');
+  if (icon) icon.textContent = adminState.audioAlertsEnabled ? '🔔' : '🔕';
+  showToast(adminState.audioAlertsEnabled ? 'Som de notificação ativado' : 'Som de notificação silenciado', 'info');
+  if (adminState.audioAlertsEnabled) playOrderNotificationChime();
+}
+
+export function toggleSidebar() {
+  const sidebar = document.getElementById('adminSidebar');
+  if (sidebar) sidebar.classList.toggle('open');
+}
+
+export function clearLogs() {
+  if (!confirm('Deseja limpar todo o histórico de atividades local?')) return;
+  adminState.logs = [];
+  try { localStorage.removeItem('gc_admin_logs'); } catch(e) {}
+  renderOverview();
+  showToast('Histórico de atividades limpo.', 'info');
 }
 
 // ════════════════════════════════════════
@@ -1052,14 +1513,53 @@ if (typeof window !== 'undefined') {
     deleteCategory,
     updateOrderStatus,
     editOrderPhone,
+    editCurrentOrderPhone,
     saveWhatsAppSettings,
     testWhatsAppNumber,
     pushCatalogToGitHub,
-    showToast
+    showToast,
+    viewOrderDetail,
+    closeOrderDetailModal,
+    saveOrderTracking,
+    sendTrackingWhatsApp,
+    copyOrderSummary,
+    printOrderSlip,
+    printSingleOrder,
+    openCreateOrderModal,
+    closeCreateOrderModal,
+    createManualOrder,
+    exportOrdersCSV,
+    exportCatalogJSON,
+    duplicateProduct,
+    toggleProductStock,
+    toggleTheme,
+    toggleAudioAlert,
+    toggleSidebar,
+    clearLogs,
+    filterOrdersByStatus
   };
 
   // Inicializa quando o DOM estiver pronto
   document.addEventListener('DOMContentLoaded', () => {
+    // 1. Aplica tema salvo
+    if (adminState.theme === 'dark') {
+      document.body.setAttribute('data-theme', 'dark');
+      const icon = document.getElementById('themeToggleIcon');
+      const text = document.getElementById('themeToggleText');
+      if (icon) icon.textContent = '☀️';
+      if (text) text.textContent = 'Modo Dia';
+    }
+
+    // 2. Relógio em tempo real no cabeçalho
+    const clockEl = document.getElementById('adminLiveClock');
+    if (clockEl) {
+      const updateClock = () => {
+        clockEl.textContent = new Date().toLocaleTimeString('pt-BR');
+      };
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
     initAuthStateListener();
 
     // Eventos do Formulário de Login
@@ -1110,12 +1610,39 @@ if (typeof window !== 'undefined') {
       });
     }
 
+    // Formulário de Criação Manual de Pedido
+    const createOrderForm = document.getElementById('createOrderForm');
+    if (createOrderForm) {
+      createOrderForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = {
+          name: document.getElementById('manualOrderName').value,
+          phone: document.getElementById('manualOrderPhone').value,
+          email: document.getElementById('manualOrderEmail').value,
+          status: document.getElementById('manualOrderStatus').value,
+          itemName: document.getElementById('manualOrderItemName').value,
+          qty: document.getElementById('manualOrderQty').value,
+          total: document.getElementById('manualOrderTotal').value
+        };
+        createManualOrder(data);
+      });
+    }
+
     // Input de busca de produtos em tempo real
     const searchInput = document.getElementById('productSearchInput');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         adminState.searchQuery = e.target.value;
         renderProductsList();
+      });
+    }
+
+    // Input de busca de pedidos em tempo real
+    const orderSearchInput = document.getElementById('orderSearchInput');
+    if (orderSearchInput) {
+      orderSearchInput.addEventListener('input', (e) => {
+        adminState.orderSearchQuery = e.target.value;
+        renderOrdersList();
       });
     }
 

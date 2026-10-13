@@ -50,17 +50,18 @@ service cloud.firestore {
       allow delete: if isValidId(userId) && (isOwner(userId) || isAdmin());
     }
 
-    // Orders collection
+    // Orders collection (Pedidos da loja e WhatsApp)
     match /orders/{orderId} {
-      allow get: if isValidId(orderId) && isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
-      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if isValidId(orderId) && isSignedIn()
-                    && incoming().userId == request.auth.uid
+      allow get: if isValidId(orderId) && (isAdmin() || (isSignedIn() && existing().userId == request.auth.uid));
+      allow list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isValidId(orderId)
                     && incoming().total is number
                     && incoming().total >= 0
                     && incoming().items is list
                     && incoming().items.size() <= 100
-                    && incoming().status in ['pendente', 'producao', 'enviado', 'entregue', 'cancelado'];
+                    && incoming().status in ['pendente', 'producao', 'enviado', 'entregue', 'cancelado']
+                    && incoming().userName is string
+                    && incoming().userEmail is string;
       allow update: if isValidId(orderId) && (
         isAdmin() ||
         (isSignedIn() && existing().userId == request.auth.uid && incoming().status == 'cancelado' && existing().status == 'pendente')
