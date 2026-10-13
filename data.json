@@ -1,370 +1,292 @@
 {
   "products": [
     {
-      "id": 9,
-      "name": "✨ Peça Personalizada",
+      "id": 1789954142890,
+      "gender": null,
       "emoji": "🧶",
-      "category": "personalizado",
-      "desc": "Envie sua ideia, cor e tamanho — criamos sua peça exclusiva em crochê, do zero, com todo cuidado artesanal.",
-      "price": null,
+      "desc": "A tradução perfeita da luz suave das manhãs de verão brasileiras. A Bolsa Dunas traz um tom amarelo-manteiga suave e iluminado, construída com uma trama espessa que une o corpo à alça em um design orgânico e contínuo.",
+      "badge": "Novo",
+      "prod_time": "8",
+      "material": "Fio de Malha 100% Algodão Premium",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954259246_0.png",
+      "category": "bolsas",
+      "colors": [],
+      "name": "Bolsa Dunas",
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954263874_1.png"
+      ],
+      "collection": "Essenciais",
+      "colorSections": [],
+      "discount": 0,
+      "section": "acessorios",
+      "slug": "bolsa-dunas",
+      "price": 65,
+      "model3d": ""
+    },
+    {
+      "id": 1789954688278,
+      "badge": "Destaque",
+      "colorSections": [],
+      "material": "Fio 100% Algodão Premium",
+      "colors": [],
+      "slug": "vestido-bossa-curto",
+      "emoji": "🧶",
+      "collection": "Essenciais",
+      "prod_time": "24",
+      "name": "VESTIDO BOSSA CURTO",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954680598_0.png",
+      "discount": 20,
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954683985_1.png"
+      ],
+      "gender": "feminino",
+      "price": 85,
+      "category": "saias-vestidos",
+      "section": "dia-a-dia",
+      "desc": "Um clássico atemporal que captura a essência do luxo despretensioso carioca. O Vestido Bossa Curto possui uma trama milimetricamente estruturada, onde a fluidez da linha encontra a solidez do metal.",
+      "model3d": ""
+    },
+    {
+      "id": 1789955083971,
+      "colorSections": [],
+      "badge": "Novo",
+      "material": "Fio 100% Algodão Premium",
+      "colors": [],
+      "slug": "camisa-arpoador",
+      "emoji": "🧶",
+      "collection": "Essenciais",
+      "prod_time": "0",
+      "name": "CAMISA ARPOADOR",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955074956_0.png",
+      "discount": 0,
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955081599_1.png"
+      ],
+      "gender": "masculino",
+      "category": "tops",
+      "price": 75,
+      "section": "dia-a-dia",
+      "desc": "Um clássico contemporâneo que captura a essência do luxo despretensioso carioca. A Camisa Arpoador possui uma trama vazada milimetricamente estruturada, onde a leveza do fio encontra o frescor do design moderno.",
+      "model3d": ""
+    },
+    {
+      "id": 1789956946626,
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957448381_0.png",
+      "prod_time": "",
+      "discount": 0,
+      "colorSections": [],
+      "gallery": [],
+      "desc": "Um sopro de brisa fresca do nosso litoral traduzido em arte tecida. A Regata Noronha captura a imensidão do horizonte onde o céu encontra o mar, trazendo uma padronagem de listras ritmadas que brinca com um degradê de azuis profundos e celestes, perfeitamente equilibrados com a suavidade da cor de a",
+      "model3d": "",
+      "emoji": "🧶",
+      "category": "tops",
+      "section": "dia-a-dia",
+      "colors": [],
+      "badge": "",
+      "material": "Fio 100% Algodão Premium",
+      "price": 65,
+      "name": "REGATA NORONHA",
+      "slug": "regata-noronha",
+      "gender": "feminino",
+      "collection": "Essenciais"
+    },
+    {
+      "id": 1789957117993,
+      "model3d": "",
+      "price": 85,
+      "section": "acessorios",
+      "slug": "bolsa-paraty",
+      "category": "bolsas",
+      "name": "BOLSA PARATY",
+      "prod_time": "",
+      "gallery": [],
+      "discount": 0,
+      "colors": [],
+      "collection": "Essenciais",
+      "colorSections": [],
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957346113_0.png",
+      "badge": "",
+      "desc": "Uma expressão máxima da nossa herança artesanal elevada ao design contemporâneo. A Bolsa Paraty resgata a nostalgia da tecelagem tradicional em uma padronagem geométrica de alto padrão, onde o contraste absoluto entre o fio preto e o tom cru evoca a alma e o ritmo dos icônicos calçadões cariocas.",
+      "emoji": "🧶",
+      "material": "Fio 100% Algodão Premium",
+      "gender": null
+    },
+    {
+      "id": 1789957539765,
+      "category": "saias-vestidos",
+      "name": "VESTIDO TRANCOSO MIDI",
+      "emoji": "🧶",
+      "prod_time": "",
+      "colorSections": [],
+      "badge": "Destaque",
+      "collection": "Essenciais",
+      "gender": "feminino",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957537128_0.png",
+      "discount": 0,
+      "slug": "vestido-trancoso-midi",
+      "desc": "Uma ode à natureza brasileira e ao artesanato de raiz. O Vestido Trancoso Midi traz o equilíbrio perfeito entre a essência rústica e a sofisticação absoluta. A paleta orgânica, que mescla tons terrosos, verde suave e branco puro em listras ritmadas, reflete as cores das falésias e o frescor da flora",
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644625238_1.webp"
+      ],
+      "colors": [],
+      "model3d": "",
+      "material": "Fio de Malha 100% Algodão Premium",
+      "section": "dia-a-dia",
+      "price": 250
+    },
+    {
+      "id": 1789957638397,
+      "emoji": "🧶",
+      "desc": "Um mergulho nas águas cristalinas do litoral brasileiro. O Short Noronha traduz a energia vibrante do mar através de uma paleta refrescante e orgânica, onde um degradê de tons oceânicos — do marinho profundo ao azul celeste — se funde perfeitamente com a suavidade da cor de areia em suas listras rit",
+      "badge": "",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957634052_0.png",
+      "gender": "feminino",
+      "prod_time": "0",
+      "colorSections": [],
+      "material": "Fio de Malha 100% Algodão Premium",
+      "collection": "Essenciais",
+      "model3d": "",
+      "category": "calcas",
+      "section": "dia-a-dia",
+      "name": "SHORT NORONHA",
+      "slug": "short-noronha",
+      "colors": [],
+      "price": 60,
+      "discount": 0,
+      "gallery": []
+    },
+    {
+      "id": 1789957755102,
+      "emoji": "🧶",
+      "desc": "Confeccionada com alfaiataria em crochê manual masculino. A Bermuda Arpoador Riviera traz uma trama estruturada em tons areia e off-white, com caimento impecável e cós ajustável em cordão artesanal nobre.",
+      "badge": "Novo",
+      "gender": "masculino",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955074956_0.png",
+      "prod_time": "18",
+      "colorSections": [],
+      "material": "Fio 100% Algodão Nobre",
+      "collection": "Essenciais",
+      "model3d": "",
+      "section": "dia-a-dia",
+      "category": "calcas",
+      "name": "BERMUDA ARPOADOR RIVIERA",
+      "slug": "bermuda-arpoador-riviera",
+      "colors": [],
+      "price": 85,
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955081599_1.png"
+      ],
+      "discount": 0
+    },
+    {
+      "id": 1790643259085,
+      "category": "decoracoes",
+      "desc": "​Um clássico lúdico que captura a essência do aconchego e da misticidade brasileira. O Dúo Celestial possui uma trama milimetricamente estruturada em fios aveludados, onde a energia radiante do dia encontra a serenidade da noite.",
+      "price": 75,
+      "discount": 10,
+      "gender": null,
+      "name": "DÚO CELESTIAL SOL E LUA",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643252900_0.webp",
+      "collection": "Casa Gold",
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643255070_1.webp",
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643256984_2.webp"
+      ],
+      "prod_time": "24",
+      "colorSections": [],
+      "model3d": "",
+      "material": "Fio de Algodão Macio Aveludado",
+      "emoji": "🧶",
+      "section": "casa",
+      "colors": [],
+      "badge": "Destaque",
+      "slug": "duo-celestial-sol-e-lua"
+    },
+    {
+      "id": 1790644607412,
+      "discount": 0,
+      "prod_time": "75",
+      "gender": null,
+      "slug": "jogo-americano-trilho-ipe-rosa-casa-brasil",
+      "collection": "Casa Gold",
+      "colorSections": [],
+      "category": "decoracoes",
+      "name": "JOGO AMERICANO & TRILHO IPÊ ROSA CASA BRASIL",
+      "price": 75,
+      "material": "",
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644605496_1.webp"
+      ],
+      "badge": "Exclusivo",
+      "colors": [],
+      "emoji": "🧶",
+      "desc": "A delicadeza da nossa flora traduzida em afeto e requinte à mesa posta. O conjunto une a base em tom cru com uma moldura botânica trançada à mão: caules em verde-oliva que desabrocham em pétalas no tom rosa ipê, evocando a beleza espontânea dos nossos jardins e matas.",
+      "section": "casa",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644602891_0.webp",
+      "model3d": ""
+    },
+    {
+      "id": 9,
       "colorSections": [
         {
           "name": "Cores disponíveis",
           "colors": [
             {
-              "name": "Dourado",
-              "hex": "#cda434"
+              "hex": "#cda434",
+              "name": "Dourado"
             }
           ]
         }
       ],
-      "badge": "Sob Medida",
-      "discount": 0,
-      "model3d": "",
       "image": "assets/peca-personalizada.png",
+      "badge": "Sob Medida",
+      "desc": "Envie sua ideia, cor e tamanho — criamos sua peça exclusiva em crochê, do zero, com todo cuidado artesanal.",
+      "emoji": "🧶",
+      "price": null,
+      "slug": "peca-personalizada",
+      "model3d": "",
       "custom": true,
+      "discount": 0,
       "gallery": [
         "assets/peca-personalizada.png"
       ],
+      "name": "✨ Peça Personalizada",
       "colors": [
         {
           "name": "Dourado",
           "hex": "#cda434"
         }
       ],
-      "slug": "peca-personalizada"
-    },
-    {
-      "id": 1789954142890,
-      "name": "Bolsa Dunas",
-      "emoji": "🧶",
-      "desc": "A tradução perfeita da luz suave das manhãs de verão brasileiras. A Bolsa Dunas traz um tom amarelo-manteiga suave e iluminado, construída com uma trama espessa que une o corpo à alça em um design orgânico e contínuo.",
-      "category": "bolsas",
-      "section": "acessorios",
-      "gender": null,
-      "collection": "Essenciais",
-      "price": 65,
-      "badge": "Novo",
-      "discount": 0,
-      "model3d": "",
-      "prod_time": "8",
-      "material": "Fio de Malha 100% Algodão Premium",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954259246_0.png",
-      "gallery": [
-        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954263874_1.png"
-      ],
-      "colorSections": [],
-      "colors": [],
-      "slug": "bolsa-dunas"
-    },
-    {
-      "id": 1789954688278,
-      "name": "VESTIDO BOSSA CURTO",
-      "emoji": "🧶",
-      "desc": "Um clássico atemporal que captura a essência do luxo despretensioso carioca. O Vestido Bossa Curto possui uma trama milimetricamente estruturada, onde a fluidez da linha encontra a solidez do metal.",
-      "category": "saias-vestidos",
-      "section": "dia-a-dia",
-      "gender": "feminino",
-      "collection": "Essenciais",
-      "price": 85,
-      "badge": "Destaque",
-      "discount": 20,
-      "model3d": "",
-      "prod_time": "24",
-      "material": "Fio 100% Algodão Premium",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954680598_0.png",
-      "gallery": [
-        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954683985_1.png"
-      ],
-      "colorSections": [],
-      "colors": [],
-      "slug": "vestido-bossa-curto"
-    },
-    {
-      "id": 1789955083971,
-      "name": "CAMISA ARPOADOR",
-      "emoji": "🧶",
-      "desc": "Um clássico contemporâneo que captura a essência do luxo despretensioso carioca. A Camisa Arpoador possui uma trama vazada milimetricamente estruturada, onde a leveza do fio encontra o frescor do design moderno.",
-      "category": "tops",
-      "section": "dia-a-dia",
-      "gender": "masculino",
-      "collection": "Essenciais",
-      "price": 75,
-      "badge": "Novo",
-      "discount": 0,
-      "model3d": "",
-      "prod_time": "0",
-      "material": "Fio 100% Algodão Premium",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955074956_0.png",
-      "gallery": [
-        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955081599_1.png"
-      ],
-      "colorSections": [],
-      "colors": [],
-      "slug": "camisa-arpoador"
-    },
-    {
-      "id": 1789956946626,
-      "name": "REGATA NORONHA",
-      "emoji": "🧶",
-      "desc": "Um sopro de brisa fresca do nosso litoral traduzido em arte tecida. A Regata Noronha captura a imensidão do horizonte onde o céu encontra o mar, trazendo uma padronagem de listras ritmadas que brinca com um degradê de azuis profundos e celestes, perfeitamente equilibrados com a suavidade da cor de a",
-      "category": "tops",
-      "section": "dia-a-dia",
-      "gender": "feminino",
-      "collection": "Essenciais",
-      "price": 65,
-      "badge": "",
-      "discount": 0,
-      "model3d": "",
-      "prod_time": "",
-      "material": "Fio 100% Algodão Premium",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957448381_0.png",
-      "gallery": [],
-      "colorSections": [],
-      "colors": [],
-      "slug": "regata-noronha"
-    },
-    {
-      "id": 1789957117993,
-      "name": "BOLSA PARATY",
-      "emoji": "🧶",
-      "desc": "Uma expressão máxima da nossa herança artesanal elevada ao design contemporâneo. A Bolsa Paraty resgata a nostalgia da tecelagem tradicional em uma padronagem geométrica de alto padrão, onde o contraste absoluto entre o fio preto e o tom cru evoca a alma e o ritmo dos icônicos calçadões cariocas.",
-      "category": "bolsas",
-      "section": "acessorios",
-      "gender": null,
-      "collection": "Essenciais",
-      "price": 85,
-      "badge": "",
-      "discount": 0,
-      "model3d": "",
-      "prod_time": "",
-      "material": "Fio 100% Algodão Premium",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957346113_0.png",
-      "gallery": [],
-      "colorSections": [],
-      "colors": [],
-      "slug": "bolsa-paraty"
-    },
-    {
-      "id": 1789957539765,
-      "name": "VESTIDO TRANCOSO MIDI",
-      "emoji": "🧶",
-      "desc": "Uma ode à natureza brasileira e ao artesanato de raiz. O Vestido Trancoso Midi traz o equilíbrio perfeito entre a essência rústica e a sofisticação absoluta. A paleta orgânica, que mescla tons terrosos, verde suave e branco puro em listras ritmadas, reflete as cores das falésias e o frescor da flora",
-      "category": "saias-vestidos",
-      "section": "dia-a-dia",
-      "gender": "feminino",
-      "collection": "Essenciais",
-      "price": 250,
-      "badge": "Destaque",
-      "discount": 0,
-      "model3d": "",
-      "prod_time": "",
-      "material": "Fio de Malha 100% Algodão Premium",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957537128_0.png",
-      "gallery": [
-        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644625238_1.webp"
-      ],
-      "colorSections": [],
-      "colors": [],
-      "slug": "vestido-trancoso-midi"
-    },
-    {
-      "id": 1789957638397,
-      "name": "SHORT NORONHA",
-      "emoji": "🧶",
-      "desc": "Um mergulho nas águas cristalinas do litoral brasileiro. O Short Noronha traduz a energia vibrante do mar através de uma paleta refrescante e orgânica, onde um degradê de tons oceânicos — do marinho profundo ao azul celeste — se funde perfeitamente com a suavidade da cor de areia em suas listras rit",
-      "category": "calcas",
-      "section": "dia-a-dia",
-      "gender": "feminino",
-      "collection": "Essenciais",
-      "price": 60,
-      "badge": "",
-      "discount": 0,
-      "model3d": "",
-      "prod_time": "0",
-      "material": "Fio de Malha 100% Algodão Premium",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957634052_0.png",
-      "gallery": [],
-      "colorSections": [],
-      "colors": [],
-      "slug": "short-noronha"
-    },
-    {
-      "id": 1790643259085,
-      "name": "DÚO CELESTIAL SOL E LUA",
-      "emoji": "🧶",
-      "desc": "​Um clássico lúdico que captura a essência do aconchego e da misticidade brasileira. O Dúo Celestial possui uma trama milimetricamente estruturada em fios aveludados, onde a energia radiante do dia encontra a serenidade da noite.",
-      "category": "decoracoes",
-      "section": "casa",
-      "gender": null,
-      "collection": null,
-      "price": 75,
-      "badge": "Destaque",
-      "discount": 10,
-      "model3d": "",
-      "prod_time": "24",
-      "material": "",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643252900_0.webp",
-      "gallery": [
-        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643255070_1.webp",
-        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643256984_2.webp"
-      ],
-      "colorSections": [],
-      "colors": [],
-      "slug": "duo-celestial-sol-e-lua"
-    },
-    {
-      "id": 1790644607412,
-      "name": "JOGO AMERICANO & TRILHO IPÊ ROSA CASA BRASIL",
-      "emoji": "🧶",
-      "desc": "​A delicadeza da nossa flora traduzida em afeto e requinte à mesa posta. O conjunto une a base em tom cru com uma moldura botânica trançada à mão: caules em verde-oliva que desabrocham em pétalas no tom rosa ipê, evocando a beleza espontânea dos nossos jardins e matas.",
-      "category": "decoracoes",
-      "section": "casa",
-      "gender": null,
-      "collection": null,
-      "price": 75,
-      "badge": "Exclusivo",
-      "discount": 0,
-      "model3d": "",
-      "prod_time": "75",
-      "material": "",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644602891_0.webp",
-      "gallery": [
-        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644605496_1.webp"
-      ],
-      "colorSections": [],
-      "colors": [],
-      "slug": "jogo-americano-trilho-ipe-rosa-casa-brasil"
+      "category": "personalizado"
     }
   ],
   "categories": [
     "amigurumi",
-    "bolsas",
-    "mantas",
-    "vestuario",
-    "personalizado",
-    "roupas-noite",
-    "saias-vestidos",
-    "jaquetas-casacos",
-    "tops",
-    "calcas",
-    "pequeninos",
+    "aneis",
     "bebe",
+    "bolsas",
+    "braceletes",
+    "brincos",
+    "broches",
+    "calcas",
+    "charms",
+    "colares",
+    "decoracoes",
     "garotas",
     "garotos",
+    "jaquetas-casacos",
+    "mantas",
+    "pequeninos",
+    "personalizado",
     "presentes",
-    "charms",
-    "brincos",
-    "colares",
-    "broches",
-    "braceletes",
-    "aneis",
-    "decoracoes"
+    "roupas-noite",
+    "saias-vestidos",
+    "tops",
+    "vestuario"
   ],
-  "badges": [
-    "Novo",
-    "Destaque",
-    "Popular",
-    "Exclusivo",
-    "Sob Medida",
-    "Edição Limitada"
-  ],
-  "collections": [
-    {
-      "id": "dia-a-dia",
-      "name": "Coleção Maré de Ouro",
-      "filter": "Essenciais",
-      "emoji": "🌊",
-      "desc": "Peças versáteis inspiradas no balanço do mar e no brilho do ouro."
-    }
-  ],
-  "globalColors": [
-    {
-      "name": "Dourado Gold",
-      "hex": "#cda434",
-      "priceAdd": 0
-    },
-    {
-      "name": "Marfim",
-      "hex": "#f4ead0",
-      "priceAdd": 0
-    },
-    {
-      "name": "Preto",
-      "hex": "#2c2c2c",
-      "priceAdd": 0
-    },
-    {
-      "name": "Rosé",
-      "hex": "#f4c9d4",
-      "priceAdd": 0
-    },
-    {
-      "name": "Vinho",
-      "hex": "#7a2437",
-      "priceAdd": 2
-    }
-  ],
-  "blogPosts": [
-    {
-      "id": 1,
-      "title": "Nova Coleção Maré de Ouro",
-      "date": "Março 2026",
-      "emoji": "🌊",
-      "tag": "Lançamento",
-      "excerpt": "Inspirada no balanço do mar e no brilho do ouro, nossa nova coleção chega com peças únicas em tons dourados e azuis."
-    },
-    {
-      "id": 2,
-      "title": "Por trás dos pontos: o Atelier",
-      "date": "Fevereiro 2026",
-      "emoji": "🧶",
-      "tag": "Bastidores",
-      "excerpt": "Um passeio pelo nosso atelier, onde cada peça nasce do cuidado, da paciência e do amor pelo crochê artesanal."
-    },
-    {
-      "id": 3,
-      "title": "Colaboração com artistas locais",
-      "date": "Janeiro 2026",
-      "emoji": "🎨",
-      "tag": "Colaboração",
-      "excerpt": "Convidamos artistas da nossa região para criar peças exclusivas que misturam tradição e contemporaneidade."
-    },
-    {
-      "id": 4,
-      "title": "Guia de cuidados com o crochê",
-      "date": "Dezembro 2025",
-      "emoji": "💛",
-      "tag": "Dicas",
-      "excerpt": "Aprenda a lavar, secar e guardar suas peças de crochê para que durem por muitos anos."
-    },
-    {
-      "id": 5,
-      "title": "Fios premium: nossa seleção",
-      "date": "Novembro 2025",
-      "emoji": "🧵",
-      "tag": "Materiais",
-      "excerpt": "Conheça os fios que escolhemos a dedo para garantir conforto, durabilidade e acabamento impecável."
-    },
-    {
-      "id": 6,
-      "title": "Personalize sua peça dos sonhos",
-      "date": "Outubro 2025",
-      "emoji": "✨",
-      "tag": "Personalização",
-      "excerpt": "Cores, tamanhos, detalhes... veja como criar uma peça sob medida com a Gold Crochet."
-    }
-  ],
-  "config": {
-    "hero_title": "Elegância que se <em>Tece</em><br>à Mão",
-    "hero_subtitle": "Peças únicas, personalizadas e com acabamento premium. Do amigurumi à peça sob medida, cada ponto carrega cuidado e sofisticação.",
-    "instagram": "https://www.instagram.com/goldcrochetbrasil?stkn=Mm5ndmt2cTJzNXRo",
-    "email": "goldcrochet.suporte@gmail.com",
-    "whatsapp": "5531984566047"
-  },
   "_meta": {
-    "updated": "2026-09-29T01:17:07.476Z",
-    "version": "4.0"
-  },
-  "newsletter": []
+    "updated": "2026-10-13T03:23:03.232Z",
+    "version": "5.0",
+    "syncedBy": "rossipereira2010@gmail.com"
+  }
 }
