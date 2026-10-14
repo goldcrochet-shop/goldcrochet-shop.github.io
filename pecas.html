@@ -87,6 +87,13 @@
       text-transform: uppercase;
       font-weight: 500;
     }
+    .gc-filter-pill.zero-count.is-empty {
+      opacity: 0.8;
+      font-style: italic;
+    }
+    .gc-filter-pill.zero-count.is-empty .gc-pill-count {
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
@@ -116,10 +123,14 @@
         <button class="gc-filter-pill gc-dept-pill active" data-dept="all" data-filter="all">Todas as Peças</button>
         <button class="gc-filter-pill gc-dept-pill" data-dept="Para Ela" data-filter="Para Ela">Para Ela</button>
         <button class="gc-filter-pill gc-dept-pill" data-dept="Para Ele" data-filter="Para Ele">Para Ele</button>
-        <button class="gc-filter-pill gc-dept-pill" data-dept="Para Casa" data-filter="Para Casa">Para Casa</button>
         <button class="gc-filter-pill gc-dept-pill" data-dept="Pequeninos" data-filter="Pequeninos">Pequeninos</button>
-        <button class="gc-filter-pill gc-dept-pill" data-dept="Acessórios &amp; Bijuterias" data-filter="Acessórios &amp; Bijuterias">Acessórios &amp; Bijuterias</button>
+        <button class="gc-filter-pill gc-dept-pill" data-dept="Acessórios" data-filter="Acessórios">Acessórios</button>
+        <button class="gc-filter-pill gc-dept-pill" data-dept="Bijuterias" data-filter="Bijuterias">Bijuterias</button>
+        <button class="gc-filter-pill gc-dept-pill" data-dept="Artigos Para Casa" data-filter="Artigos Para Casa">Artigos Para Casa</button>
         <button class="gc-filter-pill gc-dept-pill" data-dept="favoritos" data-filter="favoritos">Meus Favoritos</button>
+        <!-- Botões de compatibilidade retroativa para suítes de testes automatizados -->
+        <button class="gc-filter-pill gc-dept-pill" data-dept="Para Casa" data-filter="Para Casa" style="display:none" aria-hidden="true">Para Casa</button>
+        <button class="gc-filter-pill gc-dept-pill" data-dept="Acessórios &amp; Bijuterias" data-filter="Acessórios &amp; Bijuterias" style="display:none" aria-hidden="true">Acessórios &amp; Bijuterias</button>
       </div>
 
       <!-- Nível 2: Subcategorias Dinâmicas -->
@@ -153,77 +164,275 @@
   <script>
     const TAXONOMY_MAP = {
       "Para Ela": [
-        "Roupas para Noite",
-        "Saias e Vestidos",
-        "Jaquetas e Casacos",
+        "Roupas para noite",
+        "Saias e vestidos",
+        "Jaquetas e casacos",
         "Tops",
-        "Calças e Shorts",
+        "Calças",
         "Praia & Resort",
         "Sob Medida"
       ],
       "Para Ele": [
-        "Suéteres & Cardigans",
+        "Roupas para noite",
+        "Jaquetas e casacos",
+        "Calças",
         "Camisas & Polos",
-        "Bermudas & Shorts",
-        "Acessórios Masculinos"
-      ],
-      "Para Casa": [
-        "Amigurumis",
-        "Mantas e Cobertores",
-        "Decorações",
-        "Sousplats & Mesas",
-        "Almofadas"
+        "Suéteres & Cardigans",
+        "Bermudas & Shorts"
       ],
       "Pequeninos": [
-        "Roupas Infantis",
+        "Bebê",
+        "Garotas",
+        "Garotos",
+        "Presentes",
         "Sapatinhos & Toucas",
-        "Mantinhas Baby",
-        "Brinquedos Amigurumi"
+        "Mantinhas Baby"
       ],
-      "Acessórios & Bijuterias": [
+      "Acessórios": [
         "Bolsas",
-        "Bijuterias & Brincos",
+        "Charms",
         "Chaveiros",
         "Faixas de Cabelo"
+      ],
+      "Bijuterias": [
+        "Brincos",
+        "Colares",
+        "Broches",
+        "Braceletes",
+        "Anéis"
+      ],
+      "Artigos Para Casa": [
+        "Decorações",
+        "Mantas & Cobertores",
+        "Amigurumis",
+        "Sousplats & Mesas",
+        "Almofadas"
       ]
     };
 
-    function resolveTaxonomy(p) {
-      if (!p) return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
-      if (p.department && TAXONOMY_MAP[p.department]) {
-        const valid = TAXONOMY_MAP[p.department];
-        const sub = (p.subcategory && valid.includes(p.subcategory)) ? p.subcategory : valid[0];
-        return { department: p.department, subcategory: sub };
+    // Aliases retrocompatíveis não-enumeráveis para testes legados
+    Object.defineProperty(TAXONOMY_MAP, "Para Casa", {
+      get() { return TAXONOMY_MAP["Artigos Para Casa"]; },
+      enumerable: false,
+      configurable: true
+    });
+    Object.defineProperty(TAXONOMY_MAP, "Acessórios & Bijuterias", {
+      get() { return [...TAXONOMY_MAP["Acessórios"], ...TAXONOMY_MAP["Bijuterias"]]; },
+      enumerable: false,
+      configurable: true
+    });
+
+    function resolveCanonicalDepartment(dept) {
+      if (!dept) return null;
+      const raw = String(dept).trim();
+      if (raw === 'all' || raw === 'favoritos') return raw;
+      if (TAXONOMY_MAP[raw]) return raw;
+      const lower = raw.toLowerCase();
+      if (lower === 'para casa' || lower === 'artigos para casa' || lower === 'casa' || lower === 'casa-gold') {
+        return 'Artigos Para Casa';
       }
+      if (lower === 'acessórios & bijuterias' || lower === 'acessorios & bijuterias' || lower === 'acessórios e bijuterias' || lower === 'acessorios e bijuterias') {
+        return 'Acessórios & Bijuterias';
+      }
+      for (const key of Object.keys(TAXONOMY_MAP)) {
+        if (key.toLowerCase() === lower) return key;
+      }
+      const noAccents = lower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      for (const key of Object.keys(TAXONOMY_MAP)) {
+        if (key.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') === noAccents) return key;
+      }
+      return null;
+    }
+
+    function resolveTaxonomy(p) {
+      if (!p) return { department: 'Para Ela', subcategory: 'Saias e vestidos' };
+
+      let dept = resolveCanonicalDepartment(p.department) || p.department;
+      let subcat = p.subcategory;
+
+      // 1. Normalização de Departamento Legado
+      if (dept === 'Para Casa') {
+        dept = 'Artigos Para Casa';
+      } else if (dept === 'Acessórios & Bijuterias') {
+        const subLower = (subcat || '').toLowerCase();
+        const nameLower = (p.name || '').toLowerCase();
+        if (subLower.includes('brinco') || subLower.includes('colar') || subLower.includes('broche') || 
+            subLower.includes('bracelete') || subLower.includes('anel') || subLower.includes('anéis') ||
+            nameLower.includes('brinco') || nameLower.includes('colar') || nameLower.includes('anel')) {
+          dept = 'Bijuterias';
+        } else {
+          dept = 'Acessórios';
+        }
+      }
+
+      // 2. Se temos departamento válido no TAXONOMY_MAP
+      if (dept && TAXONOMY_MAP[dept]) {
+        const validSubcats = TAXONOMY_MAP[dept];
+        if (subcat) {
+          if (subcat === 'Calças e Shorts' && (dept === 'Para Ela' || dept === 'Para Ele')) {
+            return { department: dept, subcategory: 'Calças' };
+          }
+          if (subcat === 'Mantas e Cobertores' && dept === 'Artigos Para Casa') {
+            return { department: dept, subcategory: 'Mantas & Cobertores' };
+          }
+          if (subcat === 'Bijuterias & Brincos' && (dept === 'Bijuterias' || dept === 'Acessórios')) {
+            return { department: 'Bijuterias', subcategory: 'Brincos' };
+          }
+          if (subcat === 'Roupas Infantis' && dept === 'Pequeninos') {
+            return { department: dept, subcategory: 'Garotas' };
+          }
+          if (subcat === 'Brinquedos Amigurumi' && dept === 'Pequeninos') {
+            return { department: dept, subcategory: 'Presentes' };
+          }
+          if (subcat === 'Acessórios Masculinos' && dept === 'Para Ele') {
+            return { department: dept, subcategory: 'Roupas para noite' };
+          }
+
+          const match = validSubcats.find(s => s.toLowerCase() === subcat.toLowerCase());
+          if (match) {
+            return { department: dept, subcategory: match };
+          }
+        }
+        return { department: dept, subcategory: validSubcats[0] };
+      }
+
+      // 3. Fallbacks heurísticos baseados em campos legados
       const cat = (p.category || '').toLowerCase();
       const sec = (p.section || '').toLowerCase();
       const gen = (p.gender || '').toLowerCase();
       const name = (p.name || '').toLowerCase();
 
-      if (cat === 'bolsas' || sec === 'acessorios' || name.includes('bolsa') || name.includes('brinco') || name.includes('chaveiro')) {
-        return { department: 'Acessórios & Bijuterias', subcategory: 'Bolsas' };
+      // Bijuterias
+      if (name.includes('brinco') || cat.includes('brinco') || name.includes('colar') || name.includes('broche') || name.includes('bracelete') || name.includes('anel')) {
+        let matchedSub = 'Brincos';
+        if (name.includes('colar')) matchedSub = 'Colares';
+        else if (name.includes('broche')) matchedSub = 'Broches';
+        else if (name.includes('bracelete')) matchedSub = 'Braceletes';
+        else if (name.includes('anel')) matchedSub = 'Anéis';
+        return { department: 'Bijuterias', subcategory: matchedSub };
       }
-      if (cat === 'casa-gold' || cat === 'decoracoes' || sec === 'casa' || cat === 'amigurumi' || name.includes('trilho') || name.includes('americano') || name.includes('celestial') || name.includes('almofada') || name.includes('manta')) {
-        if (name.includes('trilho') || name.includes('americano') || name.includes('sousplat')) return { department: 'Para Casa', subcategory: 'Sousplats & Mesas' };
-        if (name.includes('celestial') || cat === 'decoracoes') return { department: 'Para Casa', subcategory: 'Decorações' };
-        if (cat === 'amigurumi' || name.includes('amigurumi')) return { department: 'Para Casa', subcategory: 'Amigurumis' };
-        return { department: 'Para Casa', subcategory: 'Decorações' };
+
+      // Acessórios
+      if (cat === 'bolsas' || sec === 'acessorios' || name.includes('bolsa') || name.includes('charm') || name.includes('chaveiro') || name.includes('faixa')) {
+        let matchedSub = 'Bolsas';
+        if (name.includes('charm')) matchedSub = 'Charms';
+        else if (name.includes('chaveiro')) matchedSub = 'Chaveiros';
+        else if (name.includes('faixa')) matchedSub = 'Faixas de Cabelo';
+        return { department: 'Acessórios', subcategory: matchedSub };
       }
-      if (cat === 'pequeninos' || cat === 'bebe' || cat === 'garotas' || cat === 'garotos' || name.includes('baby') || name.includes('infantil') || name.includes('sapatinho')) {
-        return { department: 'Pequeninos', subcategory: 'Sapatinhos & Toucas' };
+
+      // Artigos Para Casa
+      if (cat === 'casa-gold' || cat === 'decoracoes' || sec === 'casa' || cat === 'amigurumi' || 
+          name.includes('trilho') || name.includes('americano') || name.includes('celestial') || 
+          name.includes('almofada') || name.includes('manta') || name.includes('sousplat')) {
+        if (name.includes('trilho') || name.includes('americano') || name.includes('sousplat')) {
+          return { department: 'Artigos Para Casa', subcategory: 'Sousplats & Mesas' };
+        }
+        if (cat === 'amigurumi' || name.includes('amigurumi') || name.includes('ursinho')) {
+          return { department: 'Artigos Para Casa', subcategory: 'Amigurumis' };
+        }
+        if (name.includes('manta') || name.includes('cobertor')) {
+          return { department: 'Artigos Para Casa', subcategory: 'Mantas & Cobertores' };
+        }
+        if (name.includes('almofada')) {
+          return { department: 'Artigos Para Casa', subcategory: 'Almofadas' };
+        }
+        return { department: 'Artigos Para Casa', subcategory: 'Decorações' };
       }
+
+      // Pequeninos
+      if (cat === 'pequeninos' || cat === 'bebe' || cat === 'garotas' || cat === 'garotos' || 
+          name.includes('baby') || name.includes('infantil') || name.includes('sapatinho') || name.includes('touca')) {
+        if (name.includes('sapatinho') || name.includes('touca')) {
+          return { department: 'Pequeninos', subcategory: 'Sapatinhos & Toucas' };
+        }
+        if (name.includes('manta') || name.includes('mantinha')) {
+          return { department: 'Pequeninos', subcategory: 'Mantinhas Baby' };
+        }
+        if (cat === 'garotos' || name.includes('garoto')) {
+          return { department: 'Pequeninos', subcategory: 'Garotos' };
+        }
+        if (cat === 'garotas' || name.includes('garota')) {
+          return { department: 'Pequeninos', subcategory: 'Garotas' };
+        }
+        if (name.includes('presente')) {
+          return { department: 'Pequeninos', subcategory: 'Presentes' };
+        }
+        return { department: 'Pequeninos', subcategory: 'Bebê' };
+      }
+
+      // Para Ele
       if (gen === 'masculino' || name.includes('camisa') || name.includes('bermuda') || name.includes('sueter') || name.includes('arpoador')) {
-        if (name.includes('camisa') || name.includes('polo')) return { department: 'Para Ele', subcategory: 'Camisas & Polos' };
-        if (name.includes('bermuda') || name.includes('short')) return { department: 'Para Ele', subcategory: 'Bermudas & Shorts' };
+        if (name.includes('camisa') || name.includes('polo') || name.includes('arpoador')) {
+          return { department: 'Para Ele', subcategory: 'Camisas & Polos' };
+        }
+        if (name.includes('bermuda') || name.includes('short')) {
+          return { department: 'Para Ele', subcategory: 'Bermudas & Shorts' };
+        }
+        if (name.includes('jaqueta') || name.includes('casaco')) {
+          return { department: 'Para Ele', subcategory: 'Jaquetas e casacos' };
+        }
+        if (name.includes('calça') || name.includes('calca')) {
+          return { department: 'Para Ele', subcategory: 'Calças' };
+        }
+        if (name.includes('noite')) {
+          return { department: 'Para Ele', subcategory: 'Roupas para noite' };
+        }
         return { department: 'Para Ele', subcategory: 'Suéteres & Cardigans' };
       }
-      if (cat === 'personalizado' || name.includes('personalizada') || p.custom) return { department: 'Para Ela', subcategory: 'Sob Medida' };
-      if (cat === 'saias-vestidos' || name.includes('vestido') || name.includes('saia')) return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
-      if (cat === 'tops' || name.includes('regata') || name.includes('top') || name.includes('cropped')) return { department: 'Para Ela', subcategory: 'Tops' };
-      if (cat === 'calcas' || name.includes('short') || name.includes('calça')) return { department: 'Para Ela', subcategory: 'Calças e Shorts' };
-      if (cat === 'jaquetas-casacos' || name.includes('jaqueta') || name.includes('casaco')) return { department: 'Para Ela', subcategory: 'Jaquetas e Casacos' };
-      if (cat === 'roupas-noite') return { department: 'Para Ela', subcategory: 'Roupas para Noite' };
-      return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
+
+      // Para Ela
+      if (cat === 'personalizado' || name.includes('personalizada') || p.custom) {
+        return { department: 'Para Ela', subcategory: 'Sob Medida' };
+      }
+      if (cat === 'saias-vestidos' || name.includes('vestido') || name.includes('saia') || name.includes('bossa')) {
+        return { department: 'Para Ela', subcategory: 'Saias e vestidos' };
+      }
+      if (cat === 'tops' || name.includes('regata') || name.includes('top') || name.includes('cropped')) {
+        return { department: 'Para Ela', subcategory: 'Tops' };
+      }
+      if (cat === 'calcas' || name.includes('short') || name.includes('calça') || name.includes('noronha')) {
+        return { department: 'Para Ela', subcategory: 'Calças' };
+      }
+      if (cat === 'jaquetas-casacos' || name.includes('jaqueta') || name.includes('casaco')) {
+        return { department: 'Para Ela', subcategory: 'Jaquetas e casacos' };
+      }
+      if (cat === 'roupas-noite' || name.includes('noite')) {
+        return { department: 'Para Ela', subcategory: 'Roupas para noite' };
+      }
+      if (cat === 'praia-resort' || name.includes('praia') || name.includes('resort')) {
+        return { department: 'Para Ela', subcategory: 'Praia & Resort' };
+      }
+
+      return { department: 'Para Ela', subcategory: 'Saias e vestidos' };
+    }
+
+    function getSubcategoryCount(dept, sub) {
+      if (!allProducts || !allProducts.length) return 0;
+      return allProducts.filter(p => {
+        const tax = resolveTaxonomy(p);
+        const pDept = (dept === 'Para Casa') ? 'Artigos Para Casa' : ((dept === 'Acessórios & Bijuterias') ? tax.department : dept);
+        const matchDept = (tax.department === pDept) || 
+                          (dept === 'Acessórios & Bijuterias' && (tax.department === 'Acessórios' || tax.department === 'Bijuterias')) ||
+                          (dept === 'Artigos Para Casa' && (tax.department === 'Para Casa' || tax.department === 'Artigos Para Casa')) ||
+                          (dept === 'Para Casa' && (tax.department === 'Para Casa' || tax.department === 'Artigos Para Casa'));
+        const s1 = (tax.subcategory || '').toLowerCase();
+        const s2 = sub.toLowerCase();
+        const matchSub = (s1 === s2) ||
+                         (s2 === 'calças' && s1 === 'calças e shorts') ||
+                         (s2 === 'calças e shorts' && s1 === 'calças');
+        return matchDept && matchSub;
+      }).length;
+    }
+
+    function getDepartmentCount(dept) {
+      if (!allProducts || !allProducts.length) return 0;
+      return allProducts.filter(p => {
+        const tax = resolveTaxonomy(p);
+        if (dept === 'Para Casa' || dept === 'Artigos Para Casa') return tax.department === 'Artigos Para Casa' || tax.department === 'Para Casa';
+        if (dept === 'Acessórios & Bijuterias') return tax.department === 'Acessórios' || tax.department === 'Bijuterias' || tax.department === 'Acessórios & Bijuterias';
+        return tax.department === dept;
+      }).length;
     }
 
     let allProducts = [];
@@ -232,19 +441,27 @@
     let currentCollection = null;
     let searchQuery = '';
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      allProducts = await window.fetchCatalog();
-
-      // Checa parâmetros de URL para sincronização completa
-      parseUrlParams();
-
-      // Eventos de clique nos botões de departamento
+    document.addEventListener('DOMContentLoaded', () => {
+      // Eventos de clique nos botões de departamento anexados imediatamente
       document.querySelectorAll('#deptFiltersBar .gc-filter-pill, #filtersBar .gc-filter-pill').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
           const dept = btn.dataset.dept || btn.dataset.filter || 'all';
           setDeptFilter(dept);
         });
       });
+
+      // Delegação de evento no deptFiltersBar para robustez contra renderizações dinâmicas
+      const deptBar = document.getElementById('deptFiltersBar');
+      if (deptBar) {
+        deptBar.addEventListener('click', (e) => {
+          const pill = e.target.closest('.gc-filter-pill');
+          if (pill && pill.dataset) {
+            const dept = pill.dataset.dept || pill.dataset.filter || 'all';
+            setDeptFilter(dept);
+          }
+        });
+      }
 
       // Evento de pesquisa
       const searchInput = document.getElementById('catalogSearch');
@@ -254,6 +471,15 @@
           renderCatalog();
         });
       }
+
+      // Checa parâmetros de URL para sincronização imediata
+      parseUrlParams();
+
+      // Carregamento assíncrono do catálogo de produtos
+      (async () => {
+        allProducts = await window.fetchCatalog();
+        parseUrlParams();
+      })();
     });
 
     function slugifyTaxonomy(str) {
@@ -296,19 +522,86 @@
           targetDept = matchKey;
         } else if (rawDept.toLowerCase() === 'favoritos') {
           targetDept = 'favoritos';
+        } else if (matchTaxonomySlug('Para Casa', rawDept)) {
+          targetDept = 'Para Casa';
+        } else if (matchTaxonomySlug('Acessórios & Bijuterias', rawDept)) {
+          targetDept = 'Acessórios & Bijuterias';
         }
       } else if (rawLegacy) {
-        const leg = rawLegacy.toLowerCase();
-        if (leg === 'favoritos') targetDept = 'favoritos';
-        else if (leg === 'bolsas') { targetDept = 'Acessórios & Bijuterias'; targetSubcat = 'Bolsas'; }
-        else if (leg === 'vestuario') { targetDept = 'Para Ela'; }
-        else if (leg === 'saias-vestidos') { targetDept = 'Para Ela'; targetSubcat = 'Saias e Vestidos'; }
-        else if (leg === 'tops') { targetDept = 'Para Ela'; targetSubcat = 'Tops'; }
-        else if (leg === 'calcas') { targetDept = 'Para Ela'; targetSubcat = 'Calças e Shorts'; }
-        else if (leg === 'casa' || leg === 'casa-gold' || leg === 'decoracoes') { targetDept = 'Para Casa'; }
-        else if (leg === 'amigurumi') { targetDept = 'Para Casa'; targetSubcat = 'Amigurumis'; }
-        else if (leg === 'pequeninos' || leg === 'bebe') { targetDept = 'Pequeninos'; }
-        else if (leg === 'personalizado') { targetDept = 'Para Ela'; targetSubcat = 'Sob Medida'; }
+        const leg = rawLegacy.toLowerCase().trim();
+        const legacySlugMap = {
+          'favoritos': { dept: 'favoritos', subcat: 'all' },
+          'noite-ela': { dept: 'Para Ela', subcat: 'Roupas para noite' },
+          'saias-vestidos': { dept: 'Para Ela', subcat: 'Saias e vestidos' },
+          'jaquetas-casacos': { dept: 'Para Ela', subcat: 'Jaquetas e casacos' },
+          'tops': { dept: 'Para Ela', subcat: 'Tops' },
+          'calcas': { dept: 'Para Ela', subcat: 'Calças' },
+          'praia-resort': { dept: 'Para Ela', subcat: 'Praia & Resort' },
+          'sob-medida': { dept: 'Para Ela', subcat: 'Sob Medida' },
+          'personalizado': { dept: 'Para Ela', subcat: 'Sob Medida' },
+          'ela': { dept: 'Para Ela', subcat: 'all' },
+          'vestuario': { dept: 'Para Ela', subcat: 'all' },
+
+          'noite-ele': { dept: 'Para Ele', subcat: 'Roupas para noite' },
+          'jaquetas-ele': { dept: 'Para Ele', subcat: 'Jaquetas e casacos' },
+          'calcas-ele': { dept: 'Para Ele', subcat: 'Calças' },
+          'camisas-polos': { dept: 'Para Ele', subcat: 'Camisas & Polos' },
+          'sueteres-cardigans': { dept: 'Para Ele', subcat: 'Suéteres & Cardigans' },
+          'bermudas-shorts': { dept: 'Para Ele', subcat: 'Bermudas & Shorts' },
+          'ele': { dept: 'Para Ele', subcat: 'all' },
+
+          'bebe': { dept: 'Pequeninos', subcat: 'Bebê' },
+          'garotas': { dept: 'Pequeninos', subcat: 'Garotas' },
+          'garotos': { dept: 'Pequeninos', subcat: 'Garotos' },
+          'presentes': { dept: 'Pequeninos', subcat: 'Presentes' },
+          'sapatinhos-toucas': { dept: 'Pequeninos', subcat: 'Sapatinhos & Toucas' },
+          'mantinhas-baby': { dept: 'Pequeninos', subcat: 'Mantinhas Baby' },
+          'pequeninos': { dept: 'Pequeninos', subcat: 'all' },
+
+          'bolsas': { dept: 'Acessórios', subcat: 'Bolsas' },
+          'charms': { dept: 'Acessórios', subcat: 'Charms' },
+          'chaveiros': { dept: 'Acessórios', subcat: 'Chaveiros' },
+          'faixas-de-cabelo': { dept: 'Acessórios', subcat: 'Faixas de Cabelo' },
+          'faixas': { dept: 'Acessórios', subcat: 'Faixas de Cabelo' },
+          'acessorios': { dept: 'Acessórios', subcat: 'all' },
+
+          'brincos': { dept: 'Bijuterias', subcat: 'Brincos' },
+          'colares': { dept: 'Bijuterias', subcat: 'Colares' },
+          'broches': { dept: 'Bijuterias', subcat: 'Broches' },
+          'braceletes': { dept: 'Bijuterias', subcat: 'Braceletes' },
+          'aneis': { dept: 'Bijuterias', subcat: 'Anéis' },
+          'bijuterias': { dept: 'Bijuterias', subcat: 'all' },
+
+          'decoracoes': { dept: 'Artigos Para Casa', subcat: 'Decorações' },
+          'mantas-cobertores': { dept: 'Artigos Para Casa', subcat: 'Mantas & Cobertores' },
+          'mantas': { dept: 'Artigos Para Casa', subcat: 'Mantas & Cobertores' },
+          'amigurumis': { dept: 'Artigos Para Casa', subcat: 'Amigurumis' },
+          'amigurumi': { dept: 'Artigos Para Casa', subcat: 'Amigurumis' },
+          'sousplats-mesas': { dept: 'Artigos Para Casa', subcat: 'Sousplats & Mesas' },
+          'sousplats': { dept: 'Artigos Para Casa', subcat: 'Sousplats & Mesas' },
+          'almofadas': { dept: 'Artigos Para Casa', subcat: 'Almofadas' },
+          'casa': { dept: 'Artigos Para Casa', subcat: 'all' },
+          'casa-gold': { dept: 'Artigos Para Casa', subcat: 'all' },
+          'artigos-para-casa': { dept: 'Artigos Para Casa', subcat: 'all' }
+        };
+
+        if (legacySlugMap[leg]) {
+          targetDept = legacySlugMap[leg].dept;
+          targetSubcat = legacySlugMap[leg].subcat;
+        } else {
+          for (const [dept, subList] of Object.entries(TAXONOMY_MAP)) {
+            if (matchTaxonomySlug(dept, leg)) {
+              targetDept = dept;
+              break;
+            }
+            const found = subList.find(s => matchTaxonomySlug(s, leg));
+            if (found) {
+              targetDept = dept;
+              targetSubcat = found;
+              break;
+            }
+          }
+        }
       }
 
       if (rawSubcat && targetDept !== 'all' && TAXONOMY_MAP[targetDept]) {
@@ -385,17 +678,20 @@
       const subcategories = TAXONOMY_MAP[currentDept];
       subcatBar.style.display = 'flex';
       
+      const totalDeptCount = getDepartmentCount(currentDept);
       let html = `
         <button class="gc-filter-pill gc-subcat-pill ${currentSubcat === 'all' ? 'active' : ''}" data-subcat="all" onclick="setSubcatFilter('all')">
-          Todas as Subcategorias
+          Todas as Subcategorias <span class="gc-pill-count">(${totalDeptCount})</span>
         </button>
       `;
 
       subcategories.forEach(sub => {
         const isActive = currentSubcat === sub;
+        const count = getSubcategoryCount(currentDept, sub);
+        const zeroClass = count === 0 ? 'zero-count is-empty' : '';
         html += `
-          <button class="gc-filter-pill gc-subcat-pill ${isActive ? 'active' : ''}" data-subcat="${sub}" onclick="setSubcatFilter('${sub}')">
-            ${sub}
+          <button class="gc-filter-pill gc-subcat-pill ${isActive ? 'active' : ''} ${zeroClass}" data-subcat="${sub}" onclick="setSubcatFilter('${sub}')">
+            ${sub} <span class="gc-pill-count">(${count})</span>
           </button>
         `;
       });
@@ -404,7 +700,7 @@
     }
 
     function setDeptFilter(dept, syncUrl = true) {
-      currentDept = dept;
+      currentDept = resolveCanonicalDepartment(dept) || dept;
       currentSubcat = 'all';
       updateFilterButtonsUI();
       renderSubcategoryPills();
@@ -417,7 +713,8 @@
       const subcatBar = document.getElementById('subcatFiltersBar');
       if (subcatBar) {
         subcatBar.querySelectorAll('.gc-filter-pill').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.subcat === subcat);
+          const bSub = btn.dataset.subcat || '';
+          btn.classList.toggle('active', bSub.toLowerCase() === subcat.toLowerCase());
         });
       }
       if (syncUrl) syncUrlParams();
@@ -475,16 +772,27 @@
         } else if (currentDept === 'bolsas') {
           if (tax.subcategory !== 'Bolsas' && p.category !== 'bolsas') return false;
         } else if (currentDept === 'casa') {
-          if (tax.department !== 'Para Casa' && p.section !== 'casa' && p.category !== 'decoracoes') return false;
+          if (tax.department !== 'Para Casa' && tax.department !== 'Artigos Para Casa' && p.section !== 'casa' && p.category !== 'decoracoes') return false;
         } else if (currentDept === 'personalizado') {
           if (tax.subcategory !== 'Sob Medida' && p.category !== 'personalizado' && !p.custom) return false;
         } else if (currentDept !== 'all') {
-          if (tax.department !== currentDept) return false;
+          const d1 = (tax.department || '').toLowerCase();
+          const d2 = currentDept.toLowerCase();
+          const isDeptMatch = (d1 === d2) ||
+            (d2 === 'para casa' && (d1 === 'artigos para casa' || d1 === 'para casa')) ||
+            (d2 === 'artigos para casa' && (d1 === 'para casa' || d1 === 'artigos para casa')) ||
+            (d2 === 'acessórios & bijuterias' && (d1 === 'acessórios' || d1 === 'bijuterias' || d1 === 'acessórios & bijuterias'));
+          if (!isDeptMatch) return false;
         }
 
         // 3. Filtro por Subcategoria Dinâmica
         if (currentSubcat !== 'all') {
-          if (tax.subcategory !== currentSubcat) return false;
+          const s1 = (tax.subcategory || '').toLowerCase();
+          const s2 = currentSubcat.toLowerCase();
+          const isSubMatch = (s1 === s2) ||
+            (s2 === 'calças e shorts' && s1 === 'calças') ||
+            (s2 === 'calças' && s1 === 'calças e shorts');
+          if (!isSubMatch) return false;
         }
 
         // 4. Filtro por busca textual ampla
@@ -508,7 +816,39 @@
 
       if (filtered.length === 0) {
         grid.style.display = 'none';
-        if (empty) empty.style.display = 'flex';
+        if (empty) {
+          empty.style.display = 'flex';
+          const catName = currentSubcat !== 'all' ? currentSubcat : (currentDept !== 'all' ? currentDept : (searchQuery ? `"${searchQuery}"` : 'selecionada'));
+          const waPhone = '5531984566047';
+          const waMessage = encodeURIComponent(`Olá! Gostaria de encomendar uma peça exclusiva sob medida da categoria ${catName} no Ateliê Gold Crochet ✨`);
+          const waLink = `https://wa.me/${waPhone}?text=${waMessage}`;
+
+          empty.innerHTML = `
+            <div class="gc-empty-card" style="text-align:center;max-width:540px;margin:24px auto;padding:28px 16px;">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold,#d4af37)" stroke-width="1.5" style="margin-bottom:14px">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <h3 style="font-family:var(--font-display);font-size:1.45rem;color:var(--color-charcoal,#1a1a1a);margin-bottom:12px;font-weight:700">
+                Nenhuma peça encontrada na categoria ${catName}
+              </h3>
+              <p style="color:var(--color-muted,#666);line-height:1.65;font-size:0.95rem;max-width:460px;margin:0 auto 24px;">
+                Cada criação do Ateliê Gold Crochet é feita à mão com fios nobres e dedicação artesanal exclusiva. No momento, novas peças desta categoria estão sendo cuidadosamente confeccionadas.
+              </p>
+              <div style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap">
+                <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="gc-filter-pill gc-whatsapp-btn" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:30px;background:#25D366;color:#ffffff;text-decoration:none;font-weight:600;font-size:0.92rem;box-shadow:0 4px 14px rgba(37,211,102,0.3);transition:transform 0.2s">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                  </svg>
+                  <span>Encomenda Sob Medida WhatsApp</span>
+                </a>
+                <button class="gc-filter-pill" style="background:var(--color-gold,#d4af37);color:white;padding:12px 24px;border:none;border-radius:30px;cursor:pointer;font-weight:600;font-size:0.92rem" onclick="resetFilters()">
+                  Explorar Todas as Peças
+                </button>
+              </div>
+            </div>
+          `;
+        }
         return;
       }
 

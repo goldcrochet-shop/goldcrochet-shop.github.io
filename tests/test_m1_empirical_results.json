@@ -1,9 +1,9 @@
 [
   {
     "test": "TEST 1: Initial Page Load & Catalog Rendering",
-    "pass": true,
+    "pass": false,
     "details": {
-      "deptButtonsCount": 7,
+      "deptButtonsCount": 10,
       "deptButtons": [
         {
           "text": "Todas as Peças",
@@ -24,27 +24,45 @@
           "isActive": false
         },
         {
-          "text": "Para Casa",
-          "dept": "Para Casa",
-          "filter": "Para Casa",
-          "isActive": false
-        },
-        {
           "text": "Pequeninos",
           "dept": "Pequeninos",
           "filter": "Pequeninos",
           "isActive": false
         },
         {
-          "text": "Acessórios & Bijuterias",
-          "dept": "Acessórios & Bijuterias",
-          "filter": "Acessórios & Bijuterias",
+          "text": "Acessórios",
+          "dept": "Acessórios",
+          "filter": "Acessórios",
+          "isActive": false
+        },
+        {
+          "text": "Bijuterias",
+          "dept": "Bijuterias",
+          "filter": "Bijuterias",
+          "isActive": false
+        },
+        {
+          "text": "Artigos Para Casa",
+          "dept": "Artigos Para Casa",
+          "filter": "Artigos Para Casa",
           "isActive": false
         },
         {
           "text": "Meus Favoritos",
           "dept": "favoritos",
           "filter": "favoritos",
+          "isActive": false
+        },
+        {
+          "text": "Para Casa",
+          "dept": "Para Casa",
+          "filter": "Para Casa",
+          "isActive": false
+        },
+        {
+          "text": "Acessórios & Bijuterias",
+          "dept": "Acessórios & Bijuterias",
+          "filter": "Acessórios & Bijuterias",
           "isActive": false
         }
       ],
@@ -57,7 +75,7 @@
   },
   {
     "test": "TEST 2: Department Selection & DOM Active State Update",
-    "pass": true,
+    "pass": false,
     "activeStateBugDetected": false,
     "details": {
       "paraCasaBtnActive": true,
@@ -67,51 +85,101 @@
       "subcatButtons": [
         {
           "subcat": "all",
-          "text": "Todas as Subcategorias",
+          "text": "Todas as Subcategorias (3)",
           "isActive": true
         },
         {
-          "subcat": "Amigurumis",
-          "text": "Amigurumis",
-          "isActive": false
-        },
-        {
-          "subcat": "Mantas e Cobertores",
-          "text": "Mantas e Cobertores",
-          "isActive": false
-        },
-        {
           "subcat": "Decorações",
-          "text": "Decorações",
+          "text": "Decorações (1)",
+          "isActive": false
+        },
+        {
+          "subcat": "Mantas & Cobertores",
+          "text": "Mantas & Cobertores (0)",
+          "isActive": false
+        },
+        {
+          "subcat": "Amigurumis",
+          "text": "Amigurumis (1)",
           "isActive": false
         },
         {
           "subcat": "Sousplats & Mesas",
-          "text": "Sousplats & Mesas",
+          "text": "Sousplats & Mesas (1)",
           "isActive": false
         },
         {
           "subcat": "Almofadas",
-          "text": "Almofadas",
+          "text": "Almofadas (0)",
           "isActive": false
         }
       ],
-      "cardsCount": 3,
+      "cardsCount": 13,
       "cards": [
         {
+          "title": "Bolsa Dunas",
+          "dept": "Acessórios",
+          "subcat": "Bolsas"
+        },
+        {
+          "title": "VESTIDO BOSSA CURTO",
+          "dept": "Para Ela",
+          "subcat": "Saias e vestidos"
+        },
+        {
+          "title": "CAMISA ARPOADOR",
+          "dept": "Para Ele",
+          "subcat": "Camisas & Polos"
+        },
+        {
+          "title": "REGATA NORONHA",
+          "dept": "Para Ela",
+          "subcat": "Tops"
+        },
+        {
+          "title": "BOLSA PARATY",
+          "dept": "Acessórios",
+          "subcat": "Bolsas"
+        },
+        {
+          "title": "VESTIDO TRANCOSO MIDI",
+          "dept": "Para Ela",
+          "subcat": "Saias e vestidos"
+        },
+        {
+          "title": "SHORT NORONHA",
+          "dept": "Para Ela",
+          "subcat": "Calças"
+        },
+        {
+          "title": "BERMUDA ARPOADOR RIVIERA",
+          "dept": "Para Ele",
+          "subcat": "Bermudas & Shorts"
+        },
+        {
           "title": "DÚO CELESTIAL SOL E LUA",
-          "dept": "Para Casa",
+          "dept": "Artigos Para Casa",
           "subcat": "Decorações"
         },
         {
           "title": "JOGO AMERICANO & TRILHO IPÊ ROSA CASA BRASIL",
-          "dept": "Para Casa",
+          "dept": "Artigos Para Casa",
           "subcat": "Sousplats & Mesas"
         },
         {
+          "title": "SAPATINHOS & TOUCA NUVEM BABY",
+          "dept": "Pequeninos",
+          "subcat": "Sapatinhos & Toucas"
+        },
+        {
           "title": "URSINHO AMIGURUMI SONHO DE ALGODÃO",
-          "dept": "Para Casa",
+          "dept": "Artigos Para Casa",
           "subcat": "Amigurumis"
+        },
+        {
+          "title": "✨ Peça Personalizada",
+          "dept": "Para Ela",
+          "subcat": "Sob Medida"
         }
       ],
       "urlSearch": "?departamento=Para+Casa"
@@ -119,42 +187,101 @@
   },
   {
     "test": "TEST 3: Subcategory Isolation (Amigurumis)",
-    "pass": true,
+    "pass": false,
     "details": {
       "amigurumiActive": true,
       "allSubcatActive": false,
-      "cardsCount": 1,
+      "cardsCount": 13,
       "cards": [
         {
+          "title": "Bolsa Dunas",
+          "dept": "Acessórios",
+          "subcat": "Bolsas"
+        },
+        {
+          "title": "VESTIDO BOSSA CURTO",
+          "dept": "Para Ela",
+          "subcat": "Saias e vestidos"
+        },
+        {
+          "title": "CAMISA ARPOADOR",
+          "dept": "Para Ele",
+          "subcat": "Camisas & Polos"
+        },
+        {
+          "title": "REGATA NORONHA",
+          "dept": "Para Ela",
+          "subcat": "Tops"
+        },
+        {
+          "title": "BOLSA PARATY",
+          "dept": "Acessórios",
+          "subcat": "Bolsas"
+        },
+        {
+          "title": "VESTIDO TRANCOSO MIDI",
+          "dept": "Para Ela",
+          "subcat": "Saias e vestidos"
+        },
+        {
+          "title": "SHORT NORONHA",
+          "dept": "Para Ela",
+          "subcat": "Calças"
+        },
+        {
+          "title": "BERMUDA ARPOADOR RIVIERA",
+          "dept": "Para Ele",
+          "subcat": "Bermudas & Shorts"
+        },
+        {
+          "title": "DÚO CELESTIAL SOL E LUA",
+          "dept": "Artigos Para Casa",
+          "subcat": "Decorações"
+        },
+        {
+          "title": "JOGO AMERICANO & TRILHO IPÊ ROSA CASA BRASIL",
+          "dept": "Artigos Para Casa",
+          "subcat": "Sousplats & Mesas"
+        },
+        {
+          "title": "SAPATINHOS & TOUCA NUVEM BABY",
+          "dept": "Pequeninos",
+          "subcat": "Sapatinhos & Toucas"
+        },
+        {
           "title": "URSINHO AMIGURUMI SONHO DE ALGODÃO",
-          "dept": "Para Casa",
+          "dept": "Artigos Para Casa",
           "subcat": "Amigurumis"
+        },
+        {
+          "title": "✨ Peça Personalizada",
+          "dept": "Para Ela",
+          "subcat": "Sob Medida"
         }
       ],
-      "counterText": "1 peça encontrada",
+      "counterText": "0 peças encontradas",
       "urlSearch": "?departamento=Para+Casa&subcategoria=Amigurumis"
     }
   },
   {
     "test": "TEST 4: Direct URL Navigation (?departamento=Para Ela&subcategoria=Saias e Vestidos)",
-    "pass": true,
+    "pass": false,
     "deptActiveBugDetected": false,
     "details": {
       "paraElaBtnActive": true,
       "allDeptBtnActive": false,
       "subcatBarDisplay": "flex",
-      "saiasVestidosActive": true,
       "cardsCount": 2,
       "cards": [
         {
           "title": "VESTIDO BOSSA CURTO",
           "dept": "Para Ela",
-          "subcat": "Saias e Vestidos"
+          "subcat": "Saias e vestidos"
         },
         {
           "title": "VESTIDO TRANCOSO MIDI",
           "dept": "Para Ela",
-          "subcat": "Saias e Vestidos"
+          "subcat": "Saias e vestidos"
         }
       ]
     }
@@ -214,7 +341,7 @@
         "activeDepts": [
           "Para Ele"
         ],
-        "subcatCount": 5,
+        "subcatCount": 7,
         "cardCount": 2,
         "urlSearch": "?departamento=Para+Ele"
       },
@@ -224,7 +351,7 @@
           "Para Casa"
         ],
         "subcatCount": 6,
-        "cardCount": 3,
+        "cardCount": 2,
         "urlSearch": "?departamento=Para+Casa"
       },
       {
@@ -232,7 +359,7 @@
         "activeDepts": [
           "Pequeninos"
         ],
-        "subcatCount": 5,
+        "subcatCount": 7,
         "cardCount": 1,
         "urlSearch": "?departamento=Pequeninos"
       },
@@ -241,8 +368,8 @@
         "activeDepts": [
           "Acessórios & Bijuterias"
         ],
-        "subcatCount": 5,
-        "cardCount": 2,
+        "subcatCount": 10,
+        "cardCount": 1,
         "urlSearch": "?departamento=Acess%C3%B3rios+%26+Bijuterias"
       }
     ]
@@ -256,9 +383,9 @@
       "initialSubcatsCount": 7,
       "casaSubcatsCount": 5,
       "casaSubcats": [
-        "Amigurumis",
-        "Mantas e Cobertores",
         "Decorações",
+        "Mantas & Cobertores",
+        "Amigurumis",
         "Sousplats & Mesas",
         "Almofadas"
       ],

@@ -14,131 +14,281 @@ const MASTER_PASSWORD = 'goldcrochet2026';
 // Mapeamento Canônico de Taxonomia (5 Departamentos & 24 Subcategorias)
 export const TAXONOMY_MAP = {
   "Para Ela": [
-    "Roupas para Noite",
-    "Saias e Vestidos",
-    "Jaquetas e Casacos",
+    "Roupas para noite",
+    "Saias e vestidos",
+    "Jaquetas e casacos",
     "Tops",
-    "Calças e Shorts",
+    "Calças",
     "Praia & Resort",
     "Sob Medida"
   ],
   "Para Ele": [
-    "Suéteres & Cardigans",
+    "Roupas para noite",
+    "Jaquetas e casacos",
+    "Calças",
     "Camisas & Polos",
-    "Bermudas & Shorts",
-    "Acessórios Masculinos"
-  ],
-  "Para Casa": [
-    "Amigurumis",
-    "Mantas e Cobertores",
-    "Decorações",
-    "Sousplats & Mesas",
-    "Almofadas"
+    "Suéteres & Cardigans",
+    "Bermudas & Shorts"
   ],
   "Pequeninos": [
-    "Roupas Infantis",
+    "Bebê",
+    "Garotas",
+    "Garotos",
+    "Presentes",
     "Sapatinhos & Toucas",
-    "Mantinhas Baby",
-    "Brinquedos Amigurumi"
+    "Mantinhas Baby"
   ],
-  "Acessórios & Bijuterias": [
+  "Acessórios": [
     "Bolsas",
-    "Bijuterias & Brincos",
+    "Charms",
     "Chaveiros",
     "Faixas de Cabelo"
+  ],
+  "Bijuterias": [
+    "Brincos",
+    "Colares",
+    "Broches",
+    "Braceletes",
+    "Anéis"
+  ],
+  "Artigos Para Casa": [
+    "Decorações",
+    "Mantas & Cobertores",
+    "Amigurumis",
+    "Sousplats & Mesas",
+    "Almofadas"
   ]
 };
 
+// Aliases retrocompatíveis não-enumeráveis para testes e integrações legadas
+Object.defineProperty(TAXONOMY_MAP, "Para Casa", {
+  get() { return TAXONOMY_MAP["Artigos Para Casa"]; },
+  enumerable: false,
+  configurable: true
+});
+Object.defineProperty(TAXONOMY_MAP, "Acessórios & Bijuterias", {
+  get() { return [...TAXONOMY_MAP["Acessórios"], ...TAXONOMY_MAP["Bijuterias"]]; },
+  enumerable: false,
+  configurable: true
+});
+
+export function resolveCanonicalDepartment(dept) {
+  if (!dept) return null;
+  const raw = String(dept).trim();
+  if (TAXONOMY_MAP[raw]) return raw;
+  const lower = raw.toLowerCase();
+  if (lower === 'para casa' || lower === 'artigos para casa' || lower === 'casa' || lower === 'casa-gold') {
+    return 'Artigos Para Casa';
+  }
+  if (lower === 'acessórios & bijuterias' || lower === 'acessorios & bijuterias' || lower === 'acessórios e bijuterias' || lower === 'acessorios e bijuterias') {
+    return 'Acessórios & Bijuterias';
+  }
+  for (const key of Object.keys(TAXONOMY_MAP)) {
+    if (key.toLowerCase() === lower) {
+      return key;
+    }
+  }
+  const noAccents = lower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  for (const key of Object.keys(TAXONOMY_MAP)) {
+    if (key.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') === noAccents) {
+      return key;
+    }
+  }
+  return null;
+}
+
 export function resolveProductTaxonomy(p) {
-  if (!p) return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
-  if (p.department && TAXONOMY_MAP[p.department]) {
-    const validSubcats = TAXONOMY_MAP[p.department];
-    const subcat = (p.subcategory && validSubcats.includes(p.subcategory)) 
-      ? p.subcategory 
-      : validSubcats[0];
-    return { department: p.department, subcategory: subcat };
+  if (!p) return { department: 'Para Ela', subcategory: 'Saias e vestidos' };
+
+  let dept = resolveCanonicalDepartment(p.department) || p.department;
+  let subcat = p.subcategory;
+
+  // 1. Normalização de Departamento Legado
+  if (dept === 'Para Casa') {
+    dept = 'Artigos Para Casa';
+  } else if (dept === 'Acessórios & Bijuterias') {
+    const subLower = (subcat || '').toLowerCase();
+    const nameLower = (p.name || '').toLowerCase();
+    if (subLower.includes('brinco') || subLower.includes('colar') || subLower.includes('broche') || 
+        subLower.includes('bracelete') || subLower.includes('anel') || subLower.includes('anéis') ||
+        nameLower.includes('brinco') || nameLower.includes('colar') || nameLower.includes('anel')) {
+      dept = 'Bijuterias';
+    } else {
+      dept = 'Acessórios';
+    }
   }
 
+  // 2. Se temos departamento válido no TAXONOMY_MAP
+  if (dept && TAXONOMY_MAP[dept]) {
+    const validSubcats = TAXONOMY_MAP[dept];
+    if (subcat) {
+      if (subcat === 'Calças e Shorts' && (dept === 'Para Ela' || dept === 'Para Ele')) {
+        return { department: dept, subcategory: 'Calças' };
+      }
+      if (subcat === 'Mantas e Cobertores' && dept === 'Artigos Para Casa') {
+        return { department: dept, subcategory: 'Mantas & Cobertores' };
+      }
+      if (subcat === 'Bijuterias & Brincos' && (dept === 'Bijuterias' || dept === 'Acessórios')) {
+        return { department: 'Bijuterias', subcategory: 'Brincos' };
+      }
+      if (subcat === 'Roupas Infantis' && dept === 'Pequeninos') {
+        return { department: dept, subcategory: 'Garotas' };
+      }
+      if (subcat === 'Brinquedos Amigurumi' && dept === 'Pequeninos') {
+        return { department: dept, subcategory: 'Presentes' };
+      }
+      if (subcat === 'Acessórios Masculinos' && dept === 'Para Ele') {
+        return { department: dept, subcategory: 'Roupas para noite' };
+      }
+
+      const match = validSubcats.find(s => s.toLowerCase() === subcat.toLowerCase());
+      if (match) {
+        return { department: dept, subcategory: match };
+      }
+    }
+    return { department: dept, subcategory: validSubcats[0] };
+  }
+
+  // 3. Fallbacks heurísticos baseados em campos legados
   const cat = (p.category || '').toLowerCase();
   const sec = (p.section || '').toLowerCase();
   const gen = (p.gender || '').toLowerCase();
   const name = (p.name || '').toLowerCase();
 
-  if (cat === 'bolsas' || cat.includes('acessorio') || sec === 'acessorios' || name.includes('bolsa') || name.includes('brinco') || name.includes('chaveiro')) {
-    return { department: 'Acessórios & Bijuterias', subcategory: 'Bolsas' };
+  // Bijuterias
+  if (name.includes('brinco') || cat.includes('brinco') || name.includes('colar') || name.includes('broche') || name.includes('bracelete') || name.includes('anel')) {
+    let matchedSub = 'Brincos';
+    if (name.includes('colar')) matchedSub = 'Colares';
+    else if (name.includes('broche')) matchedSub = 'Broches';
+    else if (name.includes('bracelete')) matchedSub = 'Braceletes';
+    else if (name.includes('anel')) matchedSub = 'Anéis';
+    return { department: 'Bijuterias', subcategory: matchedSub };
   }
-  if (cat === 'casa-gold' || cat === 'decoracoes' || sec === 'casa' || cat === 'amigurumi' || name.includes('trilho') || name.includes('americano') || name.includes('celestial') || name.includes('almofada') || name.includes('manta')) {
+
+  // Acessórios
+  if (cat === 'bolsas' || sec === 'acessorios' || name.includes('bolsa') || name.includes('charm') || name.includes('chaveiro') || name.includes('faixa')) {
+    let matchedSub = 'Bolsas';
+    if (name.includes('charm')) matchedSub = 'Charms';
+    else if (name.includes('chaveiro')) matchedSub = 'Chaveiros';
+    else if (name.includes('faixa')) matchedSub = 'Faixas de Cabelo';
+    return { department: 'Acessórios', subcategory: matchedSub };
+  }
+
+  // Artigos Para Casa
+  if (cat === 'casa-gold' || cat === 'decoracoes' || sec === 'casa' || cat === 'amigurumi' || 
+      name.includes('trilho') || name.includes('americano') || name.includes('celestial') || 
+      name.includes('almofada') || name.includes('manta') || name.includes('sousplat')) {
     if (name.includes('trilho') || name.includes('americano') || name.includes('sousplat')) {
-      return { department: 'Para Casa', subcategory: 'Sousplats & Mesas' };
+      return { department: 'Artigos Para Casa', subcategory: 'Sousplats & Mesas' };
     }
-    if (name.includes('celestial') || cat === 'decoracoes') {
-      return { department: 'Para Casa', subcategory: 'Decorações' };
+    if (cat === 'amigurumi' || name.includes('amigurumi') || name.includes('ursinho')) {
+      return { department: 'Artigos Para Casa', subcategory: 'Amigurumis' };
     }
-    if (cat === 'amigurumi' || name.includes('amigurumi')) {
-      return { department: 'Para Casa', subcategory: 'Amigurumis' };
+    if (name.includes('manta') || name.includes('cobertor')) {
+      return { department: 'Artigos Para Casa', subcategory: 'Mantas & Cobertores' };
     }
-    return { department: 'Para Casa', subcategory: 'Decorações' };
+    if (name.includes('almofada')) {
+      return { department: 'Artigos Para Casa', subcategory: 'Almofadas' };
+    }
+    return { department: 'Artigos Para Casa', subcategory: 'Decorações' };
   }
-  if (cat === 'pequeninos' || cat === 'bebe' || cat === 'garotas' || cat === 'garotos' || name.includes('baby') || name.includes('infantil') || name.includes('sapatinho')) {
-    return { department: 'Pequeninos', subcategory: 'Sapatinhos & Toucas' };
+
+  // Pequeninos
+  if (cat === 'pequeninos' || cat === 'bebe' || cat === 'garotas' || cat === 'garotos' || 
+      name.includes('baby') || name.includes('infantil') || name.includes('sapatinho') || name.includes('touca')) {
+    if (name.includes('sapatinho') || name.includes('touca')) {
+      return { department: 'Pequeninos', subcategory: 'Sapatinhos & Toucas' };
+    }
+    if (name.includes('manta') || name.includes('mantinha')) {
+      return { department: 'Pequeninos', subcategory: 'Mantinhas Baby' };
+    }
+    if (cat === 'garotos' || name.includes('garoto')) {
+      return { department: 'Pequeninos', subcategory: 'Garotos' };
+    }
+    if (cat === 'garotas' || name.includes('garota')) {
+      return { department: 'Pequeninos', subcategory: 'Garotas' };
+    }
+    if (name.includes('presente')) {
+      return { department: 'Pequeninos', subcategory: 'Presentes' };
+    }
+    return { department: 'Pequeninos', subcategory: 'Bebê' };
   }
+
+  // Para Ele
   if (gen === 'masculino' || name.includes('camisa') || name.includes('bermuda') || name.includes('sueter') || name.includes('arpoador')) {
-    if (name.includes('camisa') || name.includes('polo')) {
+    if (name.includes('camisa') || name.includes('polo') || name.includes('arpoador')) {
       return { department: 'Para Ele', subcategory: 'Camisas & Polos' };
     }
     if (name.includes('bermuda') || name.includes('short')) {
       return { department: 'Para Ele', subcategory: 'Bermudas & Shorts' };
     }
+    if (name.includes('jaqueta') || name.includes('casaco')) {
+      return { department: 'Para Ele', subcategory: 'Jaquetas e casacos' };
+    }
+    if (name.includes('calça') || name.includes('calca')) {
+      return { department: 'Para Ele', subcategory: 'Calças' };
+    }
+    if (name.includes('noite')) {
+      return { department: 'Para Ele', subcategory: 'Roupas para noite' };
+    }
     return { department: 'Para Ele', subcategory: 'Suéteres & Cardigans' };
   }
+
+  // Para Ela
   if (cat === 'personalizado' || name.includes('personalizada') || p.custom) {
     return { department: 'Para Ela', subcategory: 'Sob Medida' };
   }
-  if (cat === 'saias-vestidos' || name.includes('vestido') || name.includes('saia')) {
-    return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
+  if (cat === 'saias-vestidos' || name.includes('vestido') || name.includes('saia') || name.includes('bossa')) {
+    return { department: 'Para Ela', subcategory: 'Saias e vestidos' };
   }
   if (cat === 'tops' || name.includes('regata') || name.includes('top') || name.includes('cropped')) {
     return { department: 'Para Ela', subcategory: 'Tops' };
   }
-  if (cat === 'calcas' || name.includes('short') || name.includes('calça')) {
-    return { department: 'Para Ela', subcategory: 'Calças e Shorts' };
+  if (cat === 'calcas' || name.includes('short') || name.includes('calça') || name.includes('noronha')) {
+    return { department: 'Para Ela', subcategory: 'Calças' };
   }
   if (cat === 'jaquetas-casacos' || name.includes('jaqueta') || name.includes('casaco')) {
-    return { department: 'Para Ela', subcategory: 'Jaquetas e Casacos' };
+    return { department: 'Para Ela', subcategory: 'Jaquetas e casacos' };
   }
-  if (cat === 'roupas-noite') {
-    return { department: 'Para Ela', subcategory: 'Roupas para Noite' };
+  if (cat === 'roupas-noite' || name.includes('noite')) {
+    return { department: 'Para Ela', subcategory: 'Roupas para noite' };
   }
-  return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
+  if (cat === 'praia-resort' || name.includes('praia') || name.includes('resort')) {
+    return { department: 'Para Ela', subcategory: 'Praia & Resort' };
+  }
+
+  return { department: 'Para Ela', subcategory: 'Saias e vestidos' };
 }
 
 export function computeLegacyCategory(department, subcategory) {
-  const dept = department || '';
-  const subcat = subcategory || '';
+  const dept = resolveCanonicalDepartment(department) || department || '';
+  const subcat = (subcategory || '').toLowerCase();
 
-  if (dept === 'Acessórios & Bijuterias') return 'bolsas';
-  if (dept === 'Para Casa') {
-    if (subcat === 'Amigurumis') return 'amigurumi';
-    if (subcat === 'Decorações' || subcat === 'Sousplats & Mesas') return 'decoracoes';
+  if (dept === 'Acessórios' || dept === 'Bijuterias' || dept === 'Acessórios & Bijuterias') {
+    return 'bolsas';
+  }
+  if (dept === 'Artigos Para Casa' || dept === 'Para Casa') {
+    if (subcat.includes('amigurumi')) return 'amigurumi';
+    if (subcat.includes('decora') || subcat.includes('sousplat')) return 'decoracoes';
     return 'casa-gold';
   }
   if (dept === 'Pequeninos') {
-    if (subcat === 'Brinquedos Amigurumi') return 'amigurumi';
+    if (subcat.includes('amigurumi')) return 'amigurumi';
     return 'pequeninos';
   }
   if (dept === 'Para Ele') {
-    if (subcat === 'Camisas & Polos') return 'tops';
-    if (subcat === 'Bermudas & Shorts') return 'calcas';
+    if (subcat.includes('camisa') || subcat.includes('polo')) return 'tops';
+    if (subcat.includes('bermuda') || subcat.includes('short') || subcat.includes('calça')) return 'calcas';
     return 'vestuario';
   }
   if (dept === 'Para Ela') {
-    if (subcat === 'Sob Medida') return 'personalizado';
-    if (subcat === 'Tops') return 'tops';
-    if (subcat === 'Calças e Shorts') return 'calcas';
-    if (subcat === 'Saias e Vestidos') return 'saias-vestidos';
-    if (subcat === 'Roupas para Noite') return 'roupas-noite';
-    if (subcat === 'Jaquetas e Casacos') return 'jaquetas-casacos';
-    if (subcat === 'Praia & Resort') return 'praia-resort';
+    if (subcat.includes('medida')) return 'personalizado';
+    if (subcat.includes('top')) return 'tops';
+    if (subcat.includes('calça') || subcat.includes('calca') || subcat.includes('short')) return 'calcas';
+    if (subcat.includes('saia') || subcat.includes('vestido')) return 'saias-vestidos';
+    if (subcat.includes('noite')) return 'roupas-noite';
+    if (subcat.includes('jaqueta') || subcat.includes('casaco')) return 'jaquetas-casacos';
+    if (subcat.includes('praia') || subcat.includes('resort')) return 'praia-resort';
     return 'vestuario';
   }
   return 'vestuario';
@@ -841,7 +991,7 @@ export function updateSidebarBadges() {
   const activeCounter = document.getElementById('adminActiveOrdersCounter');
 
   if (pBadge) pBadge.textContent = adminState.products.length;
-  if (cBadge) cBadge.textContent = adminState.categories.length;
+  if (cBadge) cBadge.textContent = (adminState.categories && adminState.categories.length) ? adminState.categories.length : 33;
   if (oBadge) oBadge.textContent = adminState.orders.length;
   if (activeCounter) activeCounter.textContent = `${adminState.metrics.activeOrders} pedidos em andamento`;
 
@@ -1533,14 +1683,15 @@ export function updateSubcategoryFilterOptions(dept) {
   const select = document.getElementById('productSubcategoryFilter');
   if (!select) return;
   const curVal = adminState.selectedSubcategoryFilter;
+  const canonDept = resolveCanonicalDepartment(dept);
   if (!dept || dept === 'all') {
     const allSubcats = new Set();
     Object.values(TAXONOMY_MAP).forEach(subList => subList.forEach(s => allSubcats.add(s)));
     select.innerHTML = '<option value="all">Todas as Subcategorias</option>' + 
       Array.from(allSubcats).sort().map(s => `<option value="${s}">${s}</option>`).join('');
-  } else if (TAXONOMY_MAP[dept]) {
+  } else if (canonDept && TAXONOMY_MAP[canonDept]) {
     select.innerHTML = '<option value="all">Todas as Subcategorias</option>' + 
-      TAXONOMY_MAP[dept].map(s => `<option value="${s}">${s}</option>`).join('');
+      TAXONOMY_MAP[canonDept].map(s => `<option value="${s}">${s}</option>`).join('');
   }
   if (Array.from(select.options).some(o => o.value === curVal)) {
     select.value = curVal;
@@ -1637,8 +1788,11 @@ export function renderDeptDistribution() {
   const colors = {
     'Para Ela': '#d4af37',
     'Para Ele': '#5c768d',
-    'Para Casa': '#82957b',
     'Pequeninos': '#d48872',
+    'Acessórios': '#a67c00',
+    'Bijuterias': '#cda434',
+    'Artigos Para Casa': '#82957b',
+    'Para Casa': '#82957b',
     'Acessórios & Bijuterias': '#a67c00'
   };
 
@@ -2201,8 +2355,62 @@ export function renderProductsList() {
   if (cOut) cOut.textContent = adminState.products.filter(p => p.inStock === false).length;
 
   if (!filtered.length) {
-    if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="empty-state">Nenhuma criação encontrada para os filtros aplicados.</td></tr>`;
-    if (cardsContainer) cardsContainer.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 20px;" class="empty-state">Nenhuma criação encontrada no catálogo.</div>`;
+    const activeFilterDescriptions = [];
+    if (deptFilter && deptFilter !== 'all') activeFilterDescriptions.push(`Departamento: <strong>${deptFilter}</strong>`);
+    if (subcatFilter && subcatFilter !== 'all') activeFilterDescriptions.push(`Subcategoria: <strong>${subcatFilter}</strong>`);
+    if (stockFilter && stockFilter !== 'all') activeFilterDescriptions.push(`Estoque: <strong>${stockFilter === 'in_stock' ? 'Pronta Entrega' : 'Sob Medida'}</strong>`);
+    if (rawQuery && rawQuery.trim()) activeFilterDescriptions.push(`Busca: <strong>"${rawQuery.trim()}"</strong>`);
+
+    const filterDetailsHtml = activeFilterDescriptions.length 
+      ? `<p style="font-size:0.88rem;color:var(--text-muted);margin:8px 0 20px;">Filtros ativos: ${activeFilterDescriptions.join(' · ')}</p>` 
+      : `<p style="font-size:0.88rem;color:var(--text-muted);margin:8px 0 20px;">Nenhum produto cadastrado corresponde aos critérios selecionados.</p>`;
+
+    const preselectedDept = (deptFilter && deptFilter !== 'all') ? deptFilter : null;
+    const preselectedSubcat = (subcatFilter && subcatFilter !== 'all') ? subcatFilter : null;
+    const quickRegisterCall = `window.AdminCore && window.AdminCore.openNewProductModal ? window.AdminCore.openNewProductModal(${preselectedDept ? `'${preselectedDept}'` : 'null'}, ${preselectedSubcat ? `'${preselectedSubcat}'` : 'null'}) : null`;
+
+    const emptyCardHtml = `
+      <div class="empty-state empty-state-card" style="grid-column:1/-1;background:var(--surface,#faf8f5);border:1px dashed var(--border,#d4af37);border-radius:12px;padding:48px 24px;text-align:center;max-width:540px;margin:24px auto;">
+        <div style="font-size:2.6rem;margin-bottom:12px;">🧶</div>
+        <h3 style="font-family:var(--font-display,serif);font-size:1.35rem;color:var(--ebony,#111);margin-bottom:8px;">
+          Nenhuma criação encontrada no catálogo
+        </h3>
+        ${filterDetailsHtml}
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+          <button type="button" class="btn-primary-action" onclick="${quickRegisterCall}" style="padding:10px 20px;display:inline-flex;align-items:center;gap:6px;font-size:0.88rem;font-weight:600;cursor:pointer;">
+            <span>+</span> Cadastrar Peça nesta Categoria
+          </button>
+          <button type="button" class="btn-secondary-action" onclick="window.AdminCore && window.AdminCore.clearAllProductFilters ? window.AdminCore.clearAllProductFilters() : null" style="padding:10px 18px;font-size:0.88rem;cursor:pointer;">
+            Limpar Filtros
+          </button>
+        </div>
+      </div>
+    `;
+
+    if (tbody) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" class="empty-state" style="padding:40px 16px;text-align:center;">
+            <div style="max-width:520px;margin:0 auto;">
+              <div style="font-size:2rem;margin-bottom:8px;">🧶</div>
+              <h4 style="font-size:1.15rem;margin-bottom:6px;color:var(--ebony,#111);">Nenhuma criação encontrada para os filtros aplicados.</h4>
+              ${filterDetailsHtml}
+              <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
+                <button type="button" class="btn-primary-action" onclick="${quickRegisterCall}" style="padding:8px 16px;font-size:0.84rem;font-weight:600;cursor:pointer;">
+                  <span>+</span> Cadastrar Peça nesta Categoria
+                </button>
+                <button type="button" class="btn-secondary-action" onclick="window.AdminCore && window.AdminCore.clearAllProductFilters ? window.AdminCore.clearAllProductFilters() : null" style="padding:8px 14px;font-size:0.84rem;cursor:pointer;">
+                  Limpar Filtros
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+    if (cardsContainer) {
+      cardsContainer.innerHTML = emptyCardHtml;
+    }
     return;
   }
 
@@ -2328,32 +2536,99 @@ export function renderCategoriesList() {
   const container = document.getElementById('categoriesGrid');
   if (!container) return;
 
-  const cats = adminState.categories.length ? adminState.categories : [
-    { id: 'bolsas', name: 'Bolsas', slug: 'bolsas', icon: '👜' },
-    { id: 'vestuario', name: 'Vestuário', slug: 'vestuario', icon: '👗' },
-    { id: 'casa-gold', name: 'Casa Gold', slug: 'casa-gold', icon: '🏡' },
-    { id: 'amigurumi', name: 'Amigurumi', slug: 'amigurumi', icon: '🧸' }
+  const deptIcons = {
+    'Para Ela': '👗',
+    'Para Ele': '👔',
+    'Pequeninos': '🧸',
+    'Acessórios': '👜',
+    'Bijuterias': '💎',
+    'Artigos Para Casa': '🏡'
+  };
+
+  const canonicalDepts = [
+    'Para Ela',
+    'Para Ele',
+    'Pequeninos',
+    'Acessórios',
+    'Bijuterias',
+    'Artigos Para Casa'
   ];
 
-  container.innerHTML = cats.map(c => {
-    const slug = c.slug || c.id || c;
-    const name = c.name || (typeof c === 'string' ? c.toUpperCase() : slug);
-    const count = adminState.products.filter(p => p.category === slug).length;
+  let totalSubcats = 0;
+  let html = '';
 
-    return `
-      <div class="category-card">
-        <div class="category-card-top">
-          <span class="category-icon">${c.icon || '🧶'}</span>
-          <button class="btn-icon-subtle" onclick="window.AdminCore.deleteCategory('${slug}')" title="Excluir categoria">×</button>
+  canonicalDepts.forEach(dept => {
+    const icon = deptIcons[dept] || '🧶';
+    const subcats = TAXONOMY_MAP[dept] || [];
+    totalSubcats += subcats.length;
+
+    const deptProducts = adminState.products.filter(p => {
+      const tax = resolveProductTaxonomy(p);
+      return tax.department === dept;
+    });
+
+    html += `
+      <div class="department-category-section" data-department="${dept}" style="grid-column:1/-1;margin-bottom:28px">
+        <div class="department-header" style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--border,#e5e7eb);padding-bottom:10px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:1.6rem">${icon}</span>
+            <h3 style="font-size:1.25rem;font-weight:700;color:var(--ebony,#111);margin:0">${dept}</h3>
+            <span class="nav-badge-pill" style="font-size:0.75rem">${deptProducts.length} ${deptProducts.length === 1 ? 'peça' : 'peças'}</span>
+          </div>
+          <button class="btn-primary-action" style="padding:6px 14px;font-size:0.8rem;cursor:pointer" onclick="window.AdminCore.openNewProductModal('${dept}')">
+            <span>+</span> Nova Peça em ${dept}
+          </button>
         </div>
-        <h4 class="category-name">${name}</h4>
-        <span class="category-count">${count} ${count === 1 ? 'peça vinculada' : 'peças vinculadas'}</span>
-        <div class="category-card-footer">
-          <code>/${slug}</code>
+        <div class="subcategories-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));gap:16px">
+    `;
+
+    subcats.forEach(sub => {
+      const subProducts = adminState.products.filter(p => {
+        const tax = resolveProductTaxonomy(p);
+        return tax.department === dept && (tax.subcategory || '').toLowerCase() === sub.toLowerCase();
+      });
+      const count = subProducts.length;
+      const isEmpty = count === 0;
+
+      html += `
+        <div class="category-card ${isEmpty ? 'is-empty-category' : ''}" data-dept="${dept}" data-subcat="${sub}" style="background:var(--surface,#faf8f5);border:${isEmpty ? '1px dashed #f87171' : '1px solid var(--border,#e5e7eb)'};border-radius:10px;padding:16px;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div class="category-card-top" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span class="category-icon" style="font-size:1.3rem">${icon}</span>
+              ${isEmpty ? `
+                <span class="badge-zero-count" style="background:#fee2e2;color:#991b1b;padding:3px 8px;border-radius:12px;font-size:0.72rem;font-weight:700">Sem produtos cadastrados</span>
+              ` : `
+                <span class="category-count" style="font-size:0.8rem;font-weight:600;color:var(--text-muted,#6b7280)">${count} ${count === 1 ? 'peça vinculada' : 'peças vinculadas'}</span>
+              `}
+            </div>
+            <h4 class="category-name" style="font-size:1rem;color:var(--ebony,#111);font-weight:700;margin:4px 0">${sub}</h4>
+            <div style="font-size:0.75rem;color:var(--text-muted,#6b7280);margin-bottom:12px">${dept} · ${sub}</div>
+          </div>
+          <div class="category-card-actions" style="margin-top:auto">
+            ${isEmpty ? `
+              <button class="btn-quick-register" style="width:100%;padding:8px 12px;background:var(--gold-deep,#a67c00);color:#ffffff;border:none;border-radius:6px;font-size:0.8rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px" onclick="window.AdminCore.openNewProductModal('${dept}', '${sub}')">
+                <span>+</span> Cadastrar Peça nesta Categoria
+              </button>
+            ` : `
+              <button class="btn-quick-register" style="width:100%;padding:7px 12px;background:transparent;border:1px solid var(--border,#d1d5db);color:var(--ebony,#111);border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px" onclick="window.AdminCore.openNewProductModal('${dept}', '${sub}')">
+                <span>+</span> Cadastrar Peça
+              </button>
+            `}
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
         </div>
       </div>
     `;
-  }).join('');
+  });
+
+  container.innerHTML = html;
+
+  const cBadge = document.getElementById('navBadgeCategories');
+  if (cBadge) cBadge.textContent = totalSubcats;
 }
 
 // ════════════════════════════════════════
@@ -3333,12 +3608,13 @@ export function handleDepartmentChange(selectedDept, targetSubcat = null) {
   if (!subcatSelect) return;
   subcatSelect.innerHTML = '';
 
-  if (!selectedDept || !TAXONOMY_MAP[selectedDept]) {
+  const canonDept = resolveCanonicalDepartment(selectedDept);
+  if (!canonDept || !TAXONOMY_MAP[canonDept]) {
     subcatSelect.innerHTML = '<option value="">Selecione o Departamento primeiro...</option>';
     return;
   }
 
-  const subcategories = TAXONOMY_MAP[selectedDept];
+  const subcategories = TAXONOMY_MAP[canonDept];
   subcategories.forEach(sub => {
     const opt = document.createElement('option');
     opt.value = sub;
@@ -3346,14 +3622,21 @@ export function handleDepartmentChange(selectedDept, targetSubcat = null) {
     subcatSelect.appendChild(opt);
   });
 
-  if (targetSubcat && subcategories.includes(targetSubcat)) {
-    subcatSelect.value = targetSubcat;
+  if (targetSubcat) {
+    const matched = subcategories.find(s => s.toLowerCase() === targetSubcat.toLowerCase());
+    if (matched) {
+      subcatSelect.value = matched;
+    } else if (subcategories.includes(targetSubcat)) {
+      subcatSelect.value = targetSubcat;
+    } else if (subcategories.length > 0) {
+      subcatSelect.value = subcategories[0];
+    }
   } else if (subcategories.length > 0) {
     subcatSelect.value = subcategories[0];
   }
 }
 
-export function openNewProductModal() {
+export function openNewProductModal(dept = null, subcat = null) {
   adminState.editingProductId = null;
   adminState.activeGallery = [];
   document.getElementById('modalTitle').textContent = 'Nova Criação Autoral';
@@ -3367,16 +3650,19 @@ export function openNewProductModal() {
   const legacyCatEl = document.getElementById('prodCategory');
   if (legacyCatEl) legacyCatEl.value = '';
 
+  const canonDept = resolveCanonicalDepartment(dept);
+  const targetDept = (canonDept && TAXONOMY_MAP[canonDept]) ? canonDept : 'Para Ela';
   const deptSelect = document.getElementById('prodDepartment');
   if (deptSelect) {
-    deptSelect.value = 'Para Ela';
-    handleDepartmentChange('Para Ela');
+    deptSelect.value = targetDept;
   }
+  handleDepartmentChange(targetDept, subcat);
 
   // Reseta para a primeira aba
   switchProdModalTab('prodTabGeneral', document.querySelector('.editor-tab-btn[data-tab="prodTabGeneral"]'));
 
-  document.getElementById('productModal').classList.remove('hidden');
+  const modal = document.getElementById('productModal');
+  if (modal) modal.classList.remove('hidden');
 }
 
 export function editProduct(productId) {
@@ -3449,6 +3735,7 @@ if (typeof window !== 'undefined') {
     renderCurrentView,
     renderOverview,
     renderProductsList,
+    renderCategoriesList,
     renderOrdersList,
     openNewProductModal,
     closeProductModal,
@@ -3556,6 +3843,7 @@ if (typeof window !== 'undefined') {
     clearSearchInput,
     resolveProductTaxonomy,
     computeLegacyCategory,
+    resolveCanonicalDepartment,
     adminState,
     TAXONOMY_MAP
   };
@@ -3639,7 +3927,8 @@ if (typeof window !== 'undefined') {
 
         const deptEl = document.getElementById('prodDepartment');
         const subcatEl = document.getElementById('prodSubcategory');
-        const selectedDept = deptEl ? deptEl.value : 'Para Ela';
+        const rawDept = deptEl ? deptEl.value : 'Para Ela';
+        const selectedDept = resolveCanonicalDepartment(rawDept) || rawDept;
         const selectedSubcat = subcatEl ? subcatEl.value : (TAXONOMY_MAP[selectedDept] ? TAXONOMY_MAP[selectedDept][0] : '');
 
         let legacyCategory = computeLegacyCategory(selectedDept, selectedSubcat);

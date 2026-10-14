@@ -142,6 +142,20 @@ class ChromeCDP:
         })
 
     def navigate(self, url, wait_load=True, timeout=10.0):
+        # Drain any pending socket frames before triggering new navigation
+        if self.ws:
+            old_timeout = self.ws.gettimeout()
+            self.ws.settimeout(0.01)
+            while True:
+                try:
+                    raw = self.ws.recv()
+                    msg = json.loads(raw)
+                    if "id" in msg:
+                        self.pending_responses[msg["id"]] = msg
+                except (websocket.WebSocketTimeoutException, Exception):
+                    break
+            self.ws.settimeout(old_timeout)
+
         self.events.clear()
         res = self.send("Page.navigate", {"url": url}, timeout=timeout)
         
@@ -167,6 +181,18 @@ class ChromeCDP:
                     pass
                 time.sleep(0.05)
             
+            # If not about:blank, verify document.readyState is interactive or complete
+            if url != "about:blank":
+                ready_start = time.time()
+                while time.time() - ready_start < timeout:
+                    try:
+                        state = self.evaluate("document.readyState", timeout=1.0)
+                        if state in ("interactive", "complete"):
+                            break
+                    except Exception:
+                        pass
+                    time.sleep(0.05)
+
             # Settlement delay for dynamic script evaluation (e.g. shared-ui.js runtime injection)
             time.sleep(0.3)
         return res
@@ -233,7 +259,10 @@ class ChromeCDP:
         })
 
     def clear_local_storage(self):
-        return self.evaluate("localStorage.clear(); sessionStorage.clear(); true;")
+        try:
+            return self.evaluate("try { localStorage.clear(); sessionStorage.clear(); } catch(e){} true;")
+        except Exception:
+            return True
 
     def get_local_storage(self, key):
         js = f"localStorage.getItem({json.dumps(key)})"
