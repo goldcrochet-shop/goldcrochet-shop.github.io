@@ -1769,8 +1769,11 @@
             <div class="gc-cart-item" style="align-items:center;gap:14px;padding:14px;border:1px solid var(--color-border);border-radius:14px;background:#fff">
               <img src="${img}" alt="${p.name}" class="gc-cart-item-img" style="width:72px;height:90px;object-fit:cover;border-radius:10px" onerror="this.src='${root}assets/icon.svg'">
               <div class="gc-cart-item-info" style="flex:1">
+                <div class="gc-product-tax-badges" style="margin-bottom:4px">
+                  <span class="gc-badge-dept" style="font-size:0.65rem">${p.department || (p.category ? p.category.toUpperCase() : 'ALTA-COSTURA')}</span>
+                  ${p.subcategory ? `<span class="gc-badge-tax-divider">·</span><span class="gc-badge-subcat" style="font-size:0.68rem">${p.subcategory}</span>` : ''}
+                </div>
                 <h4 style="margin:0 0 4px;font-size:0.92rem;font-weight:600;color:var(--color-ebony)">${p.name}</h4>
-                <div style="font-size:0.78rem;color:var(--color-muted);margin-bottom:6px">${p.category ? p.category.toUpperCase() : 'ALTA-COSTURA'}</div>
                 <div style="font-weight:700;color:var(--color-ebony);font-size:0.95rem">${formattedPrice}</div>
                 <div style="display:flex;gap:8px;margin-top:8px">
                   <button class="gc-btn-checkout" onclick="window.GoldCart.add({id:${p.id},name:'${safeName}',price:${p.price || 0},image:'${img}',slug:'${p.slug || ''}'}, 1); closeWishlist();" style="padding:6px 14px;font-size:0.78rem;width:auto;white-space:nowrap;color:#fff!important;background:var(--color-ebony);">
@@ -2120,6 +2123,165 @@
         b.classList.remove('show');
         setTimeout(() => b.remove(), 500);
       }
+    }
+  };
+
+  // ════════════════════════════════════════
+  // 9. MOTOR CENTRALIZADO DE CARROSSEL CIRCULAR CONTÍNUO (HAUTE COUTURE)
+  // Triplicação exata (1/3), início no terço central, inércia e proteção contra clique
+  // ════════════════════════════════════════
+  window.GoldCarousel = {
+    setup: function(track, options = {}) {
+      if (!track) return null;
+      const {
+        prevBtn = null,
+        nextBtn = null,
+        autoPlayInterval = 0,
+        stepWidth = 320
+      } = options;
+
+      const initializePosition = () => {
+        const oneThird = track.scrollWidth / 3;
+        if (oneThird > 0) {
+          track.scrollLeft = oneThird;
+        }
+      };
+
+      initializePosition();
+      setTimeout(initializePosition, 50);
+      setTimeout(initializePosition, 250);
+
+      const checkInfiniteLoop = () => {
+        const oneThird = track.scrollWidth / 3;
+        if (oneThird <= 0) return;
+        if (track.scrollLeft >= oneThird * 2) {
+          track.scrollLeft -= oneThird;
+        } else if (track.scrollLeft <= 15) {
+          track.scrollLeft += oneThird;
+        }
+      };
+
+      const advance = () => {
+        const oneThird = track.scrollWidth / 3;
+        if (oneThird > 0 && track.scrollLeft >= oneThird * 2 - 20) {
+          track.scrollLeft -= oneThird;
+        }
+        track.scrollBy({ left: stepWidth, behavior: 'smooth' });
+      };
+
+      const retreat = () => {
+        const oneThird = track.scrollWidth / 3;
+        if (oneThird > 0 && track.scrollLeft <= oneThird + 20) {
+          track.scrollLeft += oneThird;
+        }
+        track.scrollBy({ left: -stepWidth, behavior: 'smooth' });
+      };
+
+      track.addEventListener('scroll', checkInfiniteLoop, { passive: true });
+
+      let autoPlayTimer = autoPlayInterval > 0 ? setInterval(advance, autoPlayInterval) : null;
+      const resetTimer = () => {
+        if (autoPlayTimer) {
+          clearInterval(autoPlayTimer);
+          autoPlayTimer = setInterval(advance, autoPlayInterval);
+        }
+      };
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          retreat();
+          resetTimer();
+        });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          advance();
+          resetTimer();
+        });
+      }
+
+      // Física Tátil & Arraste Mouse com Inércia
+      let isDown = false;
+      let startX = 0;
+      let startScrollLeft = 0;
+      let lastX = 0;
+      let lastTime = 0;
+      let velocity = 0;
+      let hasMoved = false;
+      window.__gcCarouselDragged = false;
+
+      const onStart = (clientX, target) => {
+        if (target && target.closest && target.closest('.gc-card-fav-btn, button, a')) return;
+        isDown = true;
+        hasMoved = false;
+        window.__gcCarouselDragged = false;
+        startX = clientX;
+        lastX = clientX;
+        startScrollLeft = track.scrollLeft;
+        lastTime = Date.now();
+        velocity = 0;
+        resetTimer();
+
+        track.classList.add('grabbing');
+        track.style.scrollBehavior = 'auto';
+        track.style.scrollSnapType = 'none';
+      };
+
+      const onMove = (clientX) => {
+        if (!isDown) return;
+        const dx = clientX - startX;
+        if (Math.abs(dx) > 6) {
+          hasMoved = true;
+          window.__gcCarouselDragged = true;
+        }
+        const now = Date.now();
+        const dt = Math.max(now - lastTime, 16);
+        velocity = (clientX - lastX) / dt;
+        lastX = clientX;
+        lastTime = now;
+
+        track.scrollLeft = startScrollLeft - dx;
+      };
+
+      const onEnd = () => {
+        if (!isDown) return;
+        isDown = false;
+        track.classList.remove('grabbing');
+        track.style.scrollBehavior = 'smooth';
+        track.style.scrollSnapType = 'x mandatory';
+
+        if (hasMoved) {
+          const momentum = velocity * 260;
+          track.scrollBy({ left: -momentum, behavior: 'smooth' });
+          setTimeout(() => { window.__gcCarouselDragged = false; }, 140);
+        } else {
+          window.__gcCarouselDragged = false;
+        }
+        resetTimer();
+      };
+
+      track.addEventListener('mousedown', (e) => {
+        onStart(e.pageX, e.target);
+        e.preventDefault();
+      });
+      window.addEventListener('mousemove', (e) => onMove(e.pageX));
+      window.addEventListener('mouseup', onEnd);
+
+      track.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches[0]) {
+          onStart(e.touches[0].clientX, e.target);
+        }
+      }, { passive: true });
+      track.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches[0]) {
+          onMove(e.touches[0].clientX);
+        }
+      }, { passive: true });
+      track.addEventListener('touchend', onEnd);
+
+      return { advance, retreat, resetTimer, checkInfiniteLoop };
     }
   };
 

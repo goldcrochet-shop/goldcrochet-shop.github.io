@@ -41,7 +41,9 @@ export function generateProductHtml(product, allProducts = [], config = {}) {
     }
   });
 
-  const categoryName = p.category ? p.category.toUpperCase() : 'ALTA-COSTURA';
+  const dept = p.department || (p.gender === 'masculino' ? 'Para Ele' : (p.section === 'casa' || p.category === 'decoracoes' ? 'Para Casa' : (p.category === 'bolsas' ? 'Acessórios & Bijuterias' : 'Para Ela')));
+  const subcat = p.subcategory || (p.category === 'saias-vestidos' ? 'Saias e Vestidos' : (p.category === 'tops' ? 'Tops' : (p.category === 'calcas' ? 'Calças e Shorts' : (p.category === 'bolsas' ? 'Bolsas' : (p.category ? p.category.toUpperCase() : 'ALTA-COSTURA')))));
+  const categoryName = subcat.toUpperCase();
   const material = p.material || 'Fio 100% Algodão Nobre selecionado à mão';
   const prodTime = p.prod_time ? `${p.prod_time} horas de tecelagem manual` : 'Feito artesanalmente sob demanda';
   const desc = p.desc || 'Peça exclusiva em crochê manual criada pelo Ateliê Gold Crochet.';
@@ -155,7 +157,11 @@ ${schemaJson}
       <div class="gc-product-info">
         <div>
           ${p.badge ? `<span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:12px">${p.badge}</span>` : ''}
-          <span style="display:block;font-size:0.75rem;color:var(--color-muted);letter-spacing:0.15em;text-transform:uppercase;font-weight:600;margin-bottom:4px">${categoryName}</span>
+          <div class="gc-product-tax-badges" style="margin-bottom:8px">
+            <span class="gc-badge-dept">${dept}</span>
+            <span class="gc-badge-tax-divider">·</span>
+            <span class="gc-badge-subcat">${subcat}</span>
+          </div>
           <h1 class="gc-product-title">${p.name}</h1>
         </div>
 
@@ -346,6 +352,8 @@ ${schemaJson}
         const pSlug = item.slug || 'produto';
         const pImg = item.image || (item.gallery && item.gallery[0]) || '../assets/icon.svg';
         const pPrice = item.price ? ('R$ ' + Number(item.price).toFixed(2).replace('.', ',')) : 'Sob Consulta';
+        const iDept = item.department || (item.gender === 'masculino' ? 'Para Ele' : (item.section === 'casa' || item.category === 'decoracoes' ? 'Para Casa' : (item.category === 'bolsas' ? 'Acessórios & Bijuterias' : 'Para Ela')));
+        const iSubcat = item.subcategory || (item.category === 'saias-vestidos' ? 'Saias e Vestidos' : (item.category === 'tops' ? 'Tops' : (item.category === 'calcas' ? 'Calças e Shorts' : (item.category === 'bolsas' ? 'Bolsas' : (item.category ? item.category.toUpperCase() : 'ALTA-COSTURA')))));
         return '<div class="gc-product-card" onclick="window.location.href=\\'./\\' + \\'' + pSlug + '\\' + \\'.html\\'" style="cursor:pointer">' +
           '<div class="gc-product-card-img-wrap">' +
             '<button class="gc-card-fav-btn" data-id="' + item.id + '" onclick="event.stopPropagation(); window.GoldFav.toggle(' + item.id + ');" aria-label="Favoritar">' +
@@ -354,6 +362,11 @@ ${schemaJson}
             '<img src="' + pImg + '" alt="' + item.name + '" class="gc-product-card-img" loading="lazy" onerror="this.src=\\'../assets/icon.svg\\'">' +
           '</div>' +
           '<div class="gc-product-card-body">' +
+            '<div class="gc-product-tax-badges">' +
+              '<span class="gc-badge-dept">' + iDept + '</span>' +
+              '<span class="gc-badge-tax-divider">·</span>' +
+              '<span class="gc-badge-subcat">' + iSubcat + '</span>' +
+            '</div>' +
             '<h3 class="gc-product-title">' + item.name + '</h3>' +
             '<div class="gc-product-price-row">' +
               '<span class="gc-product-price">' + pPrice + '</span>' +

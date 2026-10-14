@@ -128,22 +128,24 @@
   <script src="./js/loader.js?v=2026"></script>
   <script src="./js/shared-ui.js?v=2026"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
+    async function renderCollectionsPage() {
       const products = await window.fetchCatalog();
       if (!products || !products.length) return;
 
       // Busca coleções do Firestore ou Cache Local
       let collections = [];
       try {
-        const cached = localStorage.getItem('gc_cached_collections');
+        const cached = localStorage.getItem('gc_collections_v2') || localStorage.getItem('gc_cached_collections');
         if (cached) collections = JSON.parse(cached);
       } catch(e) {}
 
       if (!collections.length) {
         collections = [
-          { id: 'essenciais', slug: 'Essenciais', name: 'Coleção Essenciais', icon: '🧶', desc: 'O luxo despretensioso das formas puras e peças atemporais para qualquer ocasião.' },
-          { id: 'alto-verao', slug: 'alto-verao', name: 'Alto Verão & Resort', icon: '☀️', desc: 'Leveza e fluidez sob a luz tropical: vestidos, regatas e bolsas de palha e algodão.' },
-          { id: 'casa-brasil', slug: 'casa-brasil', name: 'Coleção Casa Brasil', icon: '🏡', desc: 'Aconchego botânico e requinte à mesa posta em peças de puro algodão.' }
+          { id: 'raizes-douradas', slug: 'raizes-douradas', name: 'Raízes Douradas', icon: '✨', desc: 'A essência do crochê autoral refinado em fios nobres e tramas douradas que celebram a ancestralidade brasileira.', productIds: [1789954142890, 1789954688278] },
+          { id: 'botanica-serena', slug: 'botanica-serena', name: 'Botânica Serena', icon: '🌿', desc: 'Tons terrosos, verde-oliva e formas orgânicas inspiradas na exuberância e no frescor da flora tropical.', productIds: [1789955083971] },
+          { id: 'alto-verao', slug: 'alto-verao', name: 'Alto Verão & Resort', icon: '☀️', desc: 'Leveza e fluidez sob a luz tropical: vestidos, regatas e bolsas de palha e algodão.', productIds: [1789954688278, 1789955083971] },
+          { id: 'casa-brasil', slug: 'casa-brasil', name: 'Casa Brasil & Mesa Posta', icon: '🏡', desc: 'Aconchego botânico e requinte à mesa posta em peças de puro algodão e tramas aveludadas.', productIds: [] },
+          { id: 'essenciais', slug: 'Essenciais', name: 'Coleção Essenciais', icon: '🧶', desc: 'O luxo despretensioso das formas puras e peças atemporais para qualquer ocasião.', productIds: [1789954142890, 1789954688278] }
         ];
       }
 
@@ -152,9 +154,11 @@
         const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
         const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
         const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '';
+        const dept = p.department || (p.gender === 'masculino' ? 'Para Ele' : (p.section === 'casa' || p.category === 'decoracoes' ? 'Para Casa' : (p.category === 'bolsas' ? 'Acessórios & Bijuterias' : 'Para Ela')));
+        const subcat = p.subcategory || (p.category === 'saias-vestidos' ? 'Saias e Vestidos' : (p.category === 'tops' ? 'Tops' : (p.category === 'calcas' ? 'Calças e Shorts' : (p.category === 'bolsas' ? 'Bolsas' : 'Alta-Costura'))));
 
         return `
-          <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer;flex:0 0 280px;scroll-snap-align:start;">
+          <div class="gc-product-card" href="./produtos/${slug}.html" data-href="./produtos/${slug}.html" onclick="if(!window.__gcCarouselDragged) window.location.href='./produtos/${slug}.html'" style="cursor:pointer;flex:0 0 280px;scroll-snap-align:start;">
             <div class="gc-product-card-img-wrap">
               ${badge}
               <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
@@ -165,8 +169,12 @@
               <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
             </div>
             <div class="gc-product-card-body">
-              <span class="gc-product-category">${p.collection || p.category || 'Ateliê'}</span>
-              <h3 class="gc-product-title">${p.name}</h3>
+              <div class="gc-product-tax-badges">
+                <span class="gc-badge-dept">${dept}</span>
+                <span class="gc-badge-tax-divider">·</span>
+                <span class="gc-badge-subcat">${subcat}</span>
+              </div>
+              <h3 class="gc-product-title"><a href="./produtos/${slug}.html" style="text-decoration:none;color:inherit">${p.name}</a></h3>
               <p class="gc-product-desc">${p.desc || ''}</p>
               <div class="gc-product-price-row">
                 <span class="gc-product-price">${priceStr}</span>
@@ -182,7 +190,9 @@
       container.innerHTML = collections.map((col, cIdx) => {
         // Filtra peças pertencentes à coleção
         let colProducts = products.filter(p => {
+          if (Array.isArray(col.productIds) && col.productIds.length > 0 && col.productIds.map(Number).includes(Number(p.id))) return true;
           if (p.collection && (p.collection.toLowerCase() === col.name.toLowerCase() || p.collection.toLowerCase() === col.slug.toLowerCase())) return true;
+          if (Array.isArray(p.collections) && (p.collections.includes(col.slug) || p.collections.includes(col.name))) return true;
           if (col.slug === 'Essenciais' && p.category === 'bolsas') return true;
           if (col.slug === 'alto-verao' && (p.category === 'vestuario' || p.category === 'saias-vestidos' || p.category === 'tops')) return true;
           if (col.slug === 'casa-brasil' && (p.category === 'casa-gold' || p.category === 'decoracoes' || p.section === 'casa')) return true;
@@ -193,8 +203,16 @@
           colProducts = products.slice(cIdx * 2, (cIdx * 2) + 4);
         }
 
-        // Duplicação para loop infinito no carrossel
-        const infiniteItems = colProducts.length >= 2 ? [...colProducts, ...colProducts, ...colProducts] : colProducts;
+        // Preenchimento de base se quantidade for pequena para garantir transição fluida contínua
+        let baseList = [...colProducts];
+        if (baseList.length > 0 && baseList.length < 6) {
+          while (baseList.length < 6) {
+            baseList = baseList.concat(colProducts);
+          }
+        }
+
+        // Triplicação exata para loop circular contínuo
+        const infiniteItems = baseList.length > 0 ? [...baseList, ...baseList, ...baseList] : [];
         const trackId = `trackCol_${cIdx}`;
 
         return `
@@ -209,8 +227,8 @@
                   Ver Coleção Completa &gt;
                 </a>
                 <div style="display:flex;gap:6px">
-                  <button class="gc-carousel-arrow-btn" onclick="const t=document.getElementById('${trackId}'); if(t) t.scrollBy({left:-300,behavior:'smooth'});" aria-label="Voltar">&lt;</button>
-                  <button class="gc-carousel-arrow-btn" onclick="const t=document.getElementById('${trackId}'); if(t) t.scrollBy({left:300,behavior:'smooth'});" aria-label="Avançar">&gt;</button>
+                  <button id="prevBtn_${cIdx}" class="gc-carousel-arrow-btn" onclick="const t=document.getElementById('${trackId}'); if(t){ const third=t.scrollWidth/3; if(third>0 && t.scrollLeft<=third+20) t.scrollLeft+=third; t.scrollBy({left:-300,behavior:'smooth'}); }" aria-label="Voltar">&lt;</button>
+                  <button id="nextBtn_${cIdx}" class="gc-carousel-arrow-btn" onclick="const t=document.getElementById('${trackId}'); if(t){ const third=t.scrollWidth/3; if(third>0 && t.scrollLeft>=third*2-20) t.scrollLeft-=third; t.scrollBy({left:300,behavior:'smooth'}); }" aria-label="Avançar">&gt;</button>
                 </div>
               </div>
             </div>
@@ -223,24 +241,46 @@
         `;
       }).join('');
 
-      // Adiciona listener de loop infinito para cada carrossel de coleção
+      // Adiciona listener de loop infinito e inicialização no terço central
       collections.forEach((col, cIdx) => {
         const track = document.getElementById(`trackCol_${cIdx}`);
         if (!track) return;
-        track.addEventListener('scroll', () => {
-          const half = track.scrollWidth / 2;
-          if (track.scrollLeft >= half) {
-            track.scrollLeft -= half;
-          } else if (track.scrollLeft <= 5) {
-            track.scrollLeft += half;
+        const prevBtn = document.getElementById(`prevBtn_${cIdx}`);
+        const nextBtn = document.getElementById(`nextBtn_${cIdx}`);
+
+        // Posição inicial no terço central (divisão exata por 3)
+        const initPos = () => {
+          const oneThird = track.scrollWidth / 3;
+          if (oneThird > 0) {
+            track.scrollLeft = oneThird;
           }
-        }, { passive: true });
+        };
+        initPos();
+        setTimeout(initPos, 50);
+        setTimeout(initPos, 200);
+
+        if (window.GoldCarousel && typeof window.GoldCarousel.setup === 'function') {
+          window.GoldCarousel.setup(track, { prevBtn, nextBtn, autoPlayInterval: 0, stepWidth: 300 });
+        } else {
+          track.addEventListener('scroll', () => {
+            const third = track.scrollWidth / 3;
+            if (third <= 0) return;
+            if (track.scrollLeft >= third * 2) {
+              track.scrollLeft -= third;
+            } else if (track.scrollLeft <= 15) {
+              track.scrollLeft += third;
+            }
+          }, { passive: true });
+        }
       });
 
       if (window.GoldFav && window.GoldFav.updateUI) {
         window.GoldFav.updateUI();
       }
-    });
+    }
+
+    window.renderCollectionsPage = renderCollectionsPage;
+    document.addEventListener('DOMContentLoaded', renderCollectionsPage);
   </script>
 </body>
 </html>

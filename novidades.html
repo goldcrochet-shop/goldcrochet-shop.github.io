@@ -124,11 +124,19 @@
       const spotEl = document.getElementById('spotlightSection');
       if (spotlight && spotEl) {
         const spotPrice = spotlight.price ? `R$ ${Number(spotlight.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+        const sDept = spotlight.department || (spotlight.gender === 'masculino' ? 'Para Ele' : (spotlight.section === 'casa' || spotlight.category === 'decoracoes' ? 'Para Casa' : (spotlight.category === 'bolsas' ? 'Acessórios & Bijuterias' : 'Para Ela')));
+        const sSubcat = spotlight.subcategory || (spotlight.category === 'saias-vestidos' ? 'Saias e Vestidos' : (spotlight.category === 'tops' ? 'Tops' : (spotlight.category === 'calcas' ? 'Calças e Shorts' : (spotlight.category === 'bolsas' ? 'Bolsas' : 'Alta-Costura'))));
+
         spotEl.innerHTML = `
           <div class="gc-spotlight-card">
             <img src="${spotlight.image || (spotlight.gallery && spotlight.gallery[0]) || './assets/icon.svg'}" alt="${spotlight.name}" class="gc-spotlight-img" onerror="this.src='./assets/icon.svg'">
             <div class="gc-spotlight-info">
-              <span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:12px">Destaque Exclusivo</span>
+              <span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:8px">Destaque Exclusivo</span>
+              <div class="gc-product-tax-badges" style="margin-bottom:8px">
+                <span class="gc-badge-dept">${sDept}</span>
+                <span class="gc-badge-tax-divider">·</span>
+                <span class="gc-badge-subcat">${sSubcat}</span>
+              </div>
               <h2>${spotlight.name}</h2>
               <p>${spotlight.desc || 'Peça artesanal recém-adicionada ao catálogo oficial com fio nobre e caimento incomparável.'}</p>
               <div style="font-family:var(--font-body);font-size:1.6rem;font-weight:700;color:var(--color-gold-deep);margin-bottom:24px">${spotPrice}</div>
@@ -148,6 +156,8 @@
           const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
           const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
           const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '<span class="gc-badge-tag">Lançamento</span>';
+          const dept = p.department || (p.gender === 'masculino' ? 'Para Ele' : (p.section === 'casa' || p.category === 'decoracoes' ? 'Para Casa' : (p.category === 'bolsas' ? 'Acessórios & Bijuterias' : 'Para Ela')));
+          const subcat = p.subcategory || (p.category === 'saias-vestidos' ? 'Saias e Vestidos' : (p.category === 'tops' ? 'Tops' : (p.category === 'calcas' ? 'Calças e Shorts' : (p.category === 'bolsas' ? 'Bolsas' : 'Alta-Costura'))));
 
           return `
             <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
@@ -161,7 +171,11 @@
                 <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
               </div>
               <div class="gc-product-card-body">
-                <span class="gc-product-category">${p.category || 'Ateliê'}</span>
+                <div class="gc-product-tax-badges">
+                  <span class="gc-badge-dept">${dept}</span>
+                  <span class="gc-badge-tax-divider">·</span>
+                  <span class="gc-badge-subcat">${subcat}</span>
+                </div>
                 <h3 class="gc-product-title">${p.name}</h3>
                 <p class="gc-product-desc">${p.desc || ''}</p>
                 <div class="gc-product-price-row">

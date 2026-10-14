@@ -1,0 +1,274 @@
+[
+  {
+    "test": "TEST 1: Initial Page Load & Catalog Rendering",
+    "pass": true,
+    "details": {
+      "deptButtonsCount": 7,
+      "deptButtons": [
+        {
+          "text": "Todas as Peças",
+          "dept": "all",
+          "filter": "all",
+          "isActive": true
+        },
+        {
+          "text": "Para Ela",
+          "dept": "Para Ela",
+          "filter": "Para Ela",
+          "isActive": false
+        },
+        {
+          "text": "Para Ele",
+          "dept": "Para Ele",
+          "filter": "Para Ele",
+          "isActive": false
+        },
+        {
+          "text": "Para Casa",
+          "dept": "Para Casa",
+          "filter": "Para Casa",
+          "isActive": false
+        },
+        {
+          "text": "Pequeninos",
+          "dept": "Pequeninos",
+          "filter": "Pequeninos",
+          "isActive": false
+        },
+        {
+          "text": "Acessórios & Bijuterias",
+          "dept": "Acessórios & Bijuterias",
+          "filter": "Acessórios & Bijuterias",
+          "isActive": false
+        },
+        {
+          "text": "Meus Favoritos",
+          "dept": "favoritos",
+          "filter": "favoritos",
+          "isActive": false
+        }
+      ],
+      "subcatBarDisplay": "none",
+      "subcatButtonsCount": 0,
+      "cardsCount": 13,
+      "counterText": "13 peças encontradas",
+      "allProductsCount": -1
+    }
+  },
+  {
+    "test": "TEST 2: Department Selection & DOM Active State Update",
+    "pass": true,
+    "activeStateBugDetected": false,
+    "details": {
+      "paraCasaBtnActive": true,
+      "allBtnActive": false,
+      "subcatBarDisplay": "flex",
+      "subcatButtonsCount": 6,
+      "subcatButtons": [
+        {
+          "subcat": "all",
+          "text": "Todas as Subcategorias",
+          "isActive": true
+        },
+        {
+          "subcat": "Amigurumis",
+          "text": "Amigurumis",
+          "isActive": false
+        },
+        {
+          "subcat": "Mantas e Cobertores",
+          "text": "Mantas e Cobertores",
+          "isActive": false
+        },
+        {
+          "subcat": "Decorações",
+          "text": "Decorações",
+          "isActive": false
+        },
+        {
+          "subcat": "Sousplats & Mesas",
+          "text": "Sousplats & Mesas",
+          "isActive": false
+        },
+        {
+          "subcat": "Almofadas",
+          "text": "Almofadas",
+          "isActive": false
+        }
+      ],
+      "cardsCount": 3,
+      "cards": [
+        {
+          "title": "DÚO CELESTIAL SOL E LUA",
+          "dept": "Para Casa",
+          "subcat": "Decorações"
+        },
+        {
+          "title": "JOGO AMERICANO & TRILHO IPÊ ROSA CASA BRASIL",
+          "dept": "Para Casa",
+          "subcat": "Sousplats & Mesas"
+        },
+        {
+          "title": "URSINHO AMIGURUMI SONHO DE ALGODÃO",
+          "dept": "Para Casa",
+          "subcat": "Amigurumis"
+        }
+      ],
+      "urlSearch": "?departamento=Para+Casa"
+    }
+  },
+  {
+    "test": "TEST 3: Subcategory Isolation (Amigurumis)",
+    "pass": true,
+    "details": {
+      "amigurumiActive": true,
+      "allSubcatActive": false,
+      "cardsCount": 1,
+      "cards": [
+        {
+          "title": "URSINHO AMIGURUMI SONHO DE ALGODÃO",
+          "dept": "Para Casa",
+          "subcat": "Amigurumis"
+        }
+      ],
+      "counterText": "1 peça encontrada",
+      "urlSearch": "?departamento=Para+Casa&subcategoria=Amigurumis"
+    }
+  },
+  {
+    "test": "TEST 4: Direct URL Navigation (?departamento=Para Ela&subcategoria=Saias e Vestidos)",
+    "pass": true,
+    "deptActiveBugDetected": false,
+    "details": {
+      "paraElaBtnActive": true,
+      "allDeptBtnActive": false,
+      "subcatBarDisplay": "flex",
+      "saiasVestidosActive": true,
+      "cardsCount": 2,
+      "cards": [
+        {
+          "title": "VESTIDO BOSSA CURTO",
+          "dept": "Para Ela",
+          "subcat": "Saias e Vestidos"
+        },
+        {
+          "title": "VESTIDO TRANCOSO MIDI",
+          "dept": "Para Ela",
+          "subcat": "Saias e Vestidos"
+        }
+      ]
+    }
+  },
+  {
+    "test": "TEST 5: Slug/Lowercase URL Navigation",
+    "pass": true,
+    "deptActiveBugDetected": false,
+    "details": {
+      "paraEleActive": true,
+      "camisasPolosActive": true,
+      "cardsCount": 1,
+      "cards": [
+        {
+          "title": "CAMISA ARPOADOR",
+          "dept": "Para Ele",
+          "subcat": "Camisas & Polos"
+        }
+      ]
+    }
+  },
+  {
+    "test": "TEST 6: Empty State and Reset Filters Button",
+    "pass": true,
+    "details": {
+      "stateBefore": {
+        "gridDisplay": "none",
+        "emptyDisplay": "flex",
+        "counterText": "0 peças encontradas"
+      },
+      "stateAfter": {
+        "gridDisplay": "grid",
+        "emptyDisplay": "none",
+        "cardsCount": 13,
+        "allDeptActive": true,
+        "subcatBarDisplay": "none",
+        "urlSearch": ""
+      }
+    }
+  },
+  {
+    "test": "TEST 7: Department Cycle Click Test",
+    "pass": true,
+    "activeDeptBugDetected": false,
+    "details": [
+      {
+        "dept": "Para Ela",
+        "activeDepts": [
+          "Para Ela"
+        ],
+        "subcatCount": 8,
+        "cardCount": 5,
+        "urlSearch": "?departamento=Para+Ela"
+      },
+      {
+        "dept": "Para Ele",
+        "activeDepts": [
+          "Para Ele"
+        ],
+        "subcatCount": 5,
+        "cardCount": 2,
+        "urlSearch": "?departamento=Para+Ele"
+      },
+      {
+        "dept": "Para Casa",
+        "activeDepts": [
+          "Para Casa"
+        ],
+        "subcatCount": 6,
+        "cardCount": 3,
+        "urlSearch": "?departamento=Para+Casa"
+      },
+      {
+        "dept": "Pequeninos",
+        "activeDepts": [
+          "Pequeninos"
+        ],
+        "subcatCount": 5,
+        "cardCount": 1,
+        "urlSearch": "?departamento=Pequeninos"
+      },
+      {
+        "dept": "Acessórios & Bijuterias",
+        "activeDepts": [
+          "Acessórios & Bijuterias"
+        ],
+        "subcatCount": 5,
+        "cardCount": 2,
+        "urlSearch": "?departamento=Acess%C3%B3rios+%26+Bijuterias"
+      }
+    ]
+  },
+  {
+    "test": "TEST 8: Admin Product Form Taxonomy & Category Integrity",
+    "pass": true,
+    "categoryBugDetected": false,
+    "details": {
+      "initialDept": "Para Ela",
+      "initialSubcatsCount": 7,
+      "casaSubcatsCount": 5,
+      "casaSubcats": [
+        "Amigurumis",
+        "Mantas e Cobertores",
+        "Decorações",
+        "Sousplats & Mesas",
+        "Almofadas"
+      ],
+      "legacyInputDefaultValue": "",
+      "savedProduct": {
+        "name": "Bolsa Teste M1",
+        "dept": "Acessórios & Bijuterias",
+        "subcat": "Bolsas",
+        "category": "bolsas"
+      }
+    }
+  }
+]

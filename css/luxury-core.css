@@ -1577,8 +1577,45 @@ body.gc-scroll-locked {
   border: none !important;
 }
 
+.gc-product-tax-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+.gc-badge-dept {
+  font-family: var(--font-body, -apple-system, sans-serif);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-gold-deep, #a67c00);
+}
+
+.gc-badge-tax-divider {
+  font-size: 0.65rem;
+  color: var(--color-border, rgba(205, 164, 52, 0.4));
+  user-select: none;
+}
+
+.gc-badge-subcat {
+  font-family: var(--font-body, -apple-system, sans-serif);
+  font-size: 0.70rem;
+  font-weight: 500;
+  color: var(--color-muted, #736754);
+}
+
 .gc-product-category {
-  display: none !important;
+  display: inline-block;
+  font-family: var(--font-body, -apple-system, sans-serif);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gold-deep, #a67c00);
+  margin-bottom: 4px;
 }
 
 .gc-product-title {

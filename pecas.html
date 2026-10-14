@@ -111,13 +111,20 @@
         <input type="text" id="catalogSearch" class="gc-search-input" placeholder="Buscar por peça, tecido ou nome..." autocomplete="off">
       </div>
 
-      <div class="gc-filters-bar" id="filtersBar">
-        <button class="gc-filter-pill active" data-filter="all">Todas as Peças</button>
-        <button class="gc-filter-pill" data-filter="vestuario">Vestuário</button>
-        <button class="gc-filter-pill" data-filter="bolsas">Bolsas</button>
-        <button class="gc-filter-pill" data-filter="casa">Casa &amp; Mesa</button>
-        <button class="gc-filter-pill" data-filter="personalizado">Sob Medida</button>
-        <button class="gc-filter-pill" data-filter="favoritos">Meus Favoritos</button>
+      <!-- Nível 1: Departamentos / Linhas Oficiais -->
+      <div class="gc-filters-bar" id="deptFiltersBar">
+        <button class="gc-filter-pill gc-dept-pill active" data-dept="all" data-filter="all">Todas as Peças</button>
+        <button class="gc-filter-pill gc-dept-pill" data-dept="Para Ela" data-filter="Para Ela">Para Ela</button>
+        <button class="gc-filter-pill gc-dept-pill" data-dept="Para Ele" data-filter="Para Ele">Para Ele</button>
+        <button class="gc-filter-pill gc-dept-pill" data-dept="Para Casa" data-filter="Para Casa">Para Casa</button>
+        <button class="gc-filter-pill gc-dept-pill" data-dept="Pequeninos" data-filter="Pequeninos">Pequeninos</button>
+        <button class="gc-filter-pill gc-dept-pill" data-dept="Acessórios &amp; Bijuterias" data-filter="Acessórios &amp; Bijuterias">Acessórios &amp; Bijuterias</button>
+        <button class="gc-filter-pill gc-dept-pill" data-dept="favoritos" data-filter="favoritos">Meus Favoritos</button>
+      </div>
+
+      <!-- Nível 2: Subcategorias Dinâmicas -->
+      <div class="gc-filters-bar gc-subcat-filters-bar" id="subcatFiltersBar" style="display:none;margin-top:10px;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;">
+        <!-- Injetado dinamicamente via JS com base no departamento selecionado -->
       </div>
 
       <span class="gc-results-counter" id="resultsCount">Carregando acervo...</span>
@@ -129,13 +136,13 @@
     </section>
 
     <!-- Mensagem de Vazio -->
-    <div id="catalogEmpty" class="gc-empty-results">
+    <div id="catalogEmpty" class="gc-empty-results gc-empty-state gc-catalog-empty empty-state" style="display:none">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" stroke-width="1.5">
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
       <h3 style="font-family:var(--font-display);font-size:1.4rem">Nenhuma peça encontrada</h3>
-      <p style="color:var(--color-muted);max-width:420px">Tente buscar por outro termo ou selecione outra categoria.</p>
+      <p style="color:var(--color-muted);max-width:420px">Tente buscar por outro termo ou selecione outro departamento ou subcategoria.</p>
       <button class="gc-filter-pill" style="background:var(--color-gold);color:white;margin-top:10px" onclick="resetFilters()">Limpar Filtros</button>
     </div>
   </main>
@@ -144,23 +151,98 @@
   <script src="./js/loader.js?v=2026"></script>
   <script src="./js/shared-ui.js?v=2026"></script>
   <script>
+    const TAXONOMY_MAP = {
+      "Para Ela": [
+        "Roupas para Noite",
+        "Saias e Vestidos",
+        "Jaquetas e Casacos",
+        "Tops",
+        "Calças e Shorts",
+        "Praia & Resort",
+        "Sob Medida"
+      ],
+      "Para Ele": [
+        "Suéteres & Cardigans",
+        "Camisas & Polos",
+        "Bermudas & Shorts",
+        "Acessórios Masculinos"
+      ],
+      "Para Casa": [
+        "Amigurumis",
+        "Mantas e Cobertores",
+        "Decorações",
+        "Sousplats & Mesas",
+        "Almofadas"
+      ],
+      "Pequeninos": [
+        "Roupas Infantis",
+        "Sapatinhos & Toucas",
+        "Mantinhas Baby",
+        "Brinquedos Amigurumi"
+      ],
+      "Acessórios & Bijuterias": [
+        "Bolsas",
+        "Bijuterias & Brincos",
+        "Chaveiros",
+        "Faixas de Cabelo"
+      ]
+    };
+
+    function resolveTaxonomy(p) {
+      if (!p) return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
+      if (p.department && TAXONOMY_MAP[p.department]) {
+        const valid = TAXONOMY_MAP[p.department];
+        const sub = (p.subcategory && valid.includes(p.subcategory)) ? p.subcategory : valid[0];
+        return { department: p.department, subcategory: sub };
+      }
+      const cat = (p.category || '').toLowerCase();
+      const sec = (p.section || '').toLowerCase();
+      const gen = (p.gender || '').toLowerCase();
+      const name = (p.name || '').toLowerCase();
+
+      if (cat === 'bolsas' || sec === 'acessorios' || name.includes('bolsa') || name.includes('brinco') || name.includes('chaveiro')) {
+        return { department: 'Acessórios & Bijuterias', subcategory: 'Bolsas' };
+      }
+      if (cat === 'casa-gold' || cat === 'decoracoes' || sec === 'casa' || cat === 'amigurumi' || name.includes('trilho') || name.includes('americano') || name.includes('celestial') || name.includes('almofada') || name.includes('manta')) {
+        if (name.includes('trilho') || name.includes('americano') || name.includes('sousplat')) return { department: 'Para Casa', subcategory: 'Sousplats & Mesas' };
+        if (name.includes('celestial') || cat === 'decoracoes') return { department: 'Para Casa', subcategory: 'Decorações' };
+        if (cat === 'amigurumi' || name.includes('amigurumi')) return { department: 'Para Casa', subcategory: 'Amigurumis' };
+        return { department: 'Para Casa', subcategory: 'Decorações' };
+      }
+      if (cat === 'pequeninos' || cat === 'bebe' || cat === 'garotas' || cat === 'garotos' || name.includes('baby') || name.includes('infantil') || name.includes('sapatinho')) {
+        return { department: 'Pequeninos', subcategory: 'Sapatinhos & Toucas' };
+      }
+      if (gen === 'masculino' || name.includes('camisa') || name.includes('bermuda') || name.includes('sueter') || name.includes('arpoador')) {
+        if (name.includes('camisa') || name.includes('polo')) return { department: 'Para Ele', subcategory: 'Camisas & Polos' };
+        if (name.includes('bermuda') || name.includes('short')) return { department: 'Para Ele', subcategory: 'Bermudas & Shorts' };
+        return { department: 'Para Ele', subcategory: 'Suéteres & Cardigans' };
+      }
+      if (cat === 'personalizado' || name.includes('personalizada') || p.custom) return { department: 'Para Ela', subcategory: 'Sob Medida' };
+      if (cat === 'saias-vestidos' || name.includes('vestido') || name.includes('saia')) return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
+      if (cat === 'tops' || name.includes('regata') || name.includes('top') || name.includes('cropped')) return { department: 'Para Ela', subcategory: 'Tops' };
+      if (cat === 'calcas' || name.includes('short') || name.includes('calça')) return { department: 'Para Ela', subcategory: 'Calças e Shorts' };
+      if (cat === 'jaquetas-casacos' || name.includes('jaqueta') || name.includes('casaco')) return { department: 'Para Ela', subcategory: 'Jaquetas e Casacos' };
+      if (cat === 'roupas-noite') return { department: 'Para Ela', subcategory: 'Roupas para Noite' };
+      return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
+    }
+
     let allProducts = [];
-    let currentFilter = 'all';
+    let currentDept = 'all';
+    let currentSubcat = 'all';
+    let currentCollection = null;
     let searchQuery = '';
 
     document.addEventListener('DOMContentLoaded', async () => {
       allProducts = await window.fetchCatalog();
 
-      // Checa parâmetros de URL (ex: ?filtro=bolsas ou ?filtro=favoritos)
-      const urlParams = new URLSearchParams(window.location.search);
-      const initialFilter = urlParams.get('filtro') || urlParams.get('categoria') || 'all';
+      // Checa parâmetros de URL para sincronização completa
+      parseUrlParams();
 
-      setFilter(initialFilter);
-
-      // Eventos de filtro
-      document.querySelectorAll('#filtersBar .gc-filter-pill').forEach(btn => {
+      // Eventos de clique nos botões de departamento
+      document.querySelectorAll('#deptFiltersBar .gc-filter-pill, #filtersBar .gc-filter-pill').forEach(btn => {
         btn.addEventListener('click', () => {
-          setFilter(btn.dataset.filter);
+          const dept = btn.dataset.dept || btn.dataset.filter || 'all';
+          setDeptFilter(dept);
         });
       });
 
@@ -174,15 +256,171 @@
       }
     });
 
-    function setFilter(filter) {
-      currentFilter = filter;
-      document.querySelectorAll('#filtersBar .gc-filter-pill').forEach(btn => {
-        if (btn.dataset.filter === filter) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
+    function slugifyTaxonomy(str) {
+      if (!str) return '';
+      return str
+        .toString()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/&/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function matchTaxonomySlug(a, b) {
+      if (!a || !b) return false;
+      if (a.toLowerCase() === b.toLowerCase()) return true;
+      const sa = slugifyTaxonomy(a);
+      const sb = slugifyTaxonomy(b);
+      if (sa === sb) return true;
+      return sa.replace(/-e-/g, '-') === sb.replace(/-e-/g, '-');
+    }
+
+    function parseUrlParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const rawDept = urlParams.get('departamento') || urlParams.get('dept');
+      const rawSubcat = urlParams.get('subcategoria') || urlParams.get('subcat');
+      const rawCol = urlParams.get('colecao') || urlParams.get('collection');
+      const rawLegacy = urlParams.get('filtro') || urlParams.get('categoria') || urlParams.get('cat');
+
+      if (rawCol) currentCollection = rawCol;
+
+      let targetDept = 'all';
+      let targetSubcat = 'all';
+
+      if (rawDept) {
+        // Encontra departamento no mapa (tolerante a case/slug/acentos)
+        const matchKey = Object.keys(TAXONOMY_MAP).find(k => matchTaxonomySlug(k, rawDept));
+        if (matchKey) {
+          targetDept = matchKey;
+        } else if (rawDept.toLowerCase() === 'favoritos') {
+          targetDept = 'favoritos';
         }
+      } else if (rawLegacy) {
+        const leg = rawLegacy.toLowerCase();
+        if (leg === 'favoritos') targetDept = 'favoritos';
+        else if (leg === 'bolsas') { targetDept = 'Acessórios & Bijuterias'; targetSubcat = 'Bolsas'; }
+        else if (leg === 'vestuario') { targetDept = 'Para Ela'; }
+        else if (leg === 'saias-vestidos') { targetDept = 'Para Ela'; targetSubcat = 'Saias e Vestidos'; }
+        else if (leg === 'tops') { targetDept = 'Para Ela'; targetSubcat = 'Tops'; }
+        else if (leg === 'calcas') { targetDept = 'Para Ela'; targetSubcat = 'Calças e Shorts'; }
+        else if (leg === 'casa' || leg === 'casa-gold' || leg === 'decoracoes') { targetDept = 'Para Casa'; }
+        else if (leg === 'amigurumi') { targetDept = 'Para Casa'; targetSubcat = 'Amigurumis'; }
+        else if (leg === 'pequeninos' || leg === 'bebe') { targetDept = 'Pequeninos'; }
+        else if (leg === 'personalizado') { targetDept = 'Para Ela'; targetSubcat = 'Sob Medida'; }
+      }
+
+      if (rawSubcat && targetDept !== 'all' && TAXONOMY_MAP[targetDept]) {
+        const matchSub = TAXONOMY_MAP[targetDept].find(s => matchTaxonomySlug(s, rawSubcat));
+        targetSubcat = matchSub || rawSubcat;
+      } else if (rawSubcat && targetDept === 'all') {
+        for (const [dept, subList] of Object.entries(TAXONOMY_MAP)) {
+          const found = subList.find(s => matchTaxonomySlug(s, rawSubcat));
+          if (found) {
+            targetDept = dept;
+            targetSubcat = found;
+            break;
+          }
+        }
+        if (targetSubcat === 'all') targetSubcat = rawSubcat;
+      }
+
+      currentDept = targetDept;
+      currentSubcat = targetSubcat;
+      updateFilterButtonsUI();
+      renderSubcategoryPills();
+      renderCatalog();
+    }
+
+    function syncUrlParams() {
+      const url = new URL(window.location);
+      if (currentDept !== 'all') {
+        url.searchParams.set('departamento', currentDept);
+      } else {
+        url.searchParams.delete('departamento');
+        url.searchParams.delete('dept');
+      }
+
+      if (currentSubcat !== 'all') {
+        url.searchParams.set('subcategoria', currentSubcat);
+      } else {
+        url.searchParams.delete('subcategoria');
+        url.searchParams.delete('subcat');
+      }
+
+      if (currentCollection) {
+        url.searchParams.set('colecao', currentCollection);
+      } else {
+        url.searchParams.delete('colecao');
+        url.searchParams.delete('collection');
+      }
+
+      url.searchParams.delete('filtro');
+      url.searchParams.delete('categoria');
+      url.searchParams.delete('cat');
+
+      const cleanSearch = url.searchParams.toString();
+      const newUrl = url.pathname + (cleanSearch ? '?' + cleanSearch : '') + url.hash;
+      window.history.replaceState({}, '', newUrl);
+    }
+
+    function updateFilterButtonsUI() {
+      document.querySelectorAll('#deptFiltersBar .gc-filter-pill, #filtersBar .gc-filter-pill').forEach(btn => {
+        const dept = btn.dataset.dept || btn.dataset.filter;
+        btn.classList.toggle('active', dept === currentDept);
       });
+    }
+
+    function renderSubcategoryPills() {
+      const subcatBar = document.getElementById('subcatFiltersBar');
+      if (!subcatBar) return;
+
+      if (currentDept === 'all' || currentDept === 'favoritos' || !TAXONOMY_MAP[currentDept]) {
+        subcatBar.style.display = 'none';
+        subcatBar.innerHTML = '';
+        return;
+      }
+
+      const subcategories = TAXONOMY_MAP[currentDept];
+      subcatBar.style.display = 'flex';
+      
+      let html = `
+        <button class="gc-filter-pill gc-subcat-pill ${currentSubcat === 'all' ? 'active' : ''}" data-subcat="all" onclick="setSubcatFilter('all')">
+          Todas as Subcategorias
+        </button>
+      `;
+
+      subcategories.forEach(sub => {
+        const isActive = currentSubcat === sub;
+        html += `
+          <button class="gc-filter-pill gc-subcat-pill ${isActive ? 'active' : ''}" data-subcat="${sub}" onclick="setSubcatFilter('${sub}')">
+            ${sub}
+          </button>
+        `;
+      });
+
+      subcatBar.innerHTML = html;
+    }
+
+    function setDeptFilter(dept, syncUrl = true) {
+      currentDept = dept;
+      currentSubcat = 'all';
+      updateFilterButtonsUI();
+      renderSubcategoryPills();
+      if (syncUrl) syncUrlParams();
+      renderCatalog();
+    }
+
+    function setSubcatFilter(subcat, syncUrl = true) {
+      currentSubcat = subcat;
+      const subcatBar = document.getElementById('subcatFiltersBar');
+      if (subcatBar) {
+        subcatBar.querySelectorAll('.gc-filter-pill').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.subcat === subcat);
+        });
+      }
+      if (syncUrl) syncUrlParams();
       renderCatalog();
     }
 
@@ -190,8 +428,15 @@
       const searchInput = document.getElementById('catalogSearch');
       if (searchInput) searchInput.value = '';
       searchQuery = '';
-      setFilter('all');
+      currentCollection = null;
+      setDeptFilter('all');
     }
+
+    // Exposição global para automação e testes
+    window.filterByDepartment = setDeptFilter;
+    window.filterBySubcategory = setSubcatFilter;
+    window.resetFilters = resetFilters;
+    window.TAXONOMY_MAP = TAXONOMY_MAP;
 
     function renderCatalog() {
       const grid = document.getElementById('catalogGrid');
@@ -202,27 +447,54 @@
       const favs = window.GoldFav ? window.GoldFav.list() : [];
 
       const filtered = allProducts.filter(p => {
-        // Filtro por categoria
-        if (currentFilter === 'vestuario') {
-          const isVest = p.category === 'vestuario' || p.category === 'saias-vestidos' || p.category === 'tops' || p.category === 'calcas';
-          if (!isVest) return false;
-        } else if (currentFilter === 'bolsas') {
-          if (p.category !== 'bolsas') return false;
-        } else if (currentFilter === 'casa') {
-          if (p.section !== 'casa' && p.category !== 'decoracoes') return false;
-        } else if (currentFilter === 'personalizado') {
-          if (p.category !== 'personalizado' && !p.custom) return false;
-        } else if (currentFilter === 'favoritos') {
-          if (!favs.includes(p.id)) return false;
+        const tax = resolveTaxonomy(p);
+
+        // 1. Filtro por Coleção
+        if (currentCollection) {
+          const colSlug = currentCollection.toLowerCase();
+          const pCol = (p.collection || '').toLowerCase();
+          let matchCol = pCol === colSlug || (Array.isArray(p.collections) && p.collections.some(c => c.toLowerCase() === colSlug));
+          if (!matchCol) {
+            try {
+              const allCols = JSON.parse(localStorage.getItem('gc_collections_v2') || localStorage.getItem('gc_cached_collections') || '[]');
+              const matchedColObj = allCols.find(c => (c.slug && c.slug.toLowerCase() === colSlug) || (c.name && c.name.toLowerCase() === colSlug) || (c.id && String(c.id).toLowerCase() === colSlug));
+              if (matchedColObj && Array.isArray(matchedColObj.productIds) && matchedColObj.productIds.map(Number).includes(Number(p.id))) {
+                matchCol = true;
+              }
+            } catch(e) {}
+          }
+          if (!matchCol) return false;
         }
 
-        // Filtro por busca
+        // 2. Filtro por Departamento / Favoritos / Legado
+        if (currentDept === 'favoritos') {
+          if (!favs.includes(p.id)) return false;
+        } else if (currentDept === 'vestuario') {
+          const isVest = tax.department === 'Para Ela' || tax.department === 'Para Ele' || p.category === 'vestuario' || p.category === 'saias-vestidos' || p.category === 'tops' || p.category === 'calcas';
+          if (!isVest) return false;
+        } else if (currentDept === 'bolsas') {
+          if (tax.subcategory !== 'Bolsas' && p.category !== 'bolsas') return false;
+        } else if (currentDept === 'casa') {
+          if (tax.department !== 'Para Casa' && p.section !== 'casa' && p.category !== 'decoracoes') return false;
+        } else if (currentDept === 'personalizado') {
+          if (tax.subcategory !== 'Sob Medida' && p.category !== 'personalizado' && !p.custom) return false;
+        } else if (currentDept !== 'all') {
+          if (tax.department !== currentDept) return false;
+        }
+
+        // 3. Filtro por Subcategoria Dinâmica
+        if (currentSubcat !== 'all') {
+          if (tax.subcategory !== currentSubcat) return false;
+        }
+
+        // 4. Filtro por busca textual ampla
         if (searchQuery) {
           const name = (p.name || '').toLowerCase();
           const desc = (p.desc || '').toLowerCase();
-          const cat = (p.category || '').toLowerCase();
           const mat = (p.material || '').toLowerCase();
-          if (!name.includes(searchQuery) && !desc.includes(searchQuery) && !cat.includes(searchQuery) && !mat.includes(searchQuery)) {
+          const dept = (tax.department || '').toLowerCase();
+          const sub = (tax.subcategory || '').toLowerCase();
+          if (!name.includes(searchQuery) && !desc.includes(searchQuery) && !mat.includes(searchQuery) && !dept.includes(searchQuery) && !sub.includes(searchQuery)) {
             return false;
           }
         }
@@ -236,14 +508,15 @@
 
       if (filtered.length === 0) {
         grid.style.display = 'none';
-        empty.style.display = 'flex';
+        if (empty) empty.style.display = 'flex';
         return;
       }
 
       grid.style.display = 'grid';
-      empty.style.display = 'none';
+      if (empty) empty.style.display = 'none';
 
       grid.innerHTML = filtered.map(p => {
+        const tax = resolveTaxonomy(p);
         const slug = p.slug || 'produto';
         const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
         const hasDiscount = p.discount && Number(p.discount) > 0;
@@ -283,6 +556,11 @@
               <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
             </div>
             <div class="gc-product-card-body">
+              <div class="gc-product-tax-badges">
+                <span class="gc-badge-dept">${tax.department}</span>
+                <span class="gc-badge-tax-divider">·</span>
+                <span class="gc-badge-subcat">${tax.subcategory}</span>
+              </div>
               <h3 class="gc-product-title">${p.name}</h3>
               <div class="gc-product-price-row">
                 ${priceHtml}
@@ -296,6 +574,13 @@
         window.GoldFav.updateUI();
       }
     }
+
+    // Exposição global para interoperabilidade
+    window.setDeptFilter = setDeptFilter;
+    window.setSubcatFilter = setSubcatFilter;
+    window.setFilter = setDeptFilter;
+    window.resetFilters = resetFilters;
+    window.renderCatalog = renderCatalog;
   </script>
 </body>
 </html>

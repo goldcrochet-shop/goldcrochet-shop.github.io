@@ -10,6 +10,8 @@
       "material": "Fio de Malha 100% Algodão Premium",
       "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954259246_0.png",
       "category": "bolsas",
+      "department": "Acessórios & Bijuterias",
+      "subcategory": "Bolsas",
       "colors": [],
       "name": "Bolsa Dunas",
       "gallery": [
@@ -42,6 +44,8 @@
       "gender": "feminino",
       "price": 85,
       "category": "saias-vestidos",
+      "department": "Para Ela",
+      "subcategory": "Saias e Vestidos",
       "section": "dia-a-dia",
       "desc": "Um clássico atemporal que captura a essência do luxo despretensioso carioca. O Vestido Bossa Curto possui uma trama milimetricamente estruturada, onde a fluidez da linha encontra a solidez do metal.",
       "model3d": ""
@@ -64,6 +68,8 @@
       ],
       "gender": "masculino",
       "category": "tops",
+      "department": "Para Ele",
+      "subcategory": "Camisas & Polos",
       "price": 75,
       "section": "dia-a-dia",
       "desc": "Um clássico contemporâneo que captura a essência do luxo despretensioso carioca. A Camisa Arpoador possui uma trama vazada milimetricamente estruturada, onde a leveza do fio encontra o frescor do design moderno.",
@@ -80,6 +86,8 @@
       "model3d": "",
       "emoji": "🧶",
       "category": "tops",
+      "department": "Para Ela",
+      "subcategory": "Tops",
       "section": "dia-a-dia",
       "colors": [],
       "badge": "",
@@ -97,6 +105,8 @@
       "section": "acessorios",
       "slug": "bolsa-paraty",
       "category": "bolsas",
+      "department": "Acessórios & Bijuterias",
+      "subcategory": "Bolsas",
       "name": "BOLSA PARATY",
       "prod_time": "",
       "gallery": [],
@@ -114,6 +124,8 @@
     {
       "id": 1789957539765,
       "category": "saias-vestidos",
+      "department": "Para Ela",
+      "subcategory": "Saias e Vestidos",
       "name": "VESTIDO TRANCOSO MIDI",
       "emoji": "🧶",
       "prod_time": "",
@@ -147,6 +159,8 @@
       "collection": "Essenciais",
       "model3d": "",
       "category": "calcas",
+      "department": "Para Ela",
+      "subcategory": "Calças e Shorts",
       "section": "dia-a-dia",
       "name": "SHORT NORONHA",
       "slug": "short-noronha",
@@ -169,6 +183,8 @@
       "model3d": "",
       "section": "dia-a-dia",
       "category": "calcas",
+      "department": "Para Ele",
+      "subcategory": "Bermudas & Shorts",
       "name": "BERMUDA ARPOADOR RIVIERA",
       "slug": "bermuda-arpoador-riviera",
       "colors": [],
@@ -181,6 +197,8 @@
     {
       "id": 1790643259085,
       "category": "decoracoes",
+      "department": "Para Casa",
+      "subcategory": "Decorações",
       "desc": "​Um clássico lúdico que captura a essência do aconchego e da misticidade brasileira. O Dúo Celestial possui uma trama milimetricamente estruturada em fios aveludados, onde a energia radiante do dia encontra a serenidade da noite.",
       "price": 75,
       "discount": 10,
@@ -211,9 +229,11 @@
       "collection": "Casa Gold",
       "colorSections": [],
       "category": "decoracoes",
+      "department": "Para Casa",
+      "subcategory": "Sousplats & Mesas",
       "name": "JOGO AMERICANO & TRILHO IPÊ ROSA CASA BRASIL",
       "price": 75,
-      "material": "",
+      "material": "Fio Nobre Algodão Botânico",
       "gallery": [
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644605496_1.webp"
       ],
@@ -223,6 +243,56 @@
       "desc": "A delicadeza da nossa flora traduzida em afeto e requinte à mesa posta. O conjunto une a base em tom cru com uma moldura botânica trançada à mão: caules em verde-oliva que desabrocham em pétalas no tom rosa ipê, evocando a beleza espontânea dos nossos jardins e matas.",
       "section": "casa",
       "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644602891_0.webp",
+      "model3d": ""
+    },
+    {
+      "id": 1790650001001,
+      "name": "SAPATINHOS & TOUCA NUVEM BABY",
+      "slug": "sapatinhos-touca-nuvem-baby",
+      "price": 120,
+      "discount": 0,
+      "department": "Pequeninos",
+      "subcategory": "Sapatinhos & Toucas",
+      "category": "pequeninos",
+      "section": "bebe",
+      "gender": "unissex",
+      "badge": "Novo",
+      "prod_time": "10",
+      "material": "Fio 100% Algodão Hipoalergênico Orgânico",
+      "desc": "Delicadeza e maciez absoluta para os primeiros momentos do bebê. Conjunto em crochê manual com toque suave e acabamento antialérgico.",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954259246_0.png",
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954263874_1.png"
+      ],
+      "collection": "Pequeninos",
+      "colors": [],
+      "colorSections": [],
+      "emoji": "🧶",
+      "model3d": ""
+    },
+    {
+      "id": 1790650002002,
+      "name": "URSINHO AMIGURUMI SONHO DE ALGODÃO",
+      "slug": "ursinho-amigurumi-sonho-de-algodao",
+      "price": 140,
+      "discount": 0,
+      "department": "Para Casa",
+      "subcategory": "Amigurumis",
+      "category": "amigurumi",
+      "section": "casa",
+      "gender": null,
+      "badge": "Destaque",
+      "prod_time": "15",
+      "material": "Fio de Algodão Macio Aveludado",
+      "desc": "Amigurumi autoral feito à mão com olhos bordados e enchimento antialérgico, perfeito para decoração afetuosa ou abraços carinhosos.",
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643252900_0.webp",
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643255070_1.webp"
+      ],
+      "collection": "Casa Gold",
+      "colors": [],
+      "colorSections": [],
+      "emoji": "🧸",
       "model3d": ""
     },
     {
@@ -257,7 +327,9 @@
           "hex": "#cda434"
         }
       ],
-      "category": "personalizado"
+      "category": "personalizado",
+      "department": "Para Ela",
+      "subcategory": "Sob Medida"
     }
   ],
   "categories": [
@@ -285,8 +357,8 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-13T03:23:03.232Z",
-    "version": "5.0",
+    "updated": "2026-10-14T03:20:00.000Z",
+    "version": "6.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
 }

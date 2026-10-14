@@ -11,6 +11,139 @@ const DEFAULT_GH_TOKEN = '';
 const ADMIN_EMAILS = ['goldcrochet.suporte@gmail.com', 'rossipereira2010@gmail.com'];
 const MASTER_PASSWORD = 'goldcrochet2026';
 
+// Mapeamento Canônico de Taxonomia (5 Departamentos & 24 Subcategorias)
+export const TAXONOMY_MAP = {
+  "Para Ela": [
+    "Roupas para Noite",
+    "Saias e Vestidos",
+    "Jaquetas e Casacos",
+    "Tops",
+    "Calças e Shorts",
+    "Praia & Resort",
+    "Sob Medida"
+  ],
+  "Para Ele": [
+    "Suéteres & Cardigans",
+    "Camisas & Polos",
+    "Bermudas & Shorts",
+    "Acessórios Masculinos"
+  ],
+  "Para Casa": [
+    "Amigurumis",
+    "Mantas e Cobertores",
+    "Decorações",
+    "Sousplats & Mesas",
+    "Almofadas"
+  ],
+  "Pequeninos": [
+    "Roupas Infantis",
+    "Sapatinhos & Toucas",
+    "Mantinhas Baby",
+    "Brinquedos Amigurumi"
+  ],
+  "Acessórios & Bijuterias": [
+    "Bolsas",
+    "Bijuterias & Brincos",
+    "Chaveiros",
+    "Faixas de Cabelo"
+  ]
+};
+
+export function resolveProductTaxonomy(p) {
+  if (!p) return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
+  if (p.department && TAXONOMY_MAP[p.department]) {
+    const validSubcats = TAXONOMY_MAP[p.department];
+    const subcat = (p.subcategory && validSubcats.includes(p.subcategory)) 
+      ? p.subcategory 
+      : validSubcats[0];
+    return { department: p.department, subcategory: subcat };
+  }
+
+  const cat = (p.category || '').toLowerCase();
+  const sec = (p.section || '').toLowerCase();
+  const gen = (p.gender || '').toLowerCase();
+  const name = (p.name || '').toLowerCase();
+
+  if (cat === 'bolsas' || cat.includes('acessorio') || sec === 'acessorios' || name.includes('bolsa') || name.includes('brinco') || name.includes('chaveiro')) {
+    return { department: 'Acessórios & Bijuterias', subcategory: 'Bolsas' };
+  }
+  if (cat === 'casa-gold' || cat === 'decoracoes' || sec === 'casa' || cat === 'amigurumi' || name.includes('trilho') || name.includes('americano') || name.includes('celestial') || name.includes('almofada') || name.includes('manta')) {
+    if (name.includes('trilho') || name.includes('americano') || name.includes('sousplat')) {
+      return { department: 'Para Casa', subcategory: 'Sousplats & Mesas' };
+    }
+    if (name.includes('celestial') || cat === 'decoracoes') {
+      return { department: 'Para Casa', subcategory: 'Decorações' };
+    }
+    if (cat === 'amigurumi' || name.includes('amigurumi')) {
+      return { department: 'Para Casa', subcategory: 'Amigurumis' };
+    }
+    return { department: 'Para Casa', subcategory: 'Decorações' };
+  }
+  if (cat === 'pequeninos' || cat === 'bebe' || cat === 'garotas' || cat === 'garotos' || name.includes('baby') || name.includes('infantil') || name.includes('sapatinho')) {
+    return { department: 'Pequeninos', subcategory: 'Sapatinhos & Toucas' };
+  }
+  if (gen === 'masculino' || name.includes('camisa') || name.includes('bermuda') || name.includes('sueter') || name.includes('arpoador')) {
+    if (name.includes('camisa') || name.includes('polo')) {
+      return { department: 'Para Ele', subcategory: 'Camisas & Polos' };
+    }
+    if (name.includes('bermuda') || name.includes('short')) {
+      return { department: 'Para Ele', subcategory: 'Bermudas & Shorts' };
+    }
+    return { department: 'Para Ele', subcategory: 'Suéteres & Cardigans' };
+  }
+  if (cat === 'personalizado' || name.includes('personalizada') || p.custom) {
+    return { department: 'Para Ela', subcategory: 'Sob Medida' };
+  }
+  if (cat === 'saias-vestidos' || name.includes('vestido') || name.includes('saia')) {
+    return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
+  }
+  if (cat === 'tops' || name.includes('regata') || name.includes('top') || name.includes('cropped')) {
+    return { department: 'Para Ela', subcategory: 'Tops' };
+  }
+  if (cat === 'calcas' || name.includes('short') || name.includes('calça')) {
+    return { department: 'Para Ela', subcategory: 'Calças e Shorts' };
+  }
+  if (cat === 'jaquetas-casacos' || name.includes('jaqueta') || name.includes('casaco')) {
+    return { department: 'Para Ela', subcategory: 'Jaquetas e Casacos' };
+  }
+  if (cat === 'roupas-noite') {
+    return { department: 'Para Ela', subcategory: 'Roupas para Noite' };
+  }
+  return { department: 'Para Ela', subcategory: 'Saias e Vestidos' };
+}
+
+export function computeLegacyCategory(department, subcategory) {
+  const dept = department || '';
+  const subcat = subcategory || '';
+
+  if (dept === 'Acessórios & Bijuterias') return 'bolsas';
+  if (dept === 'Para Casa') {
+    if (subcat === 'Amigurumis') return 'amigurumi';
+    if (subcat === 'Decorações' || subcat === 'Sousplats & Mesas') return 'decoracoes';
+    return 'casa-gold';
+  }
+  if (dept === 'Pequeninos') {
+    if (subcat === 'Brinquedos Amigurumi') return 'amigurumi';
+    return 'pequeninos';
+  }
+  if (dept === 'Para Ele') {
+    if (subcat === 'Camisas & Polos') return 'tops';
+    if (subcat === 'Bermudas & Shorts') return 'calcas';
+    return 'vestuario';
+  }
+  if (dept === 'Para Ela') {
+    if (subcat === 'Sob Medida') return 'personalizado';
+    if (subcat === 'Tops') return 'tops';
+    if (subcat === 'Calças e Shorts') return 'calcas';
+    if (subcat === 'Saias e Vestidos') return 'saias-vestidos';
+    if (subcat === 'Roupas para Noite') return 'roupas-noite';
+    if (subcat === 'Jaquetas e Casacos') return 'jaquetas-casacos';
+    if (subcat === 'Praia & Resort') return 'praia-resort';
+    return 'vestuario';
+  }
+  return 'vestuario';
+}
+
 // Estado global da aplicação admin
 export const adminState = {
   currentUser: null,
@@ -34,17 +167,25 @@ export const adminState = {
   catalogDisplayMode: localStorage.getItem('gc_catalog_display_mode') || 'cards',
   searchQuery: '',
   selectedCategoryFilter: 'all',
+  selectedDepartmentFilter: 'all',
+  selectedSubcategoryFilter: 'all',
   customerSearchQuery: '',
   orderStatusFilter: 'all',
   orderSearchQuery: '',
   activeDetailOrderId: null,
   editingProductId: null,
   isSyncing: false,
+  selectedStockFilter: 'all',
+  selectedProductIds: new Set(),
+  quickViewProductId: null,
+  undoStack: [],
+  activeModalsStack: [],
+  columnVisibility: JSON.parse(localStorage.getItem('gc_col_vis') || '{"select":true,"thumb":true,"name":true,"category":true,"price":true,"badge":true,"stock":true,"actions":true}'),
   audioAlertsEnabled: localStorage.getItem('gc_admin_audio') !== 'false',
   theme: localStorage.getItem('gc_admin_theme') || 'light'
 };
 
-// Utilitários de Formatação
+// Utilitários de Formatação & Pesquisa
 export function formatBRL(val) {
   const num = Number(val) || 0;
   return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -64,22 +205,140 @@ export function formatDate(timestamp) {
   }
 }
 
-export function showToast(message, type = 'info') {
+export function normalizeSearchTerm(str) {
+  return String(str || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+export function highlightSearchMatch(text, query) {
+  if (!text || !query || !query.trim()) return text || '';
+  const rawQuery = query.trim();
+  const cleanQuery = rawQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${cleanQuery})`, 'gi');
+  return String(text).replace(regex, '<mark class="gc-search-mark">$1</mark>');
+}
+
+export function clearSearchInput(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.value = '';
+  if (inputId === 'productSearchInput') {
+    adminState.searchQuery = '';
+    renderProductsList();
+  } else if (inputId === 'orderSearchInput') {
+    adminState.orderSearchQuery = '';
+    renderOrdersList();
+  } else if (inputId === 'customerSearchInput') {
+    adminState.customerSearchQuery = '';
+    renderCustomersList();
+  }
+  input.focus();
+  const clearBtn = input.parentElement?.querySelector('.btn-clear-search');
+  if (clearBtn) clearBtn.classList.add('hidden');
+}
+
+export function showToast(message, type = 'info', duration = 3500) {
   const container = document.getElementById('adminToastContainer');
   if (!container) return;
 
+  while (container.children.length >= 3) {
+    container.removeChild(container.firstChild);
+  }
+
   const toast = document.createElement('div');
   toast.className = `admin-toast toast-${type}`;
+  const icon = type === 'success' ? '✓' : (type === 'error' ? '✕' : (type === 'warning' ? '⚠️' : (type === 'gold' ? '✨' : 'ℹ')));
   toast.innerHTML = `
-    <span class="toast-icon">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>
+    <span class="toast-icon">${icon}</span>
     <span class="toast-msg">${message}</span>
+    <div class="toast-progress-bar" style="animation-duration:${duration}ms"></div>
   `;
   container.appendChild(toast);
 
   setTimeout(() => {
     toast.classList.add('fade-out');
     setTimeout(() => toast.remove(), 300);
-  }, 3500);
+  }, duration);
+}
+
+export function showToastWithUndo(message, undoAction, duration = 5000) {
+  const container = document.getElementById('adminToastContainer');
+  if (!container) return;
+
+  while (container.children.length >= 3) {
+    container.removeChild(container.firstChild);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'admin-toast toast-gold';
+  toast.innerHTML = `
+    <span class="toast-icon">✨</span>
+    <span class="toast-msg">${message}</span>
+    <button type="button" class="toast-undo-btn">Desfazer</button>
+    <div class="toast-progress-bar" style="animation-duration:${duration}ms"></div>
+  `;
+
+  let undone = false;
+  const undoBtn = toast.querySelector('.toast-undo-btn');
+  if (undoBtn) {
+    undoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!undone && typeof undoAction === 'function') {
+        undone = true;
+        undoAction();
+        toast.remove();
+      }
+    });
+  }
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    if (!undone) {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 300);
+    }
+  }, duration);
+}
+
+export function testAudioChime() {
+  if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.35);
+      showToast('Sino do ateliê testado com sucesso!', 'gold');
+    } catch(e) {}
+  }
+}
+
+export function copyToClipboardWithFeedback(text, btnElement) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (btnElement) {
+      const originalHtml = btnElement.innerHTML;
+      btnElement.innerHTML = '✓ Copiado!';
+      btnElement.classList.add('copied');
+      setTimeout(() => {
+        btnElement.innerHTML = originalHtml;
+        btnElement.classList.remove('copied');
+      }, 2000);
+    }
+    showToast('Copiado para a área de transferência!', 'success');
+  }).catch(() => {
+    showToast(`Conteúdo: ${text}`, 'info');
+  });
 }
 
 export function logActivity(action, details = '') {
@@ -292,7 +551,57 @@ function updateSyncBadge(status) {
   }
 }
 
-function loadLocalCache() {
+export function getDefaultCollections() {
+  return [
+    {
+      id: 'raizes-douradas',
+      slug: 'raizes-douradas',
+      name: 'Raízes Douradas',
+      icon: '✨',
+      desc: 'A essência do crochê autoral refinado em fios nobres e tramas douradas que celebram a ancestralidade brasileira.',
+      image: './assets/hero-tropical-bg.jpg',
+      productIds: [1789954142890, 1789954688278]
+    },
+    {
+      id: 'botanica-serena',
+      slug: 'botanica-serena',
+      name: 'Botânica Serena',
+      icon: '🌿',
+      desc: 'Tons terrosos, verde-oliva e formas orgânicas inspiradas na exuberância e no frescor da flora tropical.',
+      image: './assets/peca-personalizada.png',
+      productIds: [1789955083971]
+    },
+    {
+      id: 'alto-verao',
+      slug: 'alto-verao',
+      name: 'Alto Verão & Resort',
+      icon: '☀️',
+      desc: 'Leveza e fluidez sob a luz tropical: vestidos, regatas e bolsas de palha e algodão.',
+      image: './assets/peca-personalizada.png',
+      productIds: [1789954688278, 1789955083971]
+    },
+    {
+      id: 'casa-brasil',
+      slug: 'casa-brasil',
+      name: 'Casa Brasil & Mesa Posta',
+      icon: '🏡',
+      desc: 'Aconchego botânico e requinte à mesa posta em peças de puro algodão e tramas aveludadas.',
+      image: './assets/hero-tropical-bg.jpg',
+      productIds: []
+    },
+    {
+      id: 'essenciais',
+      slug: 'Essenciais',
+      name: 'Coleção Essenciais',
+      icon: '🧶',
+      desc: 'O luxo despretensioso das formas puras e peças atemporais para qualquer ocasião.',
+      image: './assets/hero-tropical-bg.jpg',
+      productIds: [1789954142890, 1789954688278]
+    }
+  ];
+}
+
+export function loadLocalCache() {
   try {
     const localProds = localStorage.getItem('gc_cached_products');
     if (localProds) adminState.products = JSON.parse(localProds);
@@ -300,12 +609,23 @@ function loadLocalCache() {
     const localCats = localStorage.getItem('gc_cached_categories');
     if (localCats) adminState.categories = JSON.parse(localCats);
 
+    const localCols = localStorage.getItem('gc_collections_v2') || localStorage.getItem('gc_cached_collections');
+    if (localCols) adminState.collections = JSON.parse(localCols);
+
     const localOrders = localStorage.getItem('gc_cached_orders');
     if (localOrders) adminState.orders = JSON.parse(localOrders);
 
     const localLogs = localStorage.getItem('gc_admin_logs');
     if (localLogs) adminState.logs = JSON.parse(localLogs);
   } catch (e) {}
+
+  if (!adminState.collections || !adminState.collections.length) {
+    adminState.collections = getDefaultCollections();
+    try {
+      localStorage.setItem('gc_cached_collections', JSON.stringify(adminState.collections));
+      localStorage.setItem('gc_collections_v2', JSON.stringify(adminState.collections));
+    } catch(e) {}
+  }
 
   // Se o catálogo estiver vazio, carrega de data.json
   if (!adminState.products.length) {
@@ -670,6 +990,7 @@ export async function syncCollectionsFromFirestore() {
         snap.forEach(d => list.push({ id: d.id, ...d.data() }));
         adminState.collections = list;
         localStorage.setItem('gc_cached_collections', JSON.stringify(list));
+        localStorage.setItem('gc_collections_v2', JSON.stringify(list));
         return;
       }
     }
@@ -679,19 +1000,64 @@ export async function syncCollectionsFromFirestore() {
 
   // Fallback padrão se não houver coleções no Firestore
   if (!adminState.collections.length) {
-    const cached = localStorage.getItem('gc_cached_collections');
+    const cached = localStorage.getItem('gc_collections_v2') || localStorage.getItem('gc_cached_collections');
     if (cached) {
       try { adminState.collections = JSON.parse(cached); } catch(e) {}
     }
     if (!adminState.collections.length) {
-      adminState.collections = [
-        { id: 'essenciais', slug: 'Essenciais', name: 'Coleção Essenciais', icon: '🧶', desc: 'O luxo despretensioso das formas puras e peças atemporais para qualquer ocasião.', image: './assets/hero-tropical-bg.jpg' },
-        { id: 'alto-verao', slug: 'alto-verao', name: 'Alto Verão & Resort', icon: '☀️', desc: 'Leveza e fluidez sob a luz tropical: vestidos, regatas e bolsas de palha e algodão.', image: './assets/peca-personalizada.png' },
-        { id: 'casa-brasil', slug: 'casa-brasil', name: 'Coleção Casa Brasil', icon: '🏡', desc: 'Aconchego botânico e requinte à mesa posta em peças de puro algodão.', image: './assets/hero-tropical-bg.jpg' }
-      ];
+      adminState.collections = getDefaultCollections();
       localStorage.setItem('gc_cached_collections', JSON.stringify(adminState.collections));
+      localStorage.setItem('gc_collections_v2', JSON.stringify(adminState.collections));
     }
   }
+}
+
+export function updateColCounter() {
+  const checklist = document.getElementById('colProductChecklist');
+  const counter = document.getElementById('colSelectedCounter');
+  if (!counter) return;
+  const count = checklist ? checklist.querySelectorAll('input[type="checkbox"]:checked').length : 0;
+  counter.textContent = `${count} selecionada${count === 1 ? '' : 's'}`;
+}
+
+export function filterColProductChecklist(query = '') {
+  const checklist = document.getElementById('colProductChecklist');
+  if (!checklist) return;
+  const q = String(query || '').trim().toLowerCase();
+  const rows = checklist.querySelectorAll('.col-prod-row');
+  rows.forEach(r => {
+    const searchData = (r.getAttribute('data-search') || r.innerText || '').toLowerCase();
+    if (!q || searchData.includes(q)) {
+      r.style.display = 'flex';
+    } else {
+      r.style.display = 'none';
+    }
+  });
+}
+
+export function toggleAllColProducts(checkState = true) {
+  const checklist = document.getElementById('colProductChecklist');
+  if (!checklist) return;
+  const cbs = checklist.querySelectorAll('input[type="checkbox"]');
+  cbs.forEach(cb => {
+    cb.checked = Boolean(checkState);
+    const row = cb.closest('.col-prod-row');
+    if (row) {
+      row.style.background = cb.checked ? 'rgba(205,164,52,0.06)' : 'transparent';
+      row.style.borderColor = cb.checked ? 'rgba(205,164,52,0.35)' : 'var(--border-subtle)';
+    }
+  });
+  updateColCounter();
+}
+
+export function onColProductToggle(cb) {
+  if (!cb) return;
+  const row = cb.closest('.col-prod-row');
+  if (row) {
+    row.style.background = cb.checked ? 'rgba(205,164,52,0.06)' : 'transparent';
+    row.style.borderColor = cb.checked ? 'rgba(205,164,52,0.35)' : 'var(--border-subtle)';
+  }
+  updateColCounter();
 }
 
 export function openCollectionModal(col = null) {
@@ -705,7 +1071,12 @@ export function openCollectionModal(col = null) {
   const descInput = document.getElementById('colModalDesc');
   const imageInput = document.getElementById('colModalImage');
   const title = document.getElementById('collectionModalTitle');
+  const searchInput = document.getElementById('colProductSearchInput');
+  const checklist = document.getElementById('colProductChecklist');
 
+  if (searchInput) searchInput.value = '';
+
+  let selectedIds = [];
   if (col) {
     if (title) title.textContent = `Editar Coleção: ${col.name}`;
     if (idInput) idInput.value = col.id || col.slug;
@@ -714,6 +1085,14 @@ export function openCollectionModal(col = null) {
     if (iconInput) iconInput.value = col.icon || '✨';
     if (descInput) descInput.value = col.desc || '';
     if (imageInput) imageInput.value = col.image || '';
+
+    if (Array.isArray(col.productIds) && col.productIds.length) {
+      selectedIds = col.productIds.map(Number);
+    } else {
+      selectedIds = adminState.products
+        .filter(p => p.collection === col.name || p.collection === col.slug || (Array.isArray(p.collections) && (p.collections.includes(col.slug) || p.collections.includes(col.name))))
+        .map(p => Number(p.id));
+    }
   } else {
     if (title) title.textContent = 'Nova Coleção Exclusiva';
     if (idInput) idInput.value = '';
@@ -724,6 +1103,36 @@ export function openCollectionModal(col = null) {
     if (imageInput) imageInput.value = '';
   }
 
+  // Render checklist items
+  if (checklist) {
+    if (!adminState.products || !adminState.products.length) {
+      checklist.innerHTML = '<div style="padding:12px;text-align:center;color:var(--text-muted);font-size:0.82rem">Nenhum produto cadastrado no catálogo.</div>';
+    } else {
+      checklist.innerHTML = adminState.products.map(p => {
+        const pid = Number(p.id);
+        const isChecked = selectedIds.includes(pid);
+        const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
+        const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+        const dept = p.department || '';
+        const subcat = p.subcategory || p.category || '';
+        const searchTerms = `${p.name} ${dept} ${subcat} ${p.collection || ''} ${p.id}`.toLowerCase();
+
+        return `
+          <label class="col-prod-row" data-id="${p.id}" data-search="${searchTerms}" style="display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:6px;cursor:pointer;border:1px solid ${isChecked ? 'rgba(205,164,52,0.35)' : 'var(--border-subtle)'};background:${isChecked ? 'rgba(205,164,52,0.06)' : 'transparent'};transition:all 0.15s">
+            <input type="checkbox" class="col-prod-cb" value="${p.id}" ${isChecked ? 'checked' : ''} onchange="window.AdminCore.onColProductToggle(this)">
+            <img src="${img}" alt="${p.name}" style="width:38px;height:46px;object-fit:cover;border-radius:4px;border:1px solid var(--border-subtle)">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:600;font-size:0.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted)">${subcat || dept || 'Ateliê'} • ${priceStr}</div>
+            </div>
+            <span style="font-size:0.72rem;padding:2px 8px;border-radius:12px;background:var(--surface-subtle);color:var(--text-muted)">${p.collection || 'Sem coleção'}</span>
+          </label>
+        `;
+      }).join('');
+    }
+  }
+
+  updateColCounter();
   modal.classList.remove('hidden');
 }
 
@@ -735,13 +1144,24 @@ export function closeCollectionModal() {
 export async function saveCollection(data) {
   const slug = (data.slug || data.name).toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
   const id = data.id || slug;
+
+  let selectedIds = [];
+  const checklist = document.getElementById('colProductChecklist');
+  const checkedBoxes = checklist ? Array.from(checklist.querySelectorAll('input[type="checkbox"]:checked')) : [];
+  if (checkedBoxes.length > 0) {
+    selectedIds = checkedBoxes.map(cb => Number(cb.value));
+  } else if (Array.isArray(data.productIds) && data.productIds.length > 0) {
+    selectedIds = data.productIds.map(Number);
+  }
+
   const colObj = {
     id,
-    name: data.name.trim(),
-    slug: data.slug.trim() || slug,
+    name: (data.name || '').trim(),
+    slug: (data.slug || '').trim() || slug,
     icon: data.icon || '✨',
     desc: data.desc || '',
     image: data.image || '',
+    productIds: selectedIds,
     updatedAt: new Date().toISOString()
   };
 
@@ -752,7 +1172,27 @@ export async function saveCollection(data) {
     adminState.collections.push(colObj);
   }
 
+  // Sincronização Bidirecional com adminState.products
+  if (Array.isArray(adminState.products)) {
+    adminState.products.forEach(p => {
+      const pid = Number(p.id);
+      if (!Array.isArray(p.collections)) p.collections = [];
+      if (selectedIds.includes(pid)) {
+        p.collection = colObj.name;
+        if (!p.collections.includes(colObj.slug)) p.collections.push(colObj.slug);
+      } else {
+        p.collections = p.collections.filter(s => s !== colObj.slug && s !== colObj.name);
+        if (p.collection === colObj.name || p.collection === colObj.slug) {
+          p.collection = p.collections[0] || 'Essenciais';
+        }
+      }
+    });
+    localStorage.setItem('gc_cached_products', JSON.stringify(adminState.products));
+  }
+
   localStorage.setItem('gc_cached_collections', JSON.stringify(adminState.collections));
+  localStorage.setItem('gc_collections_v2', JSON.stringify(adminState.collections));
+
   renderCollectionsList();
   closeCollectionModal();
   showToast(`Coleção "${colObj.name}" salva com sucesso!`, 'success');
@@ -773,6 +1213,7 @@ export async function deleteCollection(idOrSlug) {
 
   adminState.collections = adminState.collections.filter(c => c.id !== idOrSlug && c.slug !== idOrSlug);
   localStorage.setItem('gc_cached_collections', JSON.stringify(adminState.collections));
+  localStorage.setItem('gc_collections_v2', JSON.stringify(adminState.collections));
   renderCollectionsList();
   showToast('Coleção excluída.', 'info');
   logActivity('Removeu Coleção', idOrSlug);
@@ -798,7 +1239,12 @@ export function renderCollectionsList() {
   }
 
   grid.innerHTML = adminState.collections.map(col => {
-    const productsInCol = adminState.products.filter(p => p.collection === col.name || p.collection === col.slug || (p.category && p.category.toLowerCase() === col.slug.toLowerCase())).length;
+    const productsInCol = adminState.products.filter(p => {
+      if (Array.isArray(col.productIds) && col.productIds.includes(Number(p.id))) return true;
+      if (p.collection === col.name || p.collection === col.slug) return true;
+      if (Array.isArray(p.collections) && (p.collections.includes(col.slug) || p.collections.includes(col.name))) return true;
+      return false;
+    }).length;
 
     return `
       <div class="category-card" style="display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;background:var(--surface)">
@@ -1035,6 +1481,659 @@ export function setCatalogDisplayMode(mode) {
   renderProductsList();
 }
 
+export function setDepartmentFilter(dept) {
+  adminState.selectedDepartmentFilter = dept || 'all';
+  const deptSelect = document.getElementById('productDepartmentFilter');
+  if (deptSelect && deptSelect.value !== adminState.selectedDepartmentFilter) {
+    deptSelect.value = adminState.selectedDepartmentFilter;
+  }
+  updateSubcategoryFilterOptions(dept);
+  adminState.selectedSubcategoryFilter = 'all';
+  renderActiveFilterChips();
+  renderProductsList();
+}
+
+export function setSubcategoryFilter(subcat) {
+  adminState.selectedSubcategoryFilter = subcat || 'all';
+  const subSelect = document.getElementById('productSubcategoryFilter');
+  if (subSelect && subSelect.value !== adminState.selectedSubcategoryFilter) {
+    subSelect.value = adminState.selectedSubcategoryFilter;
+  }
+  renderActiveFilterChips();
+  renderProductsList();
+}
+
+export function setStockFilter(status) {
+  adminState.selectedStockFilter = status || 'all';
+  document.querySelectorAll('#productStockFilters .filter-tab-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-stock') === adminState.selectedStockFilter);
+  });
+  renderActiveFilterChips();
+  renderProductsList();
+}
+
+export function clearAllProductFilters() {
+  adminState.selectedDepartmentFilter = 'all';
+  adminState.selectedSubcategoryFilter = 'all';
+  adminState.selectedStockFilter = 'all';
+  adminState.selectedCategoryFilter = 'all';
+  adminState.searchQuery = '';
+  const searchInput = document.getElementById('productSearchInput');
+  if (searchInput) searchInput.value = '';
+  const deptSelect = document.getElementById('productDepartmentFilter');
+  if (deptSelect) deptSelect.value = 'all';
+  updateSubcategoryFilterOptions('all');
+  const stockBtns = document.querySelectorAll('#productStockFilters .filter-tab-pill');
+  stockBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-stock') === 'all'));
+  renderActiveFilterChips();
+  renderProductsList();
+}
+
+export function updateSubcategoryFilterOptions(dept) {
+  const select = document.getElementById('productSubcategoryFilter');
+  if (!select) return;
+  const curVal = adminState.selectedSubcategoryFilter;
+  if (!dept || dept === 'all') {
+    const allSubcats = new Set();
+    Object.values(TAXONOMY_MAP).forEach(subList => subList.forEach(s => allSubcats.add(s)));
+    select.innerHTML = '<option value="all">Todas as Subcategorias</option>' + 
+      Array.from(allSubcats).sort().map(s => `<option value="${s}">${s}</option>`).join('');
+  } else if (TAXONOMY_MAP[dept]) {
+    select.innerHTML = '<option value="all">Todas as Subcategorias</option>' + 
+      TAXONOMY_MAP[dept].map(s => `<option value="${s}">${s}</option>`).join('');
+  }
+  if (Array.from(select.options).some(o => o.value === curVal)) {
+    select.value = curVal;
+  } else {
+    select.value = 'all';
+    adminState.selectedSubcategoryFilter = 'all';
+  }
+}
+
+export function renderActiveFilterChips() {
+  const container = document.getElementById('activeFiltersContainer');
+  const chipsList = document.getElementById('activeFilterChips');
+  if (!container || !chipsList) return;
+
+  const chips = [];
+  if (adminState.selectedDepartmentFilter && adminState.selectedDepartmentFilter !== 'all') {
+    chips.push({ label: `Linha: ${adminState.selectedDepartmentFilter}`, key: 'dept' });
+  }
+  if (adminState.selectedSubcategoryFilter && adminState.selectedSubcategoryFilter !== 'all') {
+    chips.push({ label: `Subcat: ${adminState.selectedSubcategoryFilter}`, key: 'subcat' });
+  }
+  if (adminState.selectedStockFilter && adminState.selectedStockFilter !== 'all') {
+    chips.push({ label: adminState.selectedStockFilter === 'in_stock' ? 'Pronta Entrega' : 'Sob Encomenda', key: 'stock' });
+  }
+  if (adminState.searchQuery && adminState.searchQuery.trim()) {
+    chips.push({ label: `Busca: "${adminState.searchQuery.trim()}"`, key: 'search' });
+  }
+
+  if (chips.length > 0) {
+    container.classList.remove('hidden');
+    chipsList.innerHTML = chips.map(c => `
+      <span class="active-filter-chip">
+        <span>${c.label}</span>
+        <button type="button" onclick="window.AdminCore.removeSingleFilter('${c.key}')" title="Remover filtro">×</button>
+      </span>
+    `).join('');
+  } else {
+    container.classList.add('hidden');
+    chipsList.innerHTML = '';
+  }
+}
+
+export function removeSingleFilter(key) {
+  if (key === 'dept') {
+    setDepartmentFilter('all');
+  } else if (key === 'subcat') {
+    setSubcategoryFilter('all');
+  } else if (key === 'stock') {
+    setStockFilter('all');
+  } else if (key === 'search') {
+    clearSearchInput('productSearchInput');
+  }
+}
+
+export function calculateInventoryStats() {
+  const inStockProducts = adminState.products.filter(p => p.inStock !== false);
+  const capital = inStockProducts.reduce((sum, p) => sum + (Number(p.price) || 0), 0);
+  const lowStock = adminState.products.filter(p => p.inStock === false).length;
+  const avgPrice = adminState.products.length ? 
+    (adminState.products.reduce((sum, p) => sum + (Number(p.price) || 0), 0) / adminState.products.length) : 0;
+
+  const capEl = document.getElementById('statInventoryCapital');
+  const totalValEl = document.getElementById('totalInventoryValue');
+  if (capEl) capEl.textContent = formatBRL(capital);
+  if (totalValEl) totalValEl.textContent = formatBRL(capital);
+
+  const lowEl = document.getElementById('statLowStockCount');
+  if (lowEl) lowEl.textContent = `${lowStock} sob encomenda`;
+
+  const countEl = document.getElementById('totalStockCount');
+  if (countEl) countEl.textContent = `${adminState.products.length} peças`;
+
+  const avgEl = document.getElementById('statAvgProductPrice');
+  if (avgEl) avgEl.textContent = formatBRL(avgPrice);
+
+  renderDeptDistribution();
+}
+
+export function renderDeptDistribution() {
+  const distBar = document.getElementById('deptDistributionBar');
+  const legend = document.getElementById('deptDistLegend');
+  if (!distBar) return;
+
+  const deptCounts = {};
+  Object.keys(TAXONOMY_MAP).forEach(d => deptCounts[d] = 0);
+  adminState.products.forEach(p => {
+    const tax = resolveProductTaxonomy(p);
+    if (deptCounts[tax.department] !== undefined) {
+      deptCounts[tax.department]++;
+    }
+  });
+
+  const total = adminState.products.length || 1;
+  const colors = {
+    'Para Ela': '#d4af37',
+    'Para Ele': '#5c768d',
+    'Para Casa': '#82957b',
+    'Pequeninos': '#d48872',
+    'Acessórios & Bijuterias': '#a67c00'
+  };
+
+  distBar.innerHTML = Object.entries(deptCounts).map(([dept, count]) => {
+    const pct = Math.round((count / total) * 100);
+    if (!count) return '';
+    return `<div class="dept-dist-segment" style="width:${pct}%;background:${colors[dept] || '#cda434'}" title="${dept}: ${count} (${pct}%)"></div>`;
+  }).join('');
+
+  if (legend) {
+    legend.innerHTML = Object.entries(deptCounts).map(([dept, count]) => {
+      const pct = Math.round((count / total) * 100);
+      return `
+        <div class="dept-dist-legend-item">
+          <span class="dept-dist-dot" style="background:${colors[dept] || '#cda434'}"></span>
+          <span>${dept}: <strong>${count}</strong> (${pct}%)</span>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+export function animateNumericCounter(elementId, targetValue, isCurrency = false) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const target = Number(targetValue) || 0;
+  let start = 0;
+  const duration = 600;
+  const startTime = performance.now();
+
+  function updateStep(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easeOut = 1 - Math.pow(1 - progress, 3);
+    const current = start + (target - start) * easeOut;
+    el.textContent = isCurrency ? formatBRL(current) : Math.round(current);
+    if (progress < 1) {
+      requestAnimationFrame(updateStep);
+    } else {
+      el.textContent = isCurrency ? formatBRL(target) : target;
+    }
+  }
+  requestAnimationFrame(updateStep);
+}
+
+export function toggleSelectAllProducts(checked) {
+  if (!adminState.selectedProductIds) adminState.selectedProductIds = new Set();
+  if (checked) {
+    adminState.products.forEach(p => adminState.selectedProductIds.add(String(p.id)));
+  } else {
+    adminState.selectedProductIds.clear();
+  }
+  document.querySelectorAll('.product-select-chk').forEach(chk => {
+    chk.checked = checked;
+  });
+  const master = document.getElementById('masterSelectAllCheckbox');
+  if (master) master.checked = checked;
+  updateBulkToolbar();
+}
+
+export function onProductSelectChange(id, checked, event) {
+  if (!adminState.selectedProductIds) adminState.selectedProductIds = new Set();
+  const strId = String(id);
+  if (checked) {
+    adminState.selectedProductIds.add(strId);
+  } else {
+    adminState.selectedProductIds.delete(strId);
+  }
+  const master = document.getElementById('masterSelectAllCheckbox');
+  if (master) {
+    master.checked = adminState.selectedProductIds.size === adminState.products.length && adminState.products.length > 0;
+  }
+  updateBulkToolbar();
+}
+
+export function clearProductSelection() {
+  if (adminState.selectedProductIds) adminState.selectedProductIds.clear();
+  document.querySelectorAll('.product-select-chk').forEach(chk => chk.checked = false);
+  const master = document.getElementById('masterSelectAllCheckbox');
+  if (master) master.checked = false;
+  updateBulkToolbar();
+}
+
+export function updateBulkToolbar() {
+  const toolbar = document.getElementById('bulkActionsToolbar');
+  if (!toolbar) return;
+  const count = adminState.selectedProductIds ? adminState.selectedProductIds.size : 0;
+  const countEl = document.getElementById('bulkSelectionCount');
+  const countAltEl = document.getElementById('bulkSelectedCount');
+  if (countEl) countEl.textContent = count;
+  if (countAltEl) countAltEl.textContent = count;
+
+  if (count > 0) {
+    toolbar.classList.remove('hidden');
+  } else {
+    toolbar.classList.add('hidden');
+  }
+}
+
+export async function bulkDeleteSelectedProducts() {
+  const count = adminState.selectedProductIds ? adminState.selectedProductIds.size : 0;
+  if (!count) return;
+  if (!confirm(`Tem certeza que deseja excluir as ${count} criações selecionadas?`)) return;
+
+  const idsToDelete = new Set(adminState.selectedProductIds);
+  const deletedProducts = adminState.products.filter(p => idsToDelete.has(String(p.id)));
+  adminState.products = adminState.products.filter(p => !idsToDelete.has(String(p.id)));
+
+  localStorage.setItem('gc_cached_products', JSON.stringify(adminState.products));
+  clearProductSelection();
+  renderProductsList();
+  calculateInventoryStats();
+
+  showToastWithUndo(`${count} criação(ões) excluída(s).`, () => {
+    adminState.products.unshift(...deletedProducts);
+    localStorage.setItem('gc_cached_products', JSON.stringify(adminState.products));
+    renderProductsList();
+    calculateInventoryStats();
+    showToast('Exclusão desfeita com sucesso!', 'success');
+  });
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    for (const pid of idsToDelete) {
+      try {
+        await fb.deleteDoc(fb.fsDoc(fb.db, 'products', String(pid)));
+      } catch(e) {}
+    }
+  }
+}
+
+export async function bulkSetStock(isInStock) {
+  const count = adminState.selectedProductIds ? adminState.selectedProductIds.size : 0;
+  if (!count) return;
+
+  adminState.products.forEach(p => {
+    if (adminState.selectedProductIds.has(String(p.id))) {
+      p.inStock = isInStock;
+    }
+  });
+
+  localStorage.setItem('gc_cached_products', JSON.stringify(adminState.products));
+  renderProductsList();
+  calculateInventoryStats();
+  showToast(`${count} peça(s) marcadas como ${isInStock ? 'Pronta Entrega' : 'Sob Encomenda'}.`, 'success');
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    for (const pid of adminState.selectedProductIds) {
+      try {
+        await fb.setDoc(fb.fsDoc(fb.db, 'products', String(pid)), { inStock: isInStock }, { merge: true });
+      } catch(e) {}
+    }
+  }
+}
+
+export function openBulkCollectionModal() {
+  const select = document.getElementById('bulkCollectionSelect');
+  const modal = document.getElementById('bulkCollectionModal');
+  if (!select || !modal) return;
+  select.innerHTML = adminState.collections.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
+  modal.classList.remove('hidden');
+}
+
+export function bulkAssignToCollection(colSlug) {
+  const col = adminState.collections.find(c => c.slug === colSlug);
+  if (!col) return;
+  if (!Array.isArray(col.productIds)) col.productIds = [];
+
+  adminState.selectedProductIds.forEach(id => {
+    const numId = Number(id);
+    if (!col.productIds.includes(numId)) col.productIds.push(numId);
+    const p = adminState.products.find(item => String(item.id) === String(id));
+    if (p) {
+      p.collection = col.name;
+      if (!Array.isArray(p.collections)) p.collections = [];
+      if (!p.collections.includes(col.slug)) p.collections.push(col.slug);
+    }
+  });
+
+  localStorage.setItem('gc_cached_products', JSON.stringify(adminState.products));
+  localStorage.setItem('gc_cached_collections', JSON.stringify(adminState.collections));
+  localStorage.setItem('gc_collections_v2', JSON.stringify(adminState.collections));
+
+  const modal = document.getElementById('bulkCollectionModal');
+  if (modal) modal.classList.add('hidden');
+  clearProductSelection();
+  renderProductsList();
+  renderCollectionsList();
+  showToast(`Peças atribuídas à coleção "${col.name}"!`, 'success');
+}
+
+export function openProductQuickView(productId) {
+  const p = adminState.products.find(item => String(item.id) === String(productId));
+  if (!p) return;
+  adminState.quickViewProductId = p.id;
+
+  const qvModal = document.getElementById('productQuickViewModal');
+  if (!qvModal) return;
+
+  const tax = resolveProductTaxonomy(p);
+  const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
+
+  const nameEl = document.getElementById('qvName');
+  const priceEl = document.getElementById('qvPrice');
+  const descEl = document.getElementById('qvDesc');
+  const deptEl = document.getElementById('qvDeptBadge');
+  const stockEl = document.getElementById('qvStockBadge');
+  const matEl = document.getElementById('qvMaterial');
+  const timeEl = document.getElementById('qvProdTime');
+  const colorsEl = document.getElementById('qvColors');
+  const mainImg = document.getElementById('qvMainImage');
+  const thumbs = document.getElementById('qvGalleryThumbs');
+
+  if (nameEl) nameEl.textContent = p.name;
+  if (priceEl) priceEl.textContent = p.price ? formatBRL(p.price) : 'Sob Consulta';
+  if (descEl) descEl.textContent = p.desc || p.material || 'Peça autoral tecida à mão em fios nobres.';
+  if (deptEl) deptEl.textContent = `${tax.department} · ${tax.subcategory}`;
+  if (matEl) matEl.textContent = p.material || 'Fio 100% Algodão Nobre';
+  if (timeEl) timeEl.textContent = p.prod_time ? `${p.prod_time} dias úteis` : '8 dias úteis';
+  if (colorsEl) colorsEl.textContent = Array.isArray(p.colors) ? p.colors.join(', ') : (p.colors || 'Sob Encomenda');
+
+  if (mainImg) mainImg.src = img;
+
+  const inStock = p.inStock !== false;
+  if (stockEl) {
+    stockEl.className = `stock-pill ${inStock ? 'in-stock' : 'out-of-stock'}`;
+    stockEl.textContent = inStock ? '✓ EM ESTOQUE' : '⏳ SOB ENCOMENDA';
+  }
+
+  if (thumbs) {
+    const gallery = Array.isArray(p.gallery) && p.gallery.length ? p.gallery : [img];
+    thumbs.innerHTML = gallery.map(gImg => `
+      <img src="${gImg}" class="qv-thumb-img ${gImg === img ? 'active' : ''}" 
+           onclick="document.getElementById('qvMainImage').src='${gImg}'; document.querySelectorAll('.qv-thumb-img').forEach(el=>el.classList.remove('active')); this.classList.add('active');" 
+           onerror="this.src='./assets/icon.svg'">
+    `).join('');
+  }
+
+  qvModal.classList.remove('hidden');
+}
+
+export function closeProductQuickView() {
+  const qvModal = document.getElementById('productQuickViewModal');
+  if (qvModal) qvModal.classList.add('hidden');
+  adminState.quickViewProductId = null;
+}
+
+export function quickViewToggleStock() {
+  if (!adminState.quickViewProductId) return;
+  toggleProductStock(adminState.quickViewProductId);
+  const p = adminState.products.find(item => String(item.id) === String(adminState.quickViewProductId));
+  if (p) {
+    const inStock = p.inStock !== false;
+    const stockEl = document.getElementById('qvStockBadge');
+    if (stockEl) {
+      stockEl.className = `stock-pill ${inStock ? 'in-stock' : 'out-of-stock'}`;
+      stockEl.textContent = inStock ? '✓ EM ESTOQUE' : '⏳ SOB ENCOMENDA';
+    }
+  }
+}
+
+export function quickViewCopyPublicLink() {
+  if (!adminState.quickViewProductId) return;
+  const p = adminState.products.find(item => String(item.id) === String(adminState.quickViewProductId));
+  if (!p) return;
+  const slug = p.slug || 'bolsa-paraty';
+  const url = `https://goldcrochet-shop.github.io/produtos/${slug}.html`;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('Link da vitrine copiado para a área de transferência!', 'success');
+  }).catch(() => {
+    showToast(`Link: ${url}`, 'info');
+  });
+}
+
+export function quickViewProceedToEdit() {
+  const pid = adminState.quickViewProductId;
+  closeProductQuickView();
+  if (pid) {
+    editProduct(pid);
+  }
+}
+
+export function initKeyboardShortcuts() {
+  if (window.__adminShortcutsInitialized) return;
+  window.__adminShortcutsInitialized = true;
+
+  window.addEventListener('keydown', (e) => {
+    // 1. Ctrl+K / Cmd+K -> Focus Search
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      let targetInput = document.getElementById('productSearchInput');
+      if (adminState.currentView === 'orders') {
+        targetInput = document.getElementById('orderSearchInput');
+      } else if (adminState.currentView === 'customers') {
+        targetInput = document.getElementById('customerSearchInput');
+      }
+      if (targetInput) {
+        targetInput.focus();
+        targetInput.select();
+      }
+      return;
+    }
+
+    // 2. Escape -> Close Topmost Modal
+    if (e.key === 'Escape' || e.code === 'Escape') {
+      closeTopmostModal();
+      return;
+    }
+
+    // 3. Ctrl+S / Cmd+S -> Save Active Modal Form
+    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+      e.preventDefault();
+      saveCurrentActiveModal();
+      return;
+    }
+
+    // 4. Ctrl+N / Cmd+N -> New item in active view
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'n' || e.key === 'N')) {
+      e.preventDefault();
+      triggerNewCreationShortcut();
+      return;
+    }
+
+    // 5. ? (Shift + /) -> Shortcuts Guide
+    if (e.key === '?' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+      e.preventDefault();
+      openShortcutsModal();
+    }
+  });
+}
+
+export function closeTopmostModal() {
+  const modals = [
+    document.getElementById('shortcutsGuideModal'),
+    document.getElementById('bulkCollectionModal'),
+    document.getElementById('productQuickViewModal'),
+    document.getElementById('productModal'),
+    document.getElementById('orderDetailModal'),
+    document.getElementById('createOrderModal'),
+    document.getElementById('customerModal'),
+    document.getElementById('collectionModal')
+  ];
+  for (const m of modals) {
+    if (m && !m.classList.contains('hidden')) {
+      m.classList.add('hidden');
+      return true;
+    }
+  }
+  if (adminState.selectedProductIds && adminState.selectedProductIds.size > 0) {
+    clearProductSelection();
+    return true;
+  }
+  return false;
+}
+
+export function saveCurrentActiveModal() {
+  const pModal = document.getElementById('productModal');
+  if (pModal && !pModal.classList.contains('hidden')) {
+    const form = document.getElementById('productForm');
+    if (form) form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    return;
+  }
+  const colModal = document.getElementById('collectionModal');
+  if (colModal && !colModal.classList.contains('hidden')) {
+    const form = document.getElementById('collectionForm');
+    if (form) form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    return;
+  }
+  const custModal = document.getElementById('customerModal');
+  if (custModal && !custModal.classList.contains('hidden')) {
+    const form = document.getElementById('customerForm');
+    if (form) form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    return;
+  }
+  const createOrdModal = document.getElementById('createOrderModal');
+  if (createOrdModal && !createOrdModal.classList.contains('hidden')) {
+    const form = document.getElementById('createOrderForm');
+    if (form) form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    return;
+  }
+}
+
+export function triggerNewCreationShortcut() {
+  if (adminState.currentView === 'products') {
+    openNewProductModal();
+  } else if (adminState.currentView === 'orders') {
+    openCreateOrderModal();
+  } else if (adminState.currentView === 'collections') {
+    openCollectionModal();
+  } else if (adminState.currentView === 'customers') {
+    openManualCustomerModal();
+  }
+}
+
+export function openShortcutsModal() {
+  const m = document.getElementById('shortcutsGuideModal');
+  if (m) m.classList.remove('hidden');
+}
+
+export function closeShortcutsModal() {
+  const m = document.getElementById('shortcutsGuideModal');
+  if (m) m.classList.add('hidden');
+}
+
+export function printProductPriceTags(selectedProductIds) {
+  const ids = Array.isArray(selectedProductIds) && selectedProductIds.length ?
+    selectedProductIds : (adminState.selectedProductIds.size ? Array.from(adminState.selectedProductIds) : adminState.products.map(p => p.id));
+
+  const slip = document.getElementById('printableSlip');
+  if (!slip) return;
+
+  const targetProducts = adminState.products.filter(p => ids.includes(p.id) || ids.includes(String(p.id)));
+
+  slip.innerHTML = `
+    <div style="font-family:sans-serif;padding:20px;display:grid;grid-template-columns:repeat(2, 1fr);gap:20px;">
+      ${targetProducts.map(p => {
+        const tax = resolveProductTaxonomy(p);
+        return `
+          <div style="border:2px solid #cda434;border-radius:10px;padding:16px;text-align:center;background:#fff;page-break-inside:avoid">
+            <h3 style="margin:0 0 4px;font-size:1.1rem;color:#a67c00">ATELIÊ GOLD CROCHET</h3>
+            <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:1px">${tax.department} · ${tax.subcategory}</div>
+            <h2 style="margin:10px 0;font-size:1.25rem;color:#181614">${p.name}</h2>
+            <div style="font-size:1.5rem;font-weight:800;color:#cda434;margin:8px 0">${formatBRL(p.price || 0)}</div>
+            <p style="font-size:0.75rem;color:#555;margin:6px 0">Fio: ${p.material || '100% Algodão Nobre'} • Feito à mão</p>
+            <div style="font-size:0.68rem;color:#aaa;border-top:1px dashed #ddd;padding-top:6px;margin-top:8px">goldcrochet-shop.github.io • Peça Autoral Exclusiva</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  slip.style.display = 'block';
+  window.print();
+  setTimeout(() => { slip.style.display = 'none'; }, 1000);
+}
+
+export function exportFilteredProductsJSON() {
+  const query = (adminState.searchQuery || '').toLowerCase();
+  const catFilter = adminState.selectedCategoryFilter;
+  const deptFilter = adminState.selectedDepartmentFilter || 'all';
+  const subcatFilter = adminState.selectedSubcategoryFilter || 'all';
+  const stockFilter = adminState.selectedStockFilter || 'all';
+
+  const filtered = adminState.products.filter(p => {
+    const tax = resolveProductTaxonomy(p);
+    const inStock = p.inStock !== false;
+    const matchQuery = !query || (p.name || '').toLowerCase().includes(query) || String(p.id).includes(query);
+    const matchDept = deptFilter === 'all' || tax.department === deptFilter;
+    const matchSubcat = subcatFilter === 'all' || tax.subcategory === subcatFilter;
+    const matchCat = !catFilter || catFilter === 'all' || p.category === catFilter;
+    const matchStock = stockFilter === 'all' || (stockFilter === 'in_stock' ? inStock : !inStock);
+    return matchQuery && matchDept && matchSubcat && matchCat && matchStock;
+  });
+
+  const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify({
+    products: filtered,
+    totalFiltered: filtered.length,
+    exportedAt: new Date().toISOString()
+  }, null, 2));
+
+  const link = document.createElement('a');
+  link.setAttribute('href', jsonStr);
+  link.setAttribute('download', `catalogo-filtrado-goldcrochet-${new Date().toISOString().slice(0,10)}.json`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast(`${filtered.length} criações exportadas em JSON!`, 'success');
+}
+
+export function initProductFormAutoDraft() {
+  const form = document.getElementById('productForm');
+  if (!form) return;
+
+  const saveDraft = () => {
+    if (adminState.editingProductId) return;
+    const draft = {
+      name: document.getElementById('prodName')?.value || '',
+      price: document.getElementById('prodPrice')?.value || '',
+      department: document.getElementById('prodDepartment')?.value || '',
+      subcategory: document.getElementById('prodSubcategory')?.value || '',
+      material: document.getElementById('prodMaterial')?.value || '',
+      desc: document.getElementById('prodDesc')?.value || '',
+      timestamp: Date.now()
+    };
+    try {
+      sessionStorage.setItem('gc_prod_draft', JSON.stringify(draft));
+    } catch(e) {}
+  };
+
+  form.querySelectorAll('input, select, textarea').forEach(input => {
+    input.addEventListener('input', saveDraft);
+  });
+}
+
 export function renderProductsList() {
   const tbody = document.getElementById('productsTableBody');
   const cardsContainer = document.getElementById('productsCardsContainer');
@@ -1049,13 +2148,32 @@ export function renderProductsList() {
   if (btnCards) btnCards.classList.toggle('active', mode === 'cards');
   if (btnTable) btnTable.classList.toggle('active', mode === 'table');
 
-  const query = (adminState.searchQuery || '').toLowerCase();
+  const rawQuery = adminState.searchQuery || '';
+  const normQuery = normalizeSearchTerm(rawQuery);
   const catFilter = adminState.selectedCategoryFilter;
+  const deptFilter = adminState.selectedDepartmentFilter || 'all';
+  const subcatFilter = adminState.selectedSubcategoryFilter || 'all';
+  const stockFilter = adminState.selectedStockFilter || 'all';
 
   let filtered = adminState.products.filter(p => {
-    const matchName = (p.name || '').toLowerCase().includes(query) || String(p.id).includes(query);
-    const matchCat = catFilter === 'all' || p.category === catFilter;
-    return matchName && matchCat;
+    const tax = resolveProductTaxonomy(p);
+    const inStock = p.inStock !== false;
+
+    const matchQuery = !normQuery ||
+      normalizeSearchTerm(p.name).includes(normQuery) ||
+      normalizeSearchTerm(p.slug).includes(normQuery) ||
+      normalizeSearchTerm(p.material).includes(normQuery) ||
+      normalizeSearchTerm(p.desc).includes(normQuery) ||
+      normalizeSearchTerm(tax.department).includes(normQuery) ||
+      normalizeSearchTerm(tax.subcategory).includes(normQuery) ||
+      String(p.id).includes(normQuery);
+
+    const matchDept = deptFilter === 'all' || tax.department === deptFilter;
+    const matchSubcat = subcatFilter === 'all' || tax.subcategory === subcatFilter;
+    const matchCat = !catFilter || catFilter === 'all' || p.category === catFilter || tax.department === catFilter;
+    const matchStock = stockFilter === 'all' || (stockFilter === 'in_stock' ? inStock : !inStock);
+
+    return matchQuery && matchDept && matchSubcat && matchCat && matchStock;
   });
 
   // Ordenação configurável
@@ -1068,8 +2186,22 @@ export function renderProductsList() {
     filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
 
+  // Atualiza indicadores numéricos de proporção
+  const total = adminState.products.length;
+  const countEl = document.getElementById('filteredCountText');
+  const ratioBar = document.getElementById('filteredRatioBar');
+  if (countEl) countEl.textContent = `Exibindo ${filtered.length} de ${total} criações`;
+  if (ratioBar) ratioBar.style.width = total ? `${Math.round((filtered.length / total) * 100)}%` : '100%';
+
+  const cAll = document.getElementById('countStockAll');
+  const cIn = document.getElementById('countStockIn');
+  const cOut = document.getElementById('countStockOut');
+  if (cAll) cAll.textContent = total;
+  if (cIn) cIn.textContent = adminState.products.filter(p => p.inStock !== false).length;
+  if (cOut) cOut.textContent = adminState.products.filter(p => p.inStock === false).length;
+
   if (!filtered.length) {
-    if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Nenhuma criação encontrada para os filtros aplicados.</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="empty-state">Nenhuma criação encontrada para os filtros aplicados.</td></tr>`;
     if (cardsContainer) cardsContainer.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 20px;" class="empty-state">Nenhuma criação encontrada no catálogo.</div>`;
     return;
   }
@@ -1077,14 +2209,21 @@ export function renderProductsList() {
   // 1. Renderiza Cards Vitrine Haute Couture
   if (cardsContainer) {
     cardsContainer.innerHTML = filtered.map(p => {
+      const tax = resolveProductTaxonomy(p);
       const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
       const priceText = p.price ? formatBRL(p.price) : 'Sob Consulta';
       const inStock = p.inStock !== false;
       const stockBadge = inStock ? 
         `<span class="luxury-product-stock-tag in-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Alternar estoque">✓ Pronta Entrega</span>` : 
         `<span class="luxury-product-stock-tag out-of-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Alternar estoque">⏳ Sob Medida</span>`;
-      const badgeHtml = p.badge ? `<div class="luxury-product-badge">${p.badge}</div>` : '';
-      const catLabel = (p.category || 'peça').toUpperCase();
+      const isShimmer = p.badge && (p.badge.toLowerCase().includes('destaque') || p.badge.toLowerCase().includes('novo'));
+      const badgeHtml = p.badge ? `<div class="luxury-product-badge ${isShimmer ? 'badge-gold-shimmer' : ''}">${p.badge}</div>` : '';
+      const artisanBadge = `<span class="luxury-badge-artisan" title="Peça autoral tecida artesanalmente pela artesã Rossi Pereira">🧶 Autoral</span>`;
+
+      const titleHtml = highlightSearchMatch(p.name, rawQuery);
+      const descHtml = highlightSearchMatch(p.desc || p.material || 'Peça autoral tecida à mão em fios nobres.', rawQuery);
+      const deptHtml = highlightSearchMatch(tax.department, rawQuery);
+      const subcatHtml = highlightSearchMatch(tax.subcategory, rawQuery);
 
       return `
         <div class="luxury-product-card">
@@ -1095,12 +2234,14 @@ export function renderProductsList() {
           </div>
           <div class="luxury-product-body">
             <div class="luxury-product-meta">
-              <span class="category-tag">${catLabel}</span>
-              ${p.prod_time ? `<span>⏱ ${p.prod_time} dias</span>` : ''}
+              <span class="category-tag" style="color:var(--color-gold-deep, #a67c00);font-weight:700">${deptHtml}</span>
+              <span style="font-size:0.75rem;color:var(--text-muted)">· ${subcatHtml}</span>
+              ${artisanBadge}
+              ${p.prod_time ? `<span>⏱ ${p.prod_time}d</span>` : ''}
             </div>
-            <h4 class="luxury-product-title">${p.name}</h4>
+            <h4 class="luxury-product-title">${titleHtml}</h4>
             <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
-              ${p.desc || p.material || 'Peça autoral tecida à mão em fios nobres.'}
+              ${descHtml}
             </div>
             <div class="luxury-product-price-row">
               <div>
@@ -1108,6 +2249,7 @@ export function renderProductsList() {
                 <span class="luxury-product-price">${priceText}</span>
               </div>
               <div class="luxury-card-actions">
+                <button class="btn-action view-quick" onclick="window.AdminCore.openProductQuickView('${p.id}')" title="Visualização Rápida">👁️</button>
                 <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar Peça">✏️</button>
                 <button class="btn-action" onclick="window.AdminCore.duplicateProduct('${p.id}')" title="Duplicar Peça">📋</button>
                 <button class="btn-action view" onclick="window.open('./produtos/${p.slug || 'bolsa-paraty'}.html', '_blank')" title="Ver na Loja">👁</button>
@@ -1123,29 +2265,42 @@ export function renderProductsList() {
   // 2. Renderiza Tabela Técnica
   if (tbody) {
     tbody.innerHTML = filtered.map(p => {
+      const tax = resolveProductTaxonomy(p);
       const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
       const priceText = p.price ? formatBRL(p.price) : '<span style="color:#8b7a5a">Sob Consulta</span>';
       const discountBadge = p.discount ? `<span class="badge-discount">-${p.discount}%</span>` : '';
-      const badgeText = p.badge ? `<span class="badge-featured">${p.badge}</span>` : '';
+      const isShimmer = p.badge && (p.badge.toLowerCase().includes('destaque') || p.badge.toLowerCase().includes('novo'));
+      const badgeText = p.badge ? `<span class="badge-featured ${isShimmer ? 'badge-gold-shimmer' : ''}">${p.badge}</span>` : '';
       const inStock = p.inStock !== false;
       const stockPill = inStock ? 
         `<span class="stock-pill in-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Clique para alternar estoque">✓ Em Estoque</span>` : 
         `<span class="stock-pill out-of-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Clique para alternar estoque">⏳ Sob Medida</span>`;
       const prodTime = p.prod_time ? `<br><small style="color:var(--text-muted);font-size:0.75rem">${p.prod_time} dias prod.</small>` : '';
 
+      const isSelected = adminState.selectedProductIds && adminState.selectedProductIds.has(String(p.id));
+      const titleHtml = highlightSearchMatch(p.name, rawQuery);
+      const slugHtml = p.slug ? highlightSearchMatch(p.slug, rawQuery) : '';
+      const idHtml = highlightSearchMatch(String(p.id), rawQuery);
+      const deptHtml = highlightSearchMatch(tax.department, rawQuery);
+      const subcatHtml = highlightSearchMatch(tax.subcategory, rawQuery);
+
       return `
         <tr>
+          <td style="width:40px;text-align:center">
+            <input type="checkbox" class="product-select-chk" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="window.AdminCore.onProductSelectChange('${p.id}', this.checked, event)">
+          </td>
           <td style="width:56px">
             <img src="${img}" alt="${p.name}" class="product-thumb" onerror="this.src='./assets/icon.svg'">
           </td>
           <td>
             <div class="product-name-cell">
-              <strong>${p.name}</strong>
-              <small>ID: ${p.id} ${p.slug ? `· /${p.slug}` : ''}</small>
+              <strong>${titleHtml}</strong>
+              <small>ID: ${idHtml} ${slugHtml ? `· /${slugHtml}` : ''}</small>
             </div>
           </td>
           <td>
-            <span class="category-tag">${(p.category || 'vestuario').toUpperCase()}</span>
+            <span class="category-tag" style="font-weight:700;color:var(--color-gold-deep, #a67c00)">${deptHtml}</span>
+            <small style="display:block;color:var(--text-muted);font-size:0.75rem">${subcatHtml}</small>
           </td>
           <td>
             <div class="price-cell">
@@ -1157,6 +2312,7 @@ export function renderProductsList() {
             ${stockPill}${prodTime}
           </td>
           <td class="table-actions">
+            <button class="btn-action view-quick" onclick="window.AdminCore.openProductQuickView('${p.id}')" title="Visualização Rápida">👁️</button>
             <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar Peça">✏️</button>
             <button class="btn-action" onclick="window.AdminCore.duplicateProduct('${p.id}')" title="Duplicar Peça">📋</button>
             <button class="btn-action view" onclick="window.open('./produtos/${p.slug || 'bolsa-paraty'}.html', '_blank')" title="Ver na Loja ao Vivo">👁</button>
@@ -1220,12 +2376,15 @@ function orderCode(o) {
 }
 
 export function buildCustomerWhatsAppLink(o, status) {
-  const tpl = getWaTemplates()[status || o.status || 'pendente'] || WA_STATUS_TEMPLATES.pendente;
+  const currentStatus = status || o.status || 'pendente';
+  const tpl = getWaTemplates()[currentStatus] || WA_STATUS_TEMPLATES[currentStatus] || WA_STATUS_TEMPLATES.pendente;
+  const custName = (o.customerName || o.userName || 'Cliente').trim();
+  const firstName = custName.split(' ')[0] || 'Cliente';
   const text = tpl
-    .replace(/\{nome\}/g, (o.userName || '').split(' ')[0] || '')
+    .replace(/\{nome\}/g, firstName)
     .replace(/\{codigo\}/g, orderCode(o))
-    .replace(/\{total\}/g, formatBRL(o.total));
-  let phone = String(o.phone || '').replace(/\D/g, '');
+    .replace(/\{total\}/g, formatBRL(o.total || 0));
+  let phone = String(o.customerPhone || o.phone || '').replace(/\D/g, '');
   if (phone && phone.length <= 11) phone = '55' + phone; // DDD+número BR sem DDI
   // Sem telefone salvo: wa.me sem número abre o seletor de contatos
   return phone ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -1247,9 +2406,9 @@ export function renderOrdersList() {
   if (searchQuery) {
     filtered = filtered.filter(o => {
       const code = String(orderCode(o)).toLowerCase();
-      const name = String(o.userName || '').toLowerCase();
-      const email = String(o.userEmail || '').toLowerCase();
-      const phone = String(o.phone || '').replace(/\D/g, '');
+      const name = String(o.customerName || o.userName || '').toLowerCase();
+      const email = String(o.customerEmail || o.userEmail || '').toLowerCase();
+      const phone = String(o.customerPhone || o.phone || '').replace(/\D/g, '');
       return code.includes(searchQuery) || name.includes(searchQuery) || email.includes(searchQuery) || phone.includes(searchQuery);
     });
   }
@@ -1272,7 +2431,7 @@ export function renderOrdersList() {
     const itemsCount = items.reduce((s, i) => s + (Number(i.qty) || 1), 0) || 1;
     const itemsTitle = items.map(i => `${i.qty || 1}x ${i.name || ''}${i.color ? ` (${i.color})` : ''}`).join('\n').replace(/"/g, '&quot;');
     const sourceBadge = o.source === 'whatsapp-checkout' ? '<small style="color:var(--gold-deep)">💬 via WhatsApp</small>' : '';
-    const phoneClean = String(o.phone || '').replace(/\D/g, '');
+    const phoneClean = String(o.customerPhone || o.phone || '').replace(/\D/g, '');
     const phoneDisplay = phoneClean ? `📱 (${phoneClean.slice(0,2)}) ${phoneClean.slice(2)}` : `<span style="color:var(--warning)">sem telefone</span>`;
     const trackingBadge = o.trackingCode ? `<br><small style="color:var(--info);font-family:var(--font-mono)">📦 ${o.trackingCode}</small>` : '';
 
@@ -1286,8 +2445,8 @@ export function renderOrdersList() {
         </td>
         <td>
           <div class="customer-cell">
-            <strong>${o.userName || 'Cliente VIP'}</strong>
-            <small>${o.userEmail || '—'}</small>
+            <strong>${o.customerName || o.userName || 'Cliente VIP'}</strong>
+            <small>${o.customerEmail || o.userEmail || '—'}</small>
             <small>${phoneDisplay}</small>
           </div>
         </td>
@@ -1325,28 +2484,89 @@ export function filterOrdersByStatus(status) {
   renderOrdersList();
 }
 
+export function renderOrderTimeline(status) {
+  const steps = ['pendente', 'producao', 'enviado', 'entregue'];
+  const curIdx = steps.indexOf(status || 'pendente');
+  steps.forEach((st, idx) => {
+    const el = document.getElementById(`orderStep${idx + 1}`);
+    if (!el) return;
+    el.classList.remove('active', 'completed');
+    if (idx < curIdx) {
+      el.classList.add('completed');
+    } else if (idx === curIdx) {
+      el.classList.add('active');
+    }
+  });
+}
+
+export function copyOrderShippingManifest() {
+  const orderId = adminState.activeDetailOrderId;
+  if (!orderId) return;
+  const o = adminState.orders.find(x => String(x.id) === String(orderId));
+  if (!o) return;
+  const name = o.customerName || o.userName || 'Cliente VIP';
+  const phone = o.customerPhone || o.phone || '';
+  const a = o.address || {};
+  const addrStr = typeof a === 'string' ? a : `${a.street || ''}, ${a.number || 's/n'} ${a.comp || ''}\nBairro: ${a.neighborhood || ''}\nCidade: ${a.city || ''}/${a.state || ''}\nCEP: ${a.cep || ''}`;
+  const manifest = `📦 DECLARAÇÃO DE CONTEÚDO & ENVIO — GOLD CROCHET\n\nDESTINATÁRIO:\n${name}\nTelefone: ${phone}\nEndereço:\n${addrStr}\n\nPEDIDO: ${orderCode(o)}\nDATA: ${formatDate(o.createdAt)}\nVALOR: ${formatBRL(o.total || 0)}`;
+
+  navigator.clipboard.writeText(manifest).then(() => {
+    showToast('Manifesto de envio copiado para a área de transferência!', 'success');
+  }).catch(() => {
+    showToast('Manifesto gerado.', 'info');
+  });
+}
+
 export function viewOrderDetail(orderId) {
   const o = adminState.orders.find(x => String(x.id) === String(orderId));
   if (!o) return;
 
   adminState.activeDetailOrderId = orderId;
-  document.getElementById('orderDetailTitle').textContent = `Pedido ${orderCode(o)}`;
-  document.getElementById('orderDetailDate').textContent = formatDate(o.createdAt);
+  const code = orderCode(o);
+  const titleEl = document.getElementById('orderDetailTitle');
+  if (titleEl) titleEl.textContent = `Pedido ${code}`;
+  const dateEl = document.getElementById('orderDetailDate');
+  if (dateEl) dateEl.textContent = formatDate(o.createdAt);
   
   const statusBadge = document.getElementById('orderDetailStatusBadge');
   if (statusBadge) {
     statusBadge.innerHTML = `<span class="status-chip status-${o.status || 'pendente'}">${(o.status || 'pendente').toUpperCase()}</span>`;
   }
 
-  document.getElementById('orderDetailCustomerName').textContent = o.userName || 'Cliente VIP';
-  document.getElementById('orderDetailCustomerEmail').textContent = o.userEmail || 'Não informado';
+  const nameEl = document.getElementById('orderDetailCustomerName');
+  if (nameEl) nameEl.textContent = o.customerName || o.userName || 'Cliente VIP';
   
-  const phone = String(o.phone || '').replace(/\D/g, '');
-  document.getElementById('orderDetailCustomerPhone').textContent = phone ? `+55 ${phone}` : 'Não cadastrado';
+  const emailEl = document.getElementById('orderDetailCustomerEmail');
+  if (emailEl) emailEl.textContent = o.customerEmail || o.userEmail || 'Não informado';
   
+  const phone = String(o.customerPhone || o.phone || '').replace(/\D/g, '');
+  const phoneEl = document.getElementById('orderDetailCustomerPhone');
+  if (phoneEl) phoneEl.textContent = phone ? `+55 ${phone}` : 'Não cadastrado';
+  
+  const waUrl = buildCustomerWhatsAppLink(o);
   const waBtn = document.getElementById('orderDetailWhatsAppBtn');
-  if (waBtn) {
-    waBtn.href = buildCustomerWhatsAppLink(o);
+  if (waBtn) waBtn.href = waUrl;
+  const waBtnAlt = document.getElementById('orderWhatsappBtn');
+  if (waBtnAlt) waBtnAlt.href = waUrl;
+
+  // Atualiza stepper da linha do tempo
+  renderOrderTimeline(o.status);
+
+  // Renderiza endereço estruturado
+  const addrBox = document.getElementById('orderDetailAddressBox');
+  const addrText = document.getElementById('orderDetailAddressText');
+  const mapsLink = document.getElementById('orderDetailMapsLink');
+  if (addrBox) {
+    if (o.address) {
+      addrBox.classList.remove('hidden');
+      const a = o.address;
+      const formatted = typeof a === 'string' ? a : `${a.street || ''}, ${a.number || 'S/N'}${a.comp ? ` (${a.comp})` : ''} - ${a.neighborhood || ''}, ${a.city || ''}/${a.state || ''} • CEP: ${a.cep || ''}`;
+      if (addrText) addrText.textContent = formatted;
+      if (mapsLink) mapsLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formatted)}`;
+    } else {
+      if (addrText) addrText.textContent = 'Endereço de entrega não cadastrado.';
+      if (mapsLink) mapsLink.href = '#';
+    }
   }
 
   const trackInput = document.getElementById('orderTrackingInput');
@@ -1358,25 +2578,37 @@ export function viewOrderDetail(orderId) {
     const items = Array.isArray(o.items) && o.items.length ? o.items : [
       { name: 'Peça Artesanal Autoral', qty: 1, price: o.total || 0, color: 'Padrão' }
     ];
-    itemsList.innerHTML = items.map(i => `
-      <div class="order-item-row">
-        <div>
-          <strong>${i.name || 'Peça Gold Crochet'}</strong>
-          ${i.color ? `<div style="font-size:0.75rem;color:var(--text-muted)">Cor/Fio: ${i.color}</div>` : ''}
+    itemsList.innerHTML = items.map(i => {
+      const img = i.image || i.thumb || './assets/icon.svg';
+      const qty = Number(i.qty) || 1;
+      const price = Number(i.price) || 0;
+      return `
+        <div class="order-item-row" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-subtle)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <img src="${img}" alt="${i.name || ''}" style="width:40px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--border-subtle)" onerror="this.src='./assets/icon.svg'">
+            <div>
+              <strong style="display:block;font-size:0.9rem">${i.name || 'Peça Gold Crochet'}</strong>
+              ${i.color ? `<div style="font-size:0.75rem;color:var(--text-muted)">Cor/Fio: <strong>${i.color}</strong></div>` : ''}
+              <div style="font-size:0.75rem;color:var(--text-muted)">${qty}x ${formatBRL(price)}</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <strong style="color:var(--gold-deep);font-size:0.95rem">${formatBRL(qty * price)}</strong>
+          </div>
         </div>
-        <div style="text-align:right">
-          <div>${i.qty || 1}x ${formatBRL(i.price || 0)}</div>
-          <strong style="color:var(--gold-deep)">${formatBRL((Number(i.qty) || 1) * (Number(i.price) || 0))}</strong>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
-  document.getElementById('orderDetailSubtotal').textContent = formatBRL(o.subtotal || o.total || 0);
-  document.getElementById('orderDetailDiscount').textContent = o.discount ? `- ${formatBRL(o.discount)}` : 'R$ 0,00';
-  document.getElementById('orderDetailTotal').textContent = formatBRL(o.total || 0);
+  const subtotalEl = document.getElementById('orderDetailSubtotal');
+  if (subtotalEl) subtotalEl.textContent = formatBRL(o.subtotal || o.total || 0);
+  const discountEl = document.getElementById('orderDetailDiscount');
+  if (discountEl) discountEl.textContent = o.discount ? `- ${formatBRL(o.discount)}` : 'R$ 0,00';
+  const totalEl = document.getElementById('orderDetailTotal');
+  if (totalEl) totalEl.textContent = formatBRL(o.total || 0);
 
-  document.getElementById('orderDetailModal').classList.remove('hidden');
+  const modal = document.getElementById('orderDetailModal');
+  if (modal) modal.classList.remove('hidden');
 }
 
 export function closeOrderDetailModal() {
@@ -2096,6 +3328,31 @@ export function addMediaUrlToGallery() {
   if (input) input.value = '';
 }
 
+export function handleDepartmentChange(selectedDept, targetSubcat = null) {
+  const subcatSelect = document.getElementById('prodSubcategory');
+  if (!subcatSelect) return;
+  subcatSelect.innerHTML = '';
+
+  if (!selectedDept || !TAXONOMY_MAP[selectedDept]) {
+    subcatSelect.innerHTML = '<option value="">Selecione o Departamento primeiro...</option>';
+    return;
+  }
+
+  const subcategories = TAXONOMY_MAP[selectedDept];
+  subcategories.forEach(sub => {
+    const opt = document.createElement('option');
+    opt.value = sub;
+    opt.textContent = sub;
+    subcatSelect.appendChild(opt);
+  });
+
+  if (targetSubcat && subcategories.includes(targetSubcat)) {
+    subcatSelect.value = targetSubcat;
+  } else if (subcategories.length > 0) {
+    subcatSelect.value = subcategories[0];
+  }
+}
+
 export function openNewProductModal() {
   adminState.editingProductId = null;
   adminState.activeGallery = [];
@@ -2107,6 +3364,15 @@ export function openNewProductModal() {
   if (coverInput) coverInput.value = '';
   renderProdGalleryUI();
 
+  const legacyCatEl = document.getElementById('prodCategory');
+  if (legacyCatEl) legacyCatEl.value = '';
+
+  const deptSelect = document.getElementById('prodDepartment');
+  if (deptSelect) {
+    deptSelect.value = 'Para Ela';
+    handleDepartmentChange('Para Ela');
+  }
+
   // Reseta para a primeira aba
   switchProdModalTab('prodTabGeneral', document.querySelector('.editor-tab-btn[data-tab="prodTabGeneral"]'));
 
@@ -2117,13 +3383,24 @@ export function editProduct(productId) {
   const p = adminState.products.find(item => String(item.id) === String(productId));
   if (!p) return;
 
+  const tax = resolveProductTaxonomy(p);
+
   adminState.editingProductId = productId;
   document.getElementById('modalTitle').textContent = `Editar Criação: ${p.name}`;
   document.getElementById('prodName').value = p.name || '';
   document.getElementById('prodSlug').value = p.slug || '';
   document.getElementById('prodPrice').value = p.price || '';
   document.getElementById('prodDiscount').value = p.discount || 0;
-  document.getElementById('prodCategory').value = p.category || 'bolsas';
+  
+  const legacyCatEl = document.getElementById('prodCategory');
+  if (legacyCatEl) legacyCatEl.value = p.category || '';
+
+  const deptSelect = document.getElementById('prodDepartment');
+  if (deptSelect) {
+    deptSelect.value = tax.department;
+    handleDepartmentChange(tax.department, tax.subcategory);
+  }
+
   document.getElementById('prodBadge').value = p.badge || '';
   document.getElementById('prodProdTime').value = p.prod_time || 8;
   document.getElementById('prodMaterial').value = p.material || 'Fio 100% Algodão Nobre';
@@ -2167,7 +3444,12 @@ if (typeof window !== 'undefined') {
     loginWithGoogle,
     logout,
     initDashboardData,
+    initAuthStateListener,
     switchView,
+    renderCurrentView,
+    renderOverview,
+    renderProductsList,
+    renderOrdersList,
     openNewProductModal,
     closeProductModal,
     editProduct,
@@ -2182,11 +3464,17 @@ if (typeof window !== 'undefined') {
     testWhatsAppNumber,
     pushCatalogToGitHub,
     showToast,
+    showToastWithUndo,
+    testAudioChime,
+    copyToClipboardWithFeedback,
     viewOrderDetail,
     closeOrderDetailModal,
     saveOrderTracking,
     sendTrackingWhatsApp,
     copyOrderSummary,
+    copyOrderShippingManifest,
+    renderOrderTimeline,
+    buildCustomerWhatsAppLink,
     printOrderSlip,
     printSingleOrder,
     openCreateOrderModal,
@@ -2215,6 +3503,12 @@ if (typeof window !== 'undefined') {
     saveCollection,
     deleteCollection,
     renderCollectionsList,
+    updateColCounter,
+    filterColProductChecklist,
+    toggleAllColProducts,
+    onColProductToggle,
+    getDefaultCollections,
+    loadLocalCache,
     editCollection: (id) => {
       const col = adminState.collections.find(c => c.id === id || c.slug === id);
       if (col) openCollectionModal(col);
@@ -2223,11 +3517,56 @@ if (typeof window !== 'undefined') {
     removeGalleryItem,
     addMediaUrlToGallery,
     exportFullBackup,
-    setProductSort
+    setProductSort,
+    handleDepartmentChange,
+    setDepartmentFilter,
+    setSubcategoryFilter,
+    setStockFilter,
+    clearAllProductFilters,
+    updateSubcategoryFilterOptions,
+    renderActiveFilterChips,
+    removeSingleFilter,
+    calculateInventoryStats,
+    renderDeptDistribution,
+    animateNumericCounter,
+    toggleSelectAllProducts,
+    onProductSelectChange,
+    clearProductSelection,
+    updateBulkToolbar,
+    bulkDeleteSelectedProducts,
+    bulkSetStock,
+    openBulkCollectionModal,
+    bulkAssignToCollection,
+    openProductQuickView,
+    closeProductQuickView,
+    quickViewToggleStock,
+    quickViewCopyPublicLink,
+    quickViewProceedToEdit,
+    initKeyboardShortcuts,
+    closeTopmostModal,
+    saveCurrentActiveModal,
+    triggerNewCreationShortcut,
+    openShortcutsModal,
+    closeShortcutsModal,
+    printProductPriceTags,
+    exportFilteredProductsJSON,
+    initProductFormAutoDraft,
+    normalizeSearchTerm,
+    highlightSearchMatch,
+    clearSearchInput,
+    resolveProductTaxonomy,
+    computeLegacyCategory,
+    adminState,
+    TAXONOMY_MAP
   };
+  window.TAXONOMY_MAP = TAXONOMY_MAP;
+  window.adminState = adminState;
+
+  // Inicializa atalhos de teclado globalmente de imediato
+  initKeyboardShortcuts();
 
   // Inicializa quando o DOM estiver pronto
-  document.addEventListener('DOMContentLoaded', () => {
+  const onReady = () => {
     // 1. Aplica tema salvo
     if (adminState.theme === 'dark') {
       document.body.setAttribute('data-theme', 'dark');
@@ -2248,6 +3587,15 @@ if (typeof window !== 'undefined') {
     }
 
     initAuthStateListener();
+    initKeyboardShortcuts();
+    initProductFormAutoDraft();
+    updateSubcategoryFilterOptions('all');
+
+    // Botão Limpar Busca
+    const btnClear = document.getElementById('btnClearProductSearch');
+    if (btnClear) {
+      btnClear.addEventListener('click', () => clearSearchInput('productSearchInput'));
+    }
 
     // Eventos do Formulário de Login
     const loginForm = document.getElementById('adminLoginForm');
@@ -2285,16 +3633,29 @@ if (typeof window !== 'undefined') {
         const inStockVal = document.getElementById('prodInStock') ? document.getElementById('prodInStock').value !== 'false' : true;
 
         const coverInput = document.getElementById('prodCoverImgUrl');
-        const mainCover = (coverInput && coverInput.value) || (adminState.activeGallery && adminState.activeGallery[0]) || document.getElementById('prodImageUrl').value || './assets/icon.svg';
+        const mainCover = (coverInput && coverInput.value) || (adminState.activeGallery && adminState.activeGallery[0]) || (document.getElementById('prodImageUrl') ? document.getElementById('prodImageUrl').value : '') || './assets/icon.svg';
         const finalGallery = (adminState.activeGallery && adminState.activeGallery.length) ? [...adminState.activeGallery] : [mainCover];
         if (!finalGallery.includes(mainCover)) finalGallery.unshift(mainCover);
+
+        const deptEl = document.getElementById('prodDepartment');
+        const subcatEl = document.getElementById('prodSubcategory');
+        const selectedDept = deptEl ? deptEl.value : 'Para Ela';
+        const selectedSubcat = subcatEl ? subcatEl.value : (TAXONOMY_MAP[selectedDept] ? TAXONOMY_MAP[selectedDept][0] : '');
+
+        let legacyCategory = computeLegacyCategory(selectedDept, selectedSubcat);
+        const legacyCatInput = document.getElementById('prodCategory');
+        if (legacyCatInput && legacyCatInput.value && legacyCatInput.value !== 'vestuario' && legacyCategory === 'vestuario') {
+          legacyCategory = legacyCatInput.value;
+        }
 
         const pData = {
           name: document.getElementById('prodName').value.trim(),
           slug: document.getElementById('prodSlug').value.trim() || document.getElementById('prodName').value.toLowerCase().replace(/[^a-z0-9]/g, '-'),
           price: Number(document.getElementById('prodPrice').value) || null,
           discount: Number(document.getElementById('prodDiscount').value) || 0,
-          category: document.getElementById('prodCategory').value,
+          category: legacyCategory,
+          department: selectedDept,
+          subcategory: selectedSubcat,
           badge: document.getElementById('prodBadge').value.trim(),
           prod_time: document.getElementById('prodProdTime').value,
           material: document.getElementById('prodMaterial').value,
@@ -2331,7 +3692,27 @@ if (typeof window !== 'undefined') {
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         adminState.searchQuery = e.target.value;
+        const clearBtn = document.getElementById('btnClearProductSearch');
+        if (clearBtn) {
+          clearBtn.classList.toggle('hidden', !e.target.value);
+        }
+        renderActiveFilterChips();
         renderProductsList();
+      });
+    }
+
+    // Filtros de departamento e subcategoria de produtos
+    const deptSelect = document.getElementById('productDepartmentFilter');
+    if (deptSelect) {
+      deptSelect.addEventListener('change', (e) => {
+        setDepartmentFilter(e.target.value);
+      });
+    }
+
+    const subcatFilterSelect = document.getElementById('productSubcategoryFilter');
+    if (subcatFilterSelect) {
+      subcatFilterSelect.addEventListener('change', (e) => {
+        setSubcategoryFilter(e.target.value);
       });
     }
 
@@ -2445,5 +3826,12 @@ if (typeof window !== 'undefined') {
         });
       });
     }
-  });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onReady);
+  } else {
+    onReady();
+  }
 }
+

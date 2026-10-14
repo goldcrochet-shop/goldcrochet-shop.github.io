@@ -1,75 +1,43 @@
-# Project: Gold Crochet Mobile Redesign & Deep Responsiveness Optimization
+# Project: Gold Crochet — Taxonomy Synchronization, Collections & Admin Enhancements
 
 ## Architecture
-Gold Crochet is a high-fashion crochet atelier storefront deployed on GitHub Pages.
-- **Frontend Core**: Multi-page architecture (`index.html`, `pecas.html`, `colecoes.html`, `novidades.html`, `casa-gold.html`, `cliente.html`, `produtos/*.html`).
-- **Shared UI Layer**: `js/shared-ui.js` dynamically renders global chrome (Header, Mobile Bottom Bar, Cart Drawer, User Drawer, Toast notifications, Favorites manager).
-- **Styling Architecture**: `css/luxury-core.css` and `style.css` provide design tokens, luxury aesthetics, CSS Grid layouts, and responsive breakpoints.
-- **Storage & State**: `localStorage` (`gc_cart_items_v2`, `gc_fav_items_v2`, `gold_user`) manages cart state, favorites, and user session offline.
-- **Checkout Channel**: Direct WhatsApp order payload generator directed to official atelier concierge (`5531984566047`).
+Gold Crochet is a luxury crochet atelier storefront deployed on GitHub Pages.
+- **Frontend Core**: Multi-page architecture (`index.html`, `pecas.html`, `colecoes.html`, `novidades.html`, `casa-gold.html`, `cliente.html`, `produtos/*.html`, `admin.html`).
+- **Shared UI Layer**: `js/shared-ui.js` provides global chrome (Header, Mobile Bottom Bar, Cart Drawer, User Drawer, Toast notifications, Favorites manager, `GoldCarousel`).
+- **Admin Core**: `admin.html` and `js/admin-core.js` manage catalog, collections, orders, customers, and cloud synchronization.
+- **Styling Architecture**: `css/luxury-core.css`, `css/style.css`, and embedded `<style>` in `admin.html`.
+- **Data & State**: `data.json`, `localStorage` (`gc_cart_items_v2`, `gc_fav_items_v2`, `gc_cached_collections`, `gc_collections_v2`, `gc_cached_products`), and optional Cloud Firestore mirror.
 
 ## Feature Inventory
 | # | Feature | Description | Milestone | Source |
 |---|---------|-------------|-----------|--------|
-| F1 | Viewport & Zero Horizontal Overflow | Confinar transbordamento com `overflow-x: hidden; max-width: 100%` em `html, body`; eliminar overflow em botões, formulários e banners em viewports de 320px a 480px. | M1 | R1, Survey Exp 1 |
-| F2 | Cabeçalho Mobile 3 Zonas Limpo | Reestruturar cabeçalho em `js/shared-ui.js` e CSS: botão hambúrguer 44px à esquerda, logo oficial centralizada, busca e sacola à direita sem encavalamento. | M1 | R1, R2, Survey Exp 1 |
-| F3 | Escalonamento Tipográfico & Tokens de Cor | Tipografia fluida com `clamp()`, definição dos tokens faltantes (`--color-gold`, `--color-gold-glow`, `--color-sand`) e padronização visual orgânica. | M1 | R1, R3, Survey Exp 1 |
-| F4 | Menu Lateral Mobile com Trava de Scroll | Menu drawer tátil disparado pelo hambúrguer, trava de rolagem no `body` (`overflow: hidden`), fechamento suave ao clicar em link ou backdrop. | M1 | R2, Survey Exp 2 |
-| F5 | Barra Inferior Móvel & Safe Area Insets | Barra de navegação inferior (`.gc-mobile-bottom-bar`) com atalhos táteis de 44x44px, estados ativos corretos (inclusive `/produtos/`), padding de compensação no rodapé e `env(safe-area-inset-*)`. | M1 | R2, R10, Survey Exp 1, 2, 3 |
-| F6 | Hero Mobile & Primeira Dobra | Hero compacto (<800px no mobile), botão pílula "Explorar Peças" sem setas (mínimo 48px de altura, `max-width: 100%`), contraste botânico nítido. | M2 | R3, Survey Exp 1 |
-| F7 | Catálogo Mobile em 2 Colunas & Cartões | Grade móvel em 2 colunas (`grid-template-columns: repeat(2, minmax(0, 1fr))`), proporção de imagem 4:5, preços em preto sólido (`#000000`), sem parcelamento, favoritos no `localStorage`. | M3 | R4, Survey Exp 2, 3 |
-| F8 | Carrossel com Deslize Tátil & Momentum | Carrossel em `index.html` com suporte a Pointer/Touch events, inércia, prevenção de falso clique durante o arraste (`__gcCarouselDragged`), `touch-action: pan-y` e botões de 44px. | M2 | R5, Survey Exp 2, 3 |
-| F9 | Busca, Filtros & Estados Vazios | Busca instantânea com foco automático, filtros por categoria/ordenação e mensagem acolhedora de estado vazio. | M3 | R6, Survey Exp 2 |
-| F10 | Detalhes do Produto & Compra Exclusiva | Páginas `produtos/*.html` com destaque para algodão sob medida e tempo de produção, botão exclusivo "Adicionar à Sacola" fixo no mobile, sem atalho avulso de WhatsApp. | M3 | R7, Survey Exp 2 |
-| F11 | Sacola em 3 Estados & Checkout WhatsApp | Gaveta da sacola em 3 estados estritos: 1) vazia/deslogada com SVG + login; 2) vazia/logada sem banner; 3) com itens + botão sólido WhatsApp; trava de rolagem e altura adaptada a teclados. | M4 | R8, Survey Exp 2 |
-| F12 | Performance, CLS < 0.1 & Reduced Motion | Imagens com `width`/`height`/`aspect-ratio` explícitos, `loading="lazy"`, scripts com `defer` e `@media (prefers-reduced-motion: reduce)`. | M2, M4 | R9, Survey Exp 1, 3 |
-| F13 | Acessibilidade WCAG AA & Input Zoom Fix | Contraste tipográfico testado: texto ébano `#2a2210` sobre ouro (6.72:1), preços `#000000` (19:1), inputs com `font-size: 16px` para eliminar auto-zoom no Safari iOS. | M1 | R10, Survey Exp 3 |
-| F14 | Metatags Completas & Cross-Device | Open Graph e Twitter Cards completos em todas as páginas, `viewport-fit=cover` no `404.html`. | M1 | R10, Survey Exp 1, 3 |
+| F1 | Canonical Taxonomy Data Model | Add `department` and `subcategory` to `data.json`, `adminState.products`, `TAXONOMY_MAP` across 5 departments and 24 subcategories. | M1 | R1, Survey Exp 1 (DONE) |
+| F2 | Admin Product Form Dynamic Selects | In `#productModal` (`admin.html`), implement `<select id="prodDepartment">` and dynamic `<select id="prodSubcategory">` populated on change via `TAXONOMY_MAP`. | M1 | R1, Survey Exp 1 (DONE) |
+| F3 | Customer-Facing Taxonomy Tags & Badges | Unhide `.gc-product-category` in `css/luxury-core.css`, render luxury `.gc-product-tax-badges` (`.gc-badge-dept`, `.gc-badge-subcat`) in cards across `index.html`, `novidades.html`, `colecoes.html`, `cliente.html`, `pecas.html`. | M1 | R1, Survey Exp 1 (DONE) |
+| F4 | Dynamic 2-Tier Filters on `pecas.html` | Department pills + dynamic Subcategory pills with multi-criteria isolation and URL query parameter sync (`?departamento=...&subcategoria=...`). | M1 | R1, Survey Exp 1 (DONE) |
+| F5 | Admin Collections Product Association UI | In `#collectionModal` (`admin.html`), add `#colProductSearchInput` and `#colProductChecklist` with interactive checkboxes, thumbnails, and quick search. | M2 | R2, Survey Exp 2 (DONE) |
+| F6 | Bidirectional Collections Sync | In `js/admin-core.js`, sync `colObj.productIds` with `p.collection`/`p.collections`, persist to `gc_cached_collections` / `gc_collections_v2`, handle offline/online sync. | M2 | R2, Survey Exp 2 (DONE) |
+| F7 | Continuous Infinite Circular Carousels | Fix loop math in `colecoes.html` (`scrollWidth / 3`, center start, bounds check) and unify with `window.GoldCarousel` in `js/shared-ui.js` with momentum drag and click protection. | M2 | R2, Survey Exp 2 (DONE) |
+| F8 | Collections Storefront Reflection & URL Sync | Dynamic reflection of collections on `colecoes.html` and Home (`index.html`), plus catalog filtering by `?colecao=${slug}` in `pecas.html`. | M2 | R2, Survey Exp 2 (DONE) |
+| F9 | Admin Suite: Quick Filters & Search Highlight | Quick filters by department, subcategory, stock status; real-time search with `<mark>` keyword highlighting in catalog, orders, customers. | M3 | R3, Survey Exp 3 |
+| F10 | Admin Suite: Inventory Stats & Batch Actions | KPI stat cards (total inventory value, counts per dept, avg ticket); floating bulk actions bar (bulk delete, bulk status, bulk collection). | M3 | R3, Survey Exp 3 |
+| F11 | Admin Suite: Quick View & Enhanced Orders | Quick View product modal without leaving table; Order details with customer info, items, address, and 1-click WhatsApp concierge link. | M3 | R3, Survey Exp 3 |
+| F12 | Admin Suite: Shortcuts, Badges, Toasts & Table Utils | Global shortcuts (Ctrl+K, Esc, Ctrl+S); gold shimmer badges; luxury toast notifications with undo; table column sort and export tools (50 items total). | M3 | R3, Survey Exp 3 |
+| F13 | E2E Testing, Syntax Validation & Git Push | Update and pass E2E tests, verify `node --check` 0 errors on all JS, git commit and push to `goldcrochet-shop.github.io`. | M4 | AC, Survey Exp 1-3 |
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| M1 | Fundação Responsiva, Tokens, Header, Menu & Metatags | F1, F2, F3, F4, F5, F13, F14 | none | PLANNED |
-| M2 | Hero Mobile, Identidade Visual & Carrossel Touch | F6, F8, F12 (Hero/Carousel) | M1 | PLANNED |
-| M3 | Catálogo em 2 Colunas, Cartões, Busca & Detalhes | F7, F9, F10 | M1 | PLANNED |
-| M4 | Sacola em 3 Estados, Checkout WhatsApp & Performance | F11, F12 (Cart/Scripts) | M1, M3 | PLANNED |
-| M5 | Validação Final E2E Tiers 1-4 & Hardening Tier 5 | Passagem de 100% dos testes E2E + Hardening Adversarial | M1, M2, M3, M4, TEST_READY | PLANNED |
-
-## Interface Contracts
-
-### Shared UI Component Contract (`js/shared-ui.js` <-> Storefront Pages)
-- Header container: `.gc-header` with 3 zones:
-  - Left: `.gc-header-menu-btn` (aria-label="Abrir menu de navegação", 44x44px, toggles `#gcMobileNavDrawer`).
-  - Center: `.gc-logo-brand` with centered official logo image.
-  - Right: `.gc-header-actions` containing search link, favorites button, and cart trigger (`#gcCartTrigger`, 44x44px).
-- Mobile Drawer: `#gcMobileNavDrawer` with backdrop `.gc-drawer-backdrop`, closes on click or ESC, triggers `document.body.classList.toggle('gc-scroll-locked')`.
-- Mobile Bottom Bar: `#gcMobileBar` fixed with safe-area spacing:
-  - Tabs: Início (`index.html`), Coleções (`colecoes.html`), Peças (`pecas.html`), Sacola (opens `#gcCartDrawer`), Conta (`cliente.html`).
-  - Active detection: maps `/produtos/` to Peças, `/index.html` or `/` to Início.
-  - Tap target: min 44x44px padding/box.
-
-### Catalog & Product Contract (`produtos/*.html` & `pecas.html` <-> `js/shared-ui.js`)
-- Price format: `.gc-price-val` rendered in solid black `#000000 !important`, no installment subtitles.
-- Cart action: `addToCartCurrent()` or `window.GoldCart.addItem(...)` exclusively channels into cart drawer.
-- Product Card: `.gc-product-card` with `border-radius: 14px 14px 8px 8px;`, image wrapper `aspect-ratio: 4 / 5;`.
-
-### Design Tokens & CSS Variables (`css/luxury-core.css` & `style.css`)
-- `:root`:
-  - `--color-gold: #cda434;`
-  - `--color-gold-glow: rgba(205, 164, 52, 0.25);`
-  - `--color-gold-deep: #a67c00;`
-  - `--color-sand: #fdf6d6;`
-  - `--color-ebony: #2a2210;`
-  - `--safe-top: env(safe-area-inset-top, 0px);`
-  - `--safe-bottom: env(safe-area-inset-bottom, 0px);`
+| M1 | Sincronização de Taxonomia de Produtos (Admin & Vitrine) | F1, F2, F3, F4 | none | DONE |
+| M2 | Gestão de Coleções no Admin & Carrosséis Infinitos Circulares | F5, F6, F7, F8 | M1 | DONE |
+| M3 | Suíte de 50 Melhorias Utilitárias e Visuais no Admin | F9, F10, F11, F12 | M1, M2 | DONE |
+| M4 | Validação E2E, Verificação de Sintaxe & Git Push | F13 | M1, M2, M3 | DONE |
 
 ## Code Layout
-- `index.html`: Home storefront, hero, brand story, product carousel, testimonials, newsletter.
-- `pecas.html`: Complete product catalog, search bar, category filters, empty state.
-- `colecoes.html`, `novidades.html`, `casa-gold.html`, `cliente.html`, `404.html`: Core subpages.
-- `produtos/*.html`: 10 individual product showcase pages.
-- `css/luxury-core.css`: Master responsive stylesheet, design tokens, layout grids, components.
-- `css/style.css`: Legacy theme styles and fallbacks.
-- `js/shared-ui.js`: Universal runtime chrome injection (Header, Drawers, Mobile Bar, Cart, Favorites).
-- `js/loader.js`: Asset and script orchestration.
-- `tests/`: Automated E2E test suite (Python 3.11 + Chrome Headless CDP runner).
+- `admin.html`: Admin layout, modals (`#productModal`, `#collectionModal`, `#quickViewModal`, `#orderDetailModal`), quick filters, stats.
+- `js/admin-core.js`: Admin reactive state, taxonomy mapping, product/collection CRUD, 50 enhancements, keyboard shortcuts, exports.
+- `colecoes.html`: Storefront collections view, infinite circular loop carousels.
+- `index.html`: Storefront Home, featured carousel, dynamic collections carousels.
+- `pecas.html`: Storefront catalog with `?colecao=${slug}` filter support.
+- `js/shared-ui.js`: Universal UI chrome, `window.GoldCarousel.setup`.
+- `tests/`: Automated E2E test runner (`tests/test_taxonomy_collections_admin.py`).
