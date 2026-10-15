@@ -1,6 +1,32 @@
 {
   "products": [
     {
+      "id": 1792094000000,
+      "name": "Clutch Aurora",
+      "slug": "clutch-aurora",
+      "gender": null,
+      "emoji": "✨",
+      "desc": "O encontro da luz dourada com o artesanal autoral. A Clutch Aurora apresenta silhueta elegante em formato de concha meia-lua, tecida ponto a ponto com fios nobres metalizados e algodão toque de seda. Acompanha corrente diamantada dourada removível e fecho ornamentado com acabamento de alta-costura.",
+      "badge": "Novo",
+      "prod_time": "12",
+      "material": "Fio Náutico com Fio Metalizado Dourado e Algodão Toque de Seda",
+      "image": "./images/clutch-aurora.jpg",
+      "gallery": [
+        "./images/clutch-aurora.jpg"
+      ],
+      "category": "bolsas",
+      "department": "Acessórios",
+      "subcategory": "Bolsas",
+      "colors": ["Dourado & Off-White"],
+      "collection": "Essenciais",
+      "colorSections": [],
+      "discount": 0,
+      "section": "acessorios",
+      "price": 149,
+      "inStock": false,
+      "model3d": ""
+    },
+    {
       "id": "1789954142890",
       "gender": null,
       "gallery": [
