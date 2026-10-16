@@ -130,27 +130,26 @@
       "updatedAt": "2026-10-16T23:20:16.456Z"
     },
     {
-      "id": 1789957539765,
-      "colorSections": [],
-      "prod_time": "",
-      "category": "saias-vestidos",
-      "price": 250,
+      "name": "VESTIDO TRANCOSO MIDI",
       "slug": "vestido-trancoso-midi",
+      "price": 250,
       "discount": 0,
-      "emoji": "🧶",
-      "section": "dia-a-dia",
+      "category": "saias-vestidos",
+      "department": "Para Ela",
+      "subcategory": "Saias e vestidos",
+      "badge": "Destaque",
+      "prod_time": "8",
       "material": "Fio de Malha 100% Algodão Premium",
+      "desc": "Uma ode à natureza brasileira e ao artesanato de raiz. O Vestido Trancoso Midi traz o equilíbrio perfeito entre a essência rústica e a sofisticação absoluta. A paleta orgânica, que mescla tons terrosos, verde suave e branco puro em listras ritmadas, reflete as cores das falésias e o frescor da flora",
+      "inStock": false,
+      "colors": [],
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957537128_0.png",
       "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957537128_0.png",
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644625238_1.webp"
       ],
-      "name": "VESTIDO TRANCOSO MIDI",
-      "collection": "Essenciais",
-      "colors": [],
-      "model3d": "",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957537128_0.png",
-      "gender": "feminino",
-      "badge": "Destaque",
-      "desc": "Uma ode à natureza brasileira e ao artesanato de raiz. O Vestido Trancoso Midi traz o equilíbrio perfeito entre a essência rústica e a sofisticação absoluta. A paleta orgânica, que mescla tons terrosos, verde suave e branco puro em listras ritmadas, reflete as cores das falésias e o frescor da flora"
+      "id": "1789957539765",
+      "updatedAt": "2026-10-16T23:20:23.705Z"
     },
     {
       "id": 1789957638397,
@@ -251,7 +250,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T23:20:16.671Z",
+    "updated": "2026-10-16T23:20:23.912Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
