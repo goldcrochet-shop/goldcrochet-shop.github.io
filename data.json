@@ -51,11 +51,11 @@
       "category": "saias-vestidos",
       "department": "Para Ela",
       "subcategory": "Saias e vestidos",
-      "badge": "Destaque",
+      "badge": "",
       "prod_time": "24",
       "material": "Fio 100% Algodão Premium",
       "desc": "Um clássico atemporal que captura a essência do luxo despretensioso carioca. O Vestido Bossa Curto possui uma trama milimetricamente estruturada, onde a fluidez da linha encontra a solidez do metal.",
-      "inStock": true,
+      "inStock": false,
       "colors": [],
       "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954680598_0.png",
       "gallery": [
@@ -63,7 +63,7 @@
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954683985_1.png"
       ],
       "id": "1789954688278",
-      "updatedAt": "2026-10-16T23:19:45.212Z"
+      "updatedAt": "2026-10-16T23:19:59.745Z"
     },
     {
       "id": 1789955083971,
@@ -252,7 +252,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T23:19:53.159Z",
+    "updated": "2026-10-16T23:19:59.942Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
