@@ -116,10 +116,22 @@
         return;
       }
 
-      // 3. Redirecionamento de páginas de produtos físicas (ex: /produtos/bolsa-dunas ou /bolsa-dunas -> /produtos/bolsa-dunas.html)
+      // 3. Redirecionamento de páginas de produtos físicas ou dinâmicas
       if (clean && !clean.includes('.')) {
         var slug = clean.replace(/^(produtos|produto)\//, '');
+        // Se já tentou acessar o .html e caiu no 404, encaminha para o visualizador dinâmico
+        if (clean.indexOf('produtos/') === 0 || clean.indexOf('produto/') === 0) {
+          window.location.replace(window.location.origin + repoPrefix + '/produtos/produto.html?slug=' + encodeURIComponent(slug));
+          return;
+        }
         window.location.replace(window.location.origin + repoPrefix + '/produtos/' + slug + '.html');
+        return;
+      }
+
+      // Se acessou diretamente .html de produto inexistente (ex: /produtos/xyz.html), vai para o produto.html dinâmico
+      if (clean && clean.indexOf('produtos/') === 0 && clean.endsWith('.html') && clean !== 'produtos/produto.html') {
+        var fileSlug = clean.replace(/^produtos\//, '').replace(/\.html$/, '');
+        window.location.replace(window.location.origin + repoPrefix + '/produtos/produto.html?slug=' + encodeURIComponent(fileSlug));
         return;
       }
 

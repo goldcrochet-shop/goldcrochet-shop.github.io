@@ -4035,9 +4035,22 @@ if (typeof window !== 'undefined') {
           legacyCategory = legacyCatInput.value;
         }
 
+        const rawName = nameInput.value.trim();
+        const baseSlug = rawName.toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '') || 'peca';
+
+        // Mantém o slug existente se estiver editando, ou gera automático com código único
+        let finalSlug = (document.getElementById('prodSlug') && document.getElementById('prodSlug').value.trim());
+        if (!finalSlug || !adminState.editingProductId) {
+          const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+          finalSlug = `${baseSlug}-${randomSuffix}`;
+        }
+
         const pData = {
-          name: nameInput.value.trim(),
-          slug: (document.getElementById('prodSlug') && document.getElementById('prodSlug').value.trim()) || nameInput.value.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'),
+          name: rawName,
+          slug: finalSlug,
           price: priceNum,
           discount: Number(document.getElementById('prodDiscount') ? document.getElementById('prodDiscount').value : 0) || 0,
           category: legacyCategory,
