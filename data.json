@@ -152,25 +152,25 @@
       "updatedAt": "2026-10-16T23:20:23.705Z"
     },
     {
-      "id": 1789957638397,
-      "badge": "",
-      "model3d": "",
-      "desc": "Um mergulho nas águas cristalinas do litoral brasileiro. O Short Noronha traduz a energia vibrante do mar através de uma paleta refrescante e orgânica, onde um degradê de tons oceânicos — do marinho profundo ao azul celeste — se funde perfeitamente com a suavidade da cor de areia em suas listras rit",
       "name": "SHORT NORONHA",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957634052_0.png",
-      "emoji": "🧶",
       "slug": "short-noronha",
-      "colorSections": [],
-      "category": "calcas",
       "price": 60,
-      "collection": "Essenciais",
-      "gallery": [],
       "discount": 0,
-      "gender": "feminino",
-      "section": "dia-a-dia",
+      "category": "calcas",
+      "department": "Para Ela",
+      "subcategory": "Calças",
+      "badge": "",
       "prod_time": "0",
+      "material": "Fio de Malha 100% Algodão Premium",
+      "desc": "Um mergulho nas águas cristalinas do litoral brasileiro. O Short Noronha traduz a energia vibrante do mar através de uma paleta refrescante e orgânica, onde um degradê de tons oceânicos — do marinho profundo ao azul celeste — se funde perfeitamente com a suavidade da cor de areia em suas listras rit",
+      "inStock": false,
       "colors": [],
-      "material": "Fio de Malha 100% Algodão Premium"
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957634052_0.png",
+      "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789957634052_0.png"
+      ],
+      "id": "1789957638397",
+      "updatedAt": "2026-10-16T23:20:39.561Z"
     },
     {
       "id": 1790643259085,
@@ -244,7 +244,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T23:20:34.519Z",
+    "updated": "2026-10-16T23:20:39.749Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
