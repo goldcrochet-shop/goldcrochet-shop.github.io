@@ -22,32 +22,26 @@
       "updatedAt": "2026-10-16T23:19:35.949Z"
     },
     {
-      "id": "1789954142890",
-      "model3d": "",
-      "badge": "",
-      "colorSections": [],
-      "slug": "bolsa-bossa",
-      "collection": "Essenciais",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954259246_0.png",
-      "subcategory": "Bolsas",
-      "price": 65,
-      "prod_time": "16",
       "name": "Bolsa Bossa",
-      "gender": null,
+      "slug": "bolsa-bossa",
+      "price": 65,
       "discount": 0,
-      "material": "Fio de Malha 100% Algodão Premium",
-      "emoji": "🧶",
-      "colors": [],
-      "inStock": true,
-      "desc": "A tradução perfeita da luz suave das manhãs de verão brasileiras. A Bolsa Bossa traz um tom amarelo-manteiga suave e iluminado, construída com uma trama espessa que une o corpo à alça em um design orgânico e contínuo.",
+      "category": "bolsas",
       "department": "Acessórios",
+      "subcategory": "Bolsas",
+      "badge": "",
+      "prod_time": "16",
+      "material": "Fio de Malha 100% Algodão Premium",
+      "desc": "A tradução perfeita da luz suave das manhãs de verão brasileiras. A Bolsa Bossa traz um tom amarelo-manteiga suave e iluminado, construída com uma trama espessa que une o corpo à alça em um design orgânico e contínuo.",
+      "inStock": false,
+      "colors": [],
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954259246_0.png",
       "gallery": [
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954259246_0.png",
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954263874_1.png"
       ],
-      "updatedAt": "2026-10-16T22:21:13.897Z",
-      "category": "bolsas",
-      "section": "acessorios"
+      "id": "1789954142890",
+      "updatedAt": "2026-10-16T23:19:52.945Z"
     },
     {
       "name": "VESTIDO BOSSA CURTO",
@@ -258,7 +252,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T23:19:45.433Z",
+    "updated": "2026-10-16T23:19:53.159Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
