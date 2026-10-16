@@ -176,7 +176,7 @@
       "name": "DÚO CELESTIAL SOL E LUA",
       "slug": "duo-celestial-sol-e-lua",
       "price": 75,
-      "discount": 10,
+      "discount": 0,
       "category": "decoracoes",
       "department": "Artigos Para Casa",
       "subcategory": "Decorações",
@@ -193,7 +193,7 @@
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643256984_2.webp"
       ],
       "id": "1790643259085",
-      "updatedAt": "2026-10-16T23:20:45.520Z"
+      "updatedAt": "2026-10-16T23:21:05.125Z"
     },
     {
       "name": "JOGO AMERICANO",
@@ -243,7 +243,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T23:20:56.575Z",
+    "updated": "2026-10-16T23:21:05.322Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
