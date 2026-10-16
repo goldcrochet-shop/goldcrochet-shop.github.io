@@ -173,28 +173,27 @@
       "updatedAt": "2026-10-16T23:20:39.561Z"
     },
     {
-      "id": 1790643259085,
+      "name": "DÚO CELESTIAL SOL E LUA",
       "slug": "duo-celestial-sol-e-lua",
-      "emoji": "🧶",
       "price": 75,
-      "category": "decoracoes",
-      "model3d": "",
-      "colorSections": [],
       "discount": 10,
-      "collection": "Casa Gold",
-      "material": "Fio de Algodão Macio Aveludado",
+      "category": "decoracoes",
+      "department": "Artigos Para Casa",
+      "subcategory": "Decorações",
+      "badge": "",
       "prod_time": "24",
-      "badge": "Destaque",
+      "material": "Fio de Algodão Macio Aveludado",
       "desc": "​Um clássico lúdico que captura a essência do aconchego e da misticidade brasileira. O Dúo Celestial possui uma trama milimetricamente estruturada em fios aveludados, onde a energia radiante do dia encontra a serenidade da noite.",
+      "inStock": false,
+      "colors": [],
       "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643252900_0.webp",
       "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643252900_0.webp",
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643255070_1.webp",
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790643256984_2.webp"
       ],
-      "gender": null,
-      "section": "casa",
-      "name": "DÚO CELESTIAL SOL E LUA",
-      "colors": []
+      "id": "1790643259085",
+      "updatedAt": "2026-10-16T23:20:45.520Z"
     },
     {
       "name": "JOGO AMERICANO",
@@ -244,7 +243,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T23:20:39.749Z",
+    "updated": "2026-10-16T23:20:45.732Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
