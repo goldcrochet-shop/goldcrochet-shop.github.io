@@ -1,6 +1,29 @@
 {
   "products": [
     {
+      "id": 1792185000000,
+      "name": "Bolsa Copacabana • Linha Estação",
+      "slug": "bolsa-copacabana-estacao",
+      "price": 120,
+      "discount": 0,
+      "category": "bolsas",
+      "department": "Acessórios",
+      "subcategory": "Bolsas",
+      "badge": "Novo",
+      "prod_time": "18",
+      "material": "Fio de Malha Premium com Aplicações de Orquídeas 3D e Pérolas",
+      "desc": "O florescer da botânica brasileira esculpido em pontos manuais de alta-costura. A Bolsa Copacabana Linha Estação eleva a clássica baguete de ombro a uma obra de arte têxtil, adornada por delicadas orquídeas e pétalas em relevo tridimensional finalizadas com aplicações peroladas.",
+      "inStock": false,
+      "colors": ["Amarelo Manteiga & Rosa", "Azul Hortênsia", "Tons Terrosos"],
+      "image": "./images/linha-copacabana-showcase.png",
+      "gallery": [
+        "./images/linha-copacabana-showcase.png"
+      ],
+      "collection": "Essenciais",
+      "section": "acessorios",
+      "updatedAt": "2026-10-16T21:00:00.000Z"
+    },
+    {
       "id": "1789954142890",
       "name": "Bolsa Copacabana Tradicional",
       "slug": "bolsa-copacabana",
