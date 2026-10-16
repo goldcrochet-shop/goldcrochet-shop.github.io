@@ -66,27 +66,26 @@
       "updatedAt": "2026-10-16T23:19:59.745Z"
     },
     {
-      "id": 1789955083971,
-      "price": 75,
       "name": "CAMISA ARPOADOR",
+      "slug": "camisa-arpoador",
+      "price": 75,
+      "discount": 0,
+      "category": "tops",
+      "department": "Para Ele",
+      "subcategory": "Camisas & Polos",
+      "badge": "Novo",
       "prod_time": "0",
-      "emoji": "🧶",
+      "material": "Fio 100% Algodão Premium",
+      "desc": "Um clássico contemporâneo que captura a essência do luxo despretensioso carioca. A Camisa Arpoador possui uma trama vazada milimetricamente estruturada, onde a leveza do fio encontra o frescor do design moderno.",
+      "inStock": false,
+      "colors": [],
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955074956_0.png",
       "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955074956_0.png",
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955081599_1.png"
       ],
-      "section": "dia-a-dia",
-      "colorSections": [],
-      "desc": "Um clássico contemporâneo que captura a essência do luxo despretensioso carioca. A Camisa Arpoador possui uma trama vazada milimetricamente estruturada, onde a leveza do fio encontra o frescor do design moderno.",
-      "model3d": "",
-      "category": "tops",
-      "badge": "Novo",
-      "collection": "Essenciais",
-      "slug": "camisa-arpoador",
-      "discount": 0,
-      "gender": "masculino",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955074956_0.png",
-      "colors": [],
-      "material": "Fio 100% Algodão Premium"
+      "id": "1789955083971",
+      "updatedAt": "2026-10-16T23:20:05.606Z"
     },
     {
       "id": 1789956946626,
@@ -252,7 +251,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T23:19:59.942Z",
+    "updated": "2026-10-16T23:20:06.433Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
