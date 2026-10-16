@@ -137,7 +137,7 @@
       "category": "saias-vestidos",
       "department": "Para Ela",
       "subcategory": "Saias e vestidos",
-      "badge": "Destaque",
+      "badge": "",
       "prod_time": "8",
       "material": "Fio de Malha 100% Algodão Premium",
       "desc": "Uma ode à natureza brasileira e ao artesanato de raiz. O Vestido Trancoso Midi traz o equilíbrio perfeito entre a essência rústica e a sofisticação absoluta. A paleta orgânica, que mescla tons terrosos, verde suave e branco puro em listras ritmadas, reflete as cores das falésias e o frescor da flora",
@@ -149,7 +149,7 @@
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644625238_1.webp"
       ],
       "id": "1789957539765",
-      "updatedAt": "2026-10-16T23:20:23.705Z"
+      "updatedAt": "2026-10-16T23:20:51.495Z"
     },
     {
       "name": "SHORT NORONHA",
@@ -243,7 +243,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T23:20:45.732Z",
+    "updated": "2026-10-16T23:20:51.684Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
