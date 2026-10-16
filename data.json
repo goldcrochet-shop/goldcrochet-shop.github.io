@@ -1,8 +1,9 @@
 {
   "products": [
     {
-      "name": "Bolsa Duna",
-      "slug": "bolsa-dunas",
+      "id": "1789954142890",
+      "name": "Bolsa Copacabana Tradicional",
+      "slug": "bolsa-copacabana",
       "price": 65,
       "discount": 0,
       "category": "bolsas",
@@ -11,15 +12,16 @@
       "badge": "",
       "prod_time": "16",
       "material": "Fio de Malha 100% Algodão Premium",
-      "desc": "A tradução perfeita da luz suave das manhãs de verão brasileiras. A Bolsa Dunas traz um tom amarelo-manteiga suave e iluminado, construída com uma trama espessa que une o corpo à alça em um design orgânico e contínuo.",
+      "desc": "A tradução perfeita da luminosidade do litoral brasileiro em uma peça de design contínuo e arquitetônico. A Bolsa Copacabana Tradicional traz o tom amarelo solar iluminado, estruturada em uma trama encorpada que une o corpo à alça em uma silhueta orgânica e elegante.",
       "inStock": true,
-      "colors": [],
+      "colors": ["Amarelo Solar"],
       "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954259246_0.png",
       "gallery": [
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954259246_0.png",
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954263874_1.png"
       ],
-      "id": "1789954142890",
+      "collection": "Essenciais",
+      "section": "acessorios",
       "updatedAt": "2026-10-16T20:41:37.097Z"
     },
     {
