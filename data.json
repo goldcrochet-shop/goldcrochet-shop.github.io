@@ -73,7 +73,7 @@
       "category": "tops",
       "department": "Para Ele",
       "subcategory": "Camisas & Polos",
-      "badge": "Novo",
+      "badge": "",
       "prod_time": "0",
       "material": "Fio 100% Algodão Premium",
       "desc": "Um clássico contemporâneo que captura a essência do luxo despretensioso carioca. A Camisa Arpoador possui uma trama vazada milimetricamente estruturada, onde a leveza do fio encontra o frescor do design moderno.",
@@ -85,7 +85,7 @@
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789955081599_1.png"
       ],
       "id": "1789955083971",
-      "updatedAt": "2026-10-16T23:20:05.606Z"
+      "updatedAt": "2026-10-16T23:20:56.369Z"
     },
     {
       "name": "REGATA NORONHA",
@@ -243,7 +243,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T23:20:51.684Z",
+    "updated": "2026-10-16T23:20:56.575Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
