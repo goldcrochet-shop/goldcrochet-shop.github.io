@@ -1519,6 +1519,73 @@ export async function pushCatalogToGitHub(token = '') {
 }
 
 // ════════════════════════════════════════
+// POPUP & FLUXO DE TOKEN DO GITHUB
+// ════════════════════════════════════════
+
+let pendingProductSaveData = null;
+
+export function openGhTokenModal(pendingData = null) {
+  pendingProductSaveData = pendingData;
+  const modal = document.getElementById('ghTokenModal');
+  const input = document.getElementById('ghModalTokenInput');
+  if (input) {
+    input.value = localStorage.getItem('gh_token') || '';
+  }
+  if (modal) modal.classList.remove('hidden');
+}
+
+export function closeGhTokenModal() {
+  const modal = document.getElementById('ghTokenModal');
+  if (modal) modal.classList.add('hidden');
+  pendingProductSaveData = null;
+}
+
+export async function confirmGhTokenAndSave() {
+  const input = document.getElementById('ghModalTokenInput');
+  const token = (input && input.value ? input.value.trim() : '') || localStorage.getItem('gh_token') || '';
+
+  if (!token) {
+    showToast('Por favor, informe seu token do GitHub.', 'warning');
+    if (input) input.focus();
+    return;
+  }
+
+  localStorage.setItem('gh_token', token);
+  const ghTokenInput = document.getElementById('ghTokenInput');
+  if (ghTokenInput) ghTokenInput.value = token;
+
+  const dataToSave = pendingProductSaveData;
+  closeGhTokenModal();
+
+  if (dataToSave) {
+    await executeSaveAndPush(dataToSave, token);
+  } else {
+    showToast('Token do GitHub salvo com sucesso!', 'success');
+  }
+}
+
+export async function executeSaveAndPush(pData, token = '') {
+  const btn = document.getElementById('btnSubmitProduct');
+  const oldText = btn ? btn.textContent : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Salvando e publicando...';
+  }
+
+  try {
+    // 1. Salva localmente e no Firestore
+    await saveProduct(pData);
+    // 2. Envia para o GitHub Pages
+    await pushCatalogToGitHub(token);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = oldText;
+    }
+  }
+}
+
+// ════════════════════════════════════════
 // RENDERIZAÇÃO DA INTERFACE DO PAINEL
 // ════════════════════════════════════════
 
@@ -3750,6 +3817,10 @@ if (typeof window !== 'undefined') {
     saveWhatsAppSettings,
     testWhatsAppNumber,
     pushCatalogToGitHub,
+    openGhTokenModal,
+    closeGhTokenModal,
+    confirmGhTokenAndSave,
+    executeSaveAndPush,
     showToast,
     showToastWithUndo,
     testAudioChime,
@@ -3916,6 +3987,34 @@ if (typeof window !== 'undefined') {
     if (prodForm) {
       prodForm.addEventListener('submit', (e) => {
         e.preventDefault();
+
+        const nameInput = document.getElementById('prodName');
+        const deptEl = document.getElementById('prodDepartment');
+        const priceInput = document.getElementById('prodPrice');
+
+        // Validação inteligente multi-aba: não deixa o formulário estático
+        if (!nameInput || !nameInput.value.trim()) {
+          switchProdModalTab('prodTabGeneral', document.querySelector('.editor-tab-btn[data-tab="prodTabGeneral"]'));
+          showToast('Por favor, informe o Nome da Peça.', 'warning');
+          if (nameInput) nameInput.focus();
+          return;
+        }
+
+        if (!deptEl || !deptEl.value) {
+          switchProdModalTab('prodTabGeneral', document.querySelector('.editor-tab-btn[data-tab="prodTabGeneral"]'));
+          showToast('Selecione o Departamento da Peça.', 'warning');
+          if (deptEl) deptEl.focus();
+          return;
+        }
+
+        const priceNum = priceInput ? Number(priceInput.value) : 0;
+        if (!priceInput || !priceInput.value || isNaN(priceNum) || priceNum <= 0) {
+          switchProdModalTab('prodTabPricing', document.querySelector('.editor-tab-btn[data-tab="prodTabPricing"]'));
+          showToast('Por favor, defina o Preço da Peça na aba Preço & Produção.', 'warning');
+          if (priceInput) priceInput.focus();
+          return;
+        }
+
         const colorsRaw = document.getElementById('prodColors') ? document.getElementById('prodColors').value : '';
         const colorsArr = colorsRaw ? colorsRaw.split(',').map(c => c.trim()).filter(Boolean) : [];
         const inStockVal = document.getElementById('prodInStock') ? document.getElementById('prodInStock').value !== 'false' : true;
@@ -3925,7 +4024,6 @@ if (typeof window !== 'undefined') {
         const finalGallery = (adminState.activeGallery && adminState.activeGallery.length) ? [...adminState.activeGallery] : [mainCover];
         if (!finalGallery.includes(mainCover)) finalGallery.unshift(mainCover);
 
-        const deptEl = document.getElementById('prodDepartment');
         const subcatEl = document.getElementById('prodSubcategory');
         const rawDept = deptEl ? deptEl.value : 'Para Ela';
         const selectedDept = resolveCanonicalDepartment(rawDept) || rawDept;
@@ -3938,23 +4036,32 @@ if (typeof window !== 'undefined') {
         }
 
         const pData = {
-          name: document.getElementById('prodName').value.trim(),
-          slug: document.getElementById('prodSlug').value.trim() || document.getElementById('prodName').value.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-          price: Number(document.getElementById('prodPrice').value) || null,
-          discount: Number(document.getElementById('prodDiscount').value) || 0,
+          name: nameInput.value.trim(),
+          slug: (document.getElementById('prodSlug') && document.getElementById('prodSlug').value.trim()) || nameInput.value.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'),
+          price: priceNum,
+          discount: Number(document.getElementById('prodDiscount') ? document.getElementById('prodDiscount').value : 0) || 0,
           category: legacyCategory,
           department: selectedDept,
           subcategory: selectedSubcat,
-          badge: document.getElementById('prodBadge').value.trim(),
-          prod_time: document.getElementById('prodProdTime').value,
-          material: document.getElementById('prodMaterial').value,
-          desc: document.getElementById('prodDesc').value,
+          badge: document.getElementById('prodBadge') ? document.getElementById('prodBadge').value.trim() : '',
+          prod_time: document.getElementById('prodProdTime') ? document.getElementById('prodProdTime').value : '7',
+          material: document.getElementById('prodMaterial') ? document.getElementById('prodMaterial').value : '',
+          desc: document.getElementById('prodDesc') ? document.getElementById('prodDesc').value : '',
           inStock: inStockVal,
           colors: colorsArr,
           image: mainCover,
           gallery: finalGallery
         };
-        saveProduct(pData);
+
+        // Verifica o Token do GitHub antes de salvar
+        const savedGhToken = localStorage.getItem('gh_token') || DEFAULT_GH_TOKEN;
+        if (!savedGhToken) {
+          // Token não existe: abre o popup solicitando o token
+          openGhTokenModal(pData);
+        } else {
+          // Token já existe: salva e faz push diretamente
+          executeSaveAndPush(pData, savedGhToken);
+        }
       });
     }
 

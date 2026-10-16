@@ -2160,7 +2160,7 @@
         <button class="modal-close-btn" onclick="window.AdminCore.closeProductModal()">&times;</button>
       </div>
 
-      <form id="productForm">
+      <form id="productForm" novalidate>
         <!-- Navegação por Abas do Editor Moderno -->
         <div class="editor-tabs-nav">
           <button type="button" class="editor-tab-btn active" data-tab="prodTabGeneral" onclick="window.AdminCore.switchProdModalTab('prodTabGeneral', this)">
@@ -2305,9 +2305,49 @@
 
         <div class="modal-footer">
           <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeProductModal()">Cancelar</button>
-          <button type="submit" class="btn-primary-action">✨ Salvar Criação &gt;</button>
+          <button type="submit" id="btnSubmitProduct" class="btn-primary-action">✨ Salvar Criação &gt;</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       MODAL DE TOKEN DO GITHUB (SINCRONIZAÇÃO EM NUVEM)
+       ════════════════════════════════════════ -->
+  <div id="ghTokenModal" class="modal-backdrop hidden" style="z-index: 1050;">
+    <div class="modal-container" style="max-width: 520px; border-top: 4px solid var(--gold-primary);">
+      <div class="modal-header">
+        <h3 class="modal-title" style="display:flex;align-items:center;gap:8px;">
+          <span>🔑</span> Conectar Token do GitHub
+        </h3>
+        <button class="modal-close-btn" onclick="window.AdminCore.closeGhTokenModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-color); margin-bottom: 16px;">
+          Para salvar suas peças e publicar as fotos diretamente na sua vitrine do GitHub Pages sem precisar mexer em código, insira seu <strong>Token Pessoal de Acesso (PAT)</strong> do GitHub com permissão de <code>repo</code>.
+        </p>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label" style="font-weight: 600;">Seu Token do GitHub (ghp_...)</label>
+          <input type="password" id="ghModalTokenInput" class="form-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="font-family: monospace; letter-spacing: 0.05em;">
+          <small style="display:block;margin-top:6px;font-size:0.78rem;color:var(--text-muted)">
+            🔒 Este token fica salvo com segurança apenas no seu navegador. Você só precisará digitá-lo uma vez.
+          </small>
+        </div>
+
+        <div style="background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 20px;">
+          <strong style="display:block; font-size: 0.82rem; margin-bottom: 4px; color: var(--gold-deep);">Como gerar seu token:</strong>
+          <span style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; display:block">
+            No GitHub, vá em <em>Settings &gt; Developer Settings &gt; Personal Access Tokens (Tokens classic)</em> &gt; <em>Generate new token</em> e marque a caixinha <strong>repo</strong>.
+          </span>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 16px 24px; display:flex; justify-content: flex-end; gap: 12px;">
+        <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeGhTokenModal()">Cancelar</button>
+        <button type="button" class="btn-primary-action" onclick="window.AdminCore.confirmGhTokenAndSave()">
+          ✨ Salvar Token &amp; Publicar
+        </button>
+      </div>
     </div>
   </div>
 
