@@ -179,27 +179,26 @@
       "collection": "Casa Gold"
     },
     {
-      "id": 1790644607412,
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644602891_0.webp",
+      "name": "JOGO AMERICANO",
+      "slug": "jogo-americano",
       "price": 75,
       "discount": 0,
-      "collection": "Casa Gold",
-      "section": "casa",
-      "emoji": "🧶",
       "category": "decoracoes",
-      "colorSections": [],
-      "slug": "jogo-americano-trilho-ipe-rosa-casa-brasil",
+      "department": "Artigos Para Casa",
+      "subcategory": "Sousplats & Mesas",
+      "badge": "Exclusivo",
+      "prod_time": "75",
+      "material": "Fio 100% Algodão Nobre",
+      "desc": "A delicadeza da nossa flora traduzida em afeto e requinte à mesa posta. O conjunto une a base em tom cru com uma moldura botânica trançada à mão: caules em verde-oliva que desabrocham em pétalas no tom rosa ipê, evocando a beleza espontânea dos nossos jardins e matas.\n\n*Conta com 4 Souplats*",
+      "inStock": true,
       "colors": [],
-      "model3d": "",
-      "gender": null,
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644602891_0.webp",
       "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644602891_0.webp",
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1790644605496_1.webp"
       ],
-      "badge": "Exclusivo",
-      "desc": "A delicadeza da nossa flora traduzida em afeto e requinte à mesa posta. O conjunto une a base em tom cru com uma moldura botânica trançada à mão: caules em verde-oliva que desabrocham em pétalas no tom rosa ipê, evocando a beleza espontânea dos nossos jardins e matas.",
-      "material": "",
-      "name": "JOGO AMERICANO & TRILHO IPÊ ROSA CASA BRASIL",
-      "prod_time": "75"
+      "id": "1790644607412",
+      "updatedAt": "2026-10-16T20:42:49.170Z"
     }
   ],
   "categories": [
@@ -227,7 +226,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T20:41:45.730Z",
+    "updated": "2026-10-16T20:43:37.502Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
