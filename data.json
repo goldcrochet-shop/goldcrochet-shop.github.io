@@ -50,27 +50,26 @@
       "section": "acessorios"
     },
     {
-      "id": 1789954688278,
+      "name": "VESTIDO BOSSA CURTO",
+      "slug": "vestido-bossa-curto",
+      "price": 85,
+      "discount": 0,
       "category": "saias-vestidos",
-      "section": "dia-a-dia",
+      "department": "Para Ela",
+      "subcategory": "Saias e vestidos",
+      "badge": "Destaque",
+      "prod_time": "24",
+      "material": "Fio 100% Algodão Premium",
+      "desc": "Um clássico atemporal que captura a essência do luxo despretensioso carioca. O Vestido Bossa Curto possui uma trama milimetricamente estruturada, onde a fluidez da linha encontra a solidez do metal.",
+      "inStock": true,
+      "colors": [],
+      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954680598_0.png",
       "gallery": [
+        "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954680598_0.png",
         "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954683985_1.png"
       ],
-      "collection": "Essenciais",
-      "colorSections": [],
-      "name": "VESTIDO BOSSA CURTO",
-      "desc": "Um clássico atemporal que captura a essência do luxo despretensioso carioca. O Vestido Bossa Curto possui uma trama milimetricamente estruturada, onde a fluidez da linha encontra a solidez do metal.",
-      "price": 85,
-      "material": "Fio 100% Algodão Premium",
-      "discount": 20,
-      "emoji": "🧶",
-      "prod_time": "24",
-      "image": "https://raw.githubusercontent.com/goldcrochet-shop/goldcrochet-shop/main/images/peca_1789954680598_0.png",
-      "colors": [],
-      "slug": "vestido-bossa-curto",
-      "model3d": "",
-      "gender": "feminino",
-      "badge": "Destaque"
+      "id": "1789954688278",
+      "updatedAt": "2026-10-16T23:19:45.212Z"
     },
     {
       "id": 1789955083971,
@@ -259,7 +258,7 @@
     "vestuario"
   ],
   "_meta": {
-    "updated": "2026-10-16T23:19:39.038Z",
+    "updated": "2026-10-16T23:19:45.433Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
   }
