@@ -698,6 +698,9 @@
     try {
       localStorage.setItem(USER_KEY, JSON.stringify(customer));
       updateUserUI();
+      try {
+        document.dispatchEvent(new CustomEvent('gc:user-synced', { detail: { user: customer, offline: true } }));
+      } catch (evtErr) {}
     } catch (e) {}
   }
 
