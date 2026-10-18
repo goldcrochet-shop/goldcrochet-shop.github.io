@@ -34,7 +34,12 @@ import {
   getDocFromServer,
   onSnapshot,
   orderBy,
-  limit
+  limit,
+  increment,
+  arrayUnion,
+  arrayRemove,
+  runTransaction,
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // Configuração principal da plataforma Gold Crochet
@@ -143,7 +148,12 @@ export {
   serverTimestamp,
   onSnapshot,
   orderBy,
-  limit
+  limit,
+  increment,
+  arrayUnion,
+  arrayRemove,
+  runTransaction,
+  writeBatch
 };
 
 if (typeof window !== 'undefined') {
@@ -171,6 +181,11 @@ if (typeof window !== 'undefined') {
     onSnapshot,
     orderBy,
     limit,
+    increment,
+    arrayUnion,
+    arrayRemove,
+    runTransaction,
+    writeBatch,
     handleFirestoreError
   };
 }

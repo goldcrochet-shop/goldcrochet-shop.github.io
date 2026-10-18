@@ -320,6 +320,7 @@ export const adminState = {
   selectedDepartmentFilter: 'all',
   selectedSubcategoryFilter: 'all',
   customerSearchQuery: '',
+  customerGiftFilter: 'all',
   orderStatusFilter: 'all',
   orderSearchQuery: '',
   activeDetailOrderId: null,
@@ -353,6 +354,101 @@ export function formatDate(timestamp) {
   } catch (e) {
     return '—';
   }
+}
+
+export const VALID_BRAZILIAN_DDDS = new Set([
+  '11','12','13','14','15','16','17','18','19', // SP
+  '21','22','24',                                 // RJ
+  '27','28',                                     // ES
+  '31','32','33','34','35','37','38',             // MG
+  '41','42','43','44','45','46',                 // PR
+  '47','48','49',                                 // SC
+  '51','53','54','55',                             // RS
+  '61',                                           // DF
+  '62','64',                                     // GO
+  '63',                                           // TO
+  '65','66',                                     // MT
+  '67',                                           // MS
+  '68',                                           // AC
+  '69',                                           // RO
+  '71','73','74','75','77',                       // BA
+  '79',                                           // SE
+  '81','87',                                     // PE
+  '82',                                           // AL
+  '83',                                           // PB
+  '84',                                           // RN
+  '85','88',                                     // CE
+  '86','89',                                     // PI
+  '91','93','94',                                 // PA
+  '92','97',                                     // AM
+  '95',                                           // RR
+  '96',                                           // AP
+  '98','99'                                       // MA
+]);
+
+export function normalizeBrazilianPhone(rawPhone) {
+  let cleaned = String(rawPhone || '').replace(/\D/g, '');
+  if (!cleaned) return '';
+  while (cleaned.startsWith('55') && cleaned.length > 11) {
+    cleaned = cleaned.slice(2);
+  }
+  return cleaned;
+}
+
+export function validateBrazilianPhone(rawPhone) {
+  const norm = normalizeBrazilianPhone(rawPhone);
+  if (!norm || norm.length < 10 || norm.length > 11) {
+    return { valid: false, reason: 'Telefone deve conter DDD + 8 ou 9 dígitos' };
+  }
+  const ddd = norm.slice(0, 2);
+  if (!VALID_BRAZILIAN_DDDS.has(ddd)) {
+    return { valid: false, reason: `DDD (${ddd}) não é válido no Brasil` };
+  }
+  if (norm.length === 11 && norm[2] !== '9') {
+    return { valid: false, reason: 'Celulares devem iniciar com 9 após o DDD' };
+  }
+  const formatted = norm.length === 11
+    ? `(${ddd}) ${norm.slice(2, 7)}-${norm.slice(7)}`
+    : `(${ddd}) ${norm.slice(2, 6)}-${norm.slice(6)}`;
+  return {
+    valid: true,
+    ddd,
+    phone: norm,
+    ddi: '55',
+    fullDigits: '55' + norm,
+    formatted
+  };
+}
+
+export function formatWhatsAppLink(phone, message) {
+  const norm = normalizeBrazilianPhone(phone);
+  return norm
+    ? `https://wa.me/55${norm}?text=${encodeURIComponent(message || '')}`
+    : `https://wa.me/?text=${encodeURIComponent(message || '')}`;
+}
+
+export function applyPhoneMask(input) {
+  if (!input) return;
+  const handler = () => {
+    let digits = input.value.replace(/\D/g, '');
+    while (digits.startsWith('55') && digits.length > 11) {
+      digits = digits.slice(2);
+    }
+    if (digits.length > 11) digits = digits.slice(0, 11);
+
+    if (digits.length <= 2) {
+      input.value = digits ? `(${digits}` : '';
+    } else if (digits.length <= 6) {
+      input.value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    } else if (digits.length <= 10) {
+      input.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    } else {
+      input.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+    }
+  };
+  input.removeEventListener('input', input._gcMaskHandler || (() => {}));
+  input._gcMaskHandler = handler;
+  input.addEventListener('input', handler);
 }
 
 export function normalizeSearchTerm(str) {
@@ -765,6 +861,13 @@ export function loadLocalCache() {
     const localOrders = localStorage.getItem('gc_cached_orders');
     if (localOrders) adminState.orders = JSON.parse(localOrders);
 
+    const localCustomers = localStorage.getItem('gc_cached_customers');
+    if (localCustomers) {
+      adminState.customers = JSON.parse(localCustomers);
+      const custBadge = document.getElementById('navBadgeCustomers');
+      if (custBadge) custBadge.textContent = adminState.customers.length;
+    }
+
     const localLogs = localStorage.getItem('gc_admin_logs');
     if (localLogs) adminState.logs = JSON.parse(localLogs);
   } catch (e) {}
@@ -776,6 +879,9 @@ export function loadLocalCache() {
       localStorage.setItem('gc_collections_v2', JSON.stringify(adminState.collections));
     } catch(e) {}
   }
+
+  // Sincroniza métricas e contadores imediatamente no boot a partir do cache local (<30ms)
+  calculateMetrics();
 
   // Se o catálogo estiver vazio, carrega de data.json
   if (!adminState.products.length) {
@@ -890,6 +996,7 @@ export async function syncOrdersFromFirestore() {
         adminState.orders = liveList;
         try { localStorage.setItem('gc_cached_orders', JSON.stringify(liveList)); } catch(e) {}
         calculateMetrics();
+        syncCustomersFromFirestore();
         if (adminState.currentView === 'orders' || adminState.currentView === 'overview') {
           renderCurrentView();
         }
@@ -902,48 +1009,112 @@ export async function syncOrdersFromFirestore() {
 
 export async function syncCustomersFromFirestore() {
   const fb = window.GoldFirebase;
-  if (!fb || !fb.db) return;
+  let list = [];
 
-  try {
-    const colRef = fb.fsCollection(fb.db, 'users');
-    const snapshot = await fb.getDocs(colRef).catch(() => null);
+  // Se houver dados em cache, inicia com eles para manter estado caso offline
+  if (adminState.customers && adminState.customers.length) {
+    list = [...adminState.customers];
+  }
 
-    const list = [];
-    if (snapshot && !snapshot.empty) {
-      snapshot.forEach(docSnap => {
-        const u = docSnap.data();
-        if (u.role !== 'admin') {
-          list.push({ id: docSnap.id, ...u });
-        }
-      });
-    }
+  const processAndMergeUsers = (baseUsers) => {
+    let merged = [...(baseUsers || [])];
 
-    // Mescla com compradores identificados nos pedidos para garantir que ninguém fique de fora
+    // Mescla com compradores identificados nos pedidos (acumulando contagem de pedidos reais)
+    const orderCountsByEmail = {};
+    const orderCountsByPhone = {};
+
     adminState.orders.forEach(o => {
-      if (o.userEmail && !list.some(c => c.email && c.email.toLowerCase() === o.userEmail.toLowerCase())) {
-        list.push({
-          id: o.userId || ('client_' + Math.abs(o.userEmail.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0))),
-          name: o.userName || 'Cliente Gold',
-          email: o.userEmail,
-          phone: o.phone || '',
-          purchasesCount: 1,
+      const email = (o.userEmail || o.customerEmail || '').toLowerCase().trim();
+      const phone = String(o.phone || o.customerPhone || '').replace(/\D/g, '');
+      if (email) orderCountsByEmail[email] = (orderCountsByEmail[email] || 0) + 1;
+      if (phone) orderCountsByPhone[phone] = (orderCountsByPhone[phone] || 0) + 1;
+    });
+
+    adminState.orders.forEach(o => {
+      const email = (o.userEmail || o.customerEmail || '').toLowerCase().trim();
+      const phone = String(o.phone || o.customerPhone || '').replace(/\D/g, '');
+      const name = o.userName || o.customerName || 'Cliente Gold';
+
+      let existing = merged.find(c => {
+        const cEmail = (c.email || '').toLowerCase().trim();
+        const cPhone = String(c.phone || '').replace(/\D/g, '');
+        if (email && cEmail && email === cEmail) return true;
+        if (phone && cPhone && phone === cPhone) return true;
+        return false;
+      });
+
+      const realPurchases = (email && orderCountsByEmail[email]) || (phone && orderCountsByPhone[phone]) || 1;
+
+      if (!existing && (email || phone || name !== 'Cliente Gold')) {
+        const cleanKey = email || phone || name;
+        merged.push({
+          id: o.userId || ('client_' + Math.abs(cleanKey.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0))),
+          name: name,
+          email: email,
+          phone: o.phone || o.customerPhone || '',
+          purchasesCount: realPurchases,
           giftsClaimed: 0
         });
+      } else if (existing) {
+        if (!existing.purchasesCount || existing.purchasesCount < realPurchases) {
+          existing.purchasesCount = realPurchases;
+        }
+        if (!existing.phone && (o.phone || o.customerPhone)) {
+          existing.phone = o.phone || o.customerPhone;
+        }
+        if ((!existing.name || existing.name === 'Cliente' || existing.name === 'Cliente Gold') && name && name !== 'Cliente Gold') {
+          existing.name = name;
+        }
       }
     });
 
-    adminState.customers = list;
-    try { localStorage.setItem('gc_cached_customers', JSON.stringify(list)); } catch(e) {}
-    
+    adminState.customers = merged;
+    try { localStorage.setItem('gc_cached_customers', JSON.stringify(merged)); } catch(e) {}
+
     const badge = document.getElementById('navBadgeCustomers');
-    if (badge) badge.textContent = list.length;
+    if (badge) badge.textContent = merged.length;
+    updateSidebarBadges();
 
     if (adminState.currentView === 'customers') {
       renderCustomersList();
     }
+  };
+
+  try {
+    if (fb && fb.db) {
+      const colRef = fb.fsCollection(fb.db, 'users');
+      const snapshot = await fb.getDocs(colRef).catch(() => null);
+
+      if (snapshot && !snapshot.empty) {
+        list = [];
+        snapshot.forEach(docSnap => {
+          const u = docSnap.data();
+          if (u.role !== 'admin') {
+            list.push({ id: docSnap.id, ...u });
+          }
+        });
+      }
+
+      // Ouvinte em tempo real para novos cadastros e atualizações de clientes
+      if (fb.onSnapshot && !adminState._usersSnapshotActive) {
+        adminState._usersSnapshotActive = true;
+        fb.onSnapshot(colRef, (liveSnap) => {
+          const liveUsers = [];
+          liveSnap.forEach(d => {
+            const u = d.data();
+            if (u.role !== 'admin') {
+              liveUsers.push({ id: d.id, ...u });
+            }
+          });
+          processAndMergeUsers(liveUsers);
+        }, (err) => console.warn('[Users Snapshot Error]', err));
+      }
+    }
   } catch (err) {
     console.warn('[Firestore Customers Read]', err.message);
   }
+
+  processAndMergeUsers(list);
 }
 
 export function playOrderNotificationChime() {
@@ -993,6 +1164,8 @@ export function updateSidebarBadges() {
   if (pBadge) pBadge.textContent = adminState.products.length;
   if (cBadge) cBadge.textContent = (adminState.categories && adminState.categories.length) ? adminState.categories.length : 33;
   if (oBadge) oBadge.textContent = adminState.orders.length;
+  const custBadge = document.getElementById('navBadgeCustomers');
+  if (custBadge) custBadge.textContent = (adminState.customers && adminState.customers.length) ? adminState.customers.length : 0;
   if (activeCounter) activeCounter.textContent = `${adminState.metrics.activeOrders} pedidos em andamento`;
 
   // Atualiza contadores nas abas de filtros de pedidos
@@ -1006,6 +1179,32 @@ export function updateSidebarBadges() {
     const el = document.getElementById('countOrder' + st);
     if (el) el.textContent = counts[st.toLowerCase()] || 0;
   });
+
+  // Atualiza contadores nas abas de filtros de clientes & brindes
+  let countCustAll = adminState.customers ? adminState.customers.length : 0;
+  let countCustReady = 0;
+  let countCustProgress = 0;
+  let countCustNew = 0;
+
+  if (adminState.customers) {
+    adminState.customers.forEach(c => {
+      const p = Number(c.purchasesCount) || 0;
+      const cl = Number(c.giftsClaimed) || 0;
+      const avail = Math.max(0, Math.floor(p / 3) - cl);
+      if (avail > 0) countCustReady++;
+      if (p > 0 && avail === 0) countCustProgress++;
+      if (p === 0) countCustNew++;
+    });
+  }
+
+  const elCustAll = document.getElementById('countCustAll');
+  if (elCustAll) elCustAll.textContent = countCustAll;
+  const elCustReady = document.getElementById('countCustReady');
+  if (elCustReady) elCustReady.textContent = countCustReady;
+  const elCustProgress = document.getElementById('countCustProgress');
+  if (elCustProgress) elCustProgress.textContent = countCustProgress;
+  const elCustNew = document.getElementById('countCustNew');
+  if (elCustNew) elCustNew.textContent = countCustNew;
 }
 
 // ════════════════════════════════════════
@@ -2702,8 +2901,9 @@ export function renderCategoriesList() {
 // WHATSAPP ⇄ PEDIDOS
 // ════════════════════════════════════════
 const WA_STATUS_TEMPLATES = {
-  pendente: 'Olá {nome}! Recebemos seu pedido {codigo} no Ateliê Gold Crochet ✨ Em breve enviaremos os dados de pagamento e prazo.',
-  producao: 'Olá {nome}! Seu pedido {codigo} já está em produção no ateliê 🧶 Cada ponto feito à mão com carinho!',
+  pendente: 'Olá {nome}! Recebemos seu pedido {codigo} no Ateliê Gold Crochet ✨ Em breve confirmaremos todos os detalhes da sua confecção.',
+  producao: 'Olá {nome}! Sua peça do pedido {codigo} já está em produção no ateliê 🧶 Cada ponto feito à mão com carinho e fios nobres!',
+  acabamento: 'Olá {nome}! Seu pedido {codigo} está na fase final de acabamento de alta-costura e revisão manual de cada detalhe ✨',
   enviado: 'Olá {nome}! Seu pedido {codigo} foi enviado 📦 Em breve você recebe o código de rastreio.',
   entregue: 'Olá {nome}! Seu pedido {codigo} consta como entregue ✅ Esperamos que ame sua peça Gold Crochet!',
   cancelado: 'Olá {nome}. Seu pedido {codigo} foi cancelado. Qualquer dúvida, estamos à disposição por aqui.'
@@ -2726,10 +2926,8 @@ export function buildCustomerWhatsAppLink(o, status) {
     .replace(/\{nome\}/g, firstName)
     .replace(/\{codigo\}/g, orderCode(o))
     .replace(/\{total\}/g, formatBRL(o.total || 0));
-  let phone = String(o.customerPhone || o.phone || '').replace(/\D/g, '');
-  if (phone && phone.length <= 11) phone = '55' + phone; // DDD+número BR sem DDI
-  // Sem telefone salvo: wa.me sem número abre o seletor de contatos
-  return phone ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
+  const rawPhone = o.customerPhone || o.phone || '';
+  return formatWhatsAppLink(rawPhone, text);
 }
 
 export function renderOrdersList() {
@@ -2885,11 +3083,24 @@ export function viewOrderDetail(orderId) {
   const phoneEl = document.getElementById('orderDetailCustomerPhone');
   if (phoneEl) phoneEl.textContent = phone ? `+55 ${phone}` : 'Não cadastrado';
   
-  const waUrl = buildCustomerWhatsAppLink(o);
+  const currentStatus = o.status || 'pendente';
+  const waUrl = buildCustomerWhatsAppLink(o, currentStatus);
   const waBtn = document.getElementById('orderDetailWhatsAppBtn');
-  if (waBtn) waBtn.href = waUrl;
+  if (waBtn) {
+    waBtn.href = waUrl;
+    waBtn.title = `Falar no WhatsApp sobre status ${currentStatus.toUpperCase()}`;
+  }
   const waBtnAlt = document.getElementById('orderWhatsappBtn');
   if (waBtnAlt) waBtnAlt.href = waUrl;
+
+  const linkPendente = document.getElementById('waStatusLinkPendente');
+  if (linkPendente) linkPendente.href = buildCustomerWhatsAppLink(o, 'pendente');
+  const linkProducao = document.getElementById('waStatusLinkProducao');
+  if (linkProducao) linkProducao.href = buildCustomerWhatsAppLink(o, 'producao');
+  const linkAcabamento = document.getElementById('waStatusLinkAcabamento');
+  if (linkAcabamento) linkAcabamento.href = buildCustomerWhatsAppLink(o, 'acabamento');
+  const linkEnviado = document.getElementById('waStatusLinkEnviado');
+  if (linkEnviado) linkEnviado.href = buildCustomerWhatsAppLink(o, 'enviado');
 
   // Atualiza stepper da linha do tempo
   renderOrderTimeline(o.status);
@@ -3080,8 +3291,160 @@ export function printSingleOrder(orderId) {
   setTimeout(() => { slip.style.display = 'none'; }, 1000);
 }
 
+export function printShippingLabel(orderId) {
+  const oid = orderId || adminState.activeDetailOrderId;
+  const o = adminState.orders.find(x => String(x.id) === String(oid)) || (adminState.orders && adminState.orders[0]) || null;
+  if (!o) {
+    showToast('Nenhum pedido selecionado para imprimir etiqueta.', 'warning');
+    return;
+  }
+
+  const slip = document.getElementById('printableSlip');
+  if (!slip) return;
+
+  const custName = o.customerName || o.userName || 'Destinatário VIP';
+  const phone = o.customerPhone || o.phone || '';
+  const a = o.address || {};
+
+  let street = '';
+  let number = '';
+  let comp = '';
+  let neighborhood = '';
+  let city = '';
+  let state = '';
+  let cep = '';
+
+  if (typeof a === 'string') {
+    street = a;
+  } else if (a && typeof a === 'object') {
+    street = a.street || a.rua || a.logradouro || '';
+    number = a.number || a.numero || 'S/N';
+    comp = a.comp || a.complemento || '';
+    neighborhood = a.neighborhood || a.bairro || '';
+    city = a.city || a.cidade || '';
+    state = a.state || a.estado || a.uf || '';
+    cep = a.cep || '';
+  }
+
+  const addrLine1 = street ? `${street}, ${number}${comp ? ` (${comp})` : ''}` : 'Endereço a combinar';
+  const addrLine2 = neighborhood ? `${neighborhood}` : '';
+  const addrLine3 = (city || state) ? `${city}${state ? ` / ${state}` : ''}` : '';
+
+  slip.innerHTML = `
+    <div class="shipping-label-container" style="font-family: Arial, sans-serif; max-width: 520px; margin: 15px auto; padding: 20px; border: 2px solid #222; background: #fff; color: #111; box-sizing: border-box;">
+      <!-- CABEÇALHO DA ETIQUETA -->
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid #222; padding-bottom: 10px; margin-bottom: 14px;">
+        <div>
+          <h2 style="margin:0; font-size: 1.3rem; letter-spacing: 1px; color:#a67c00; font-weight:800;">ATELIÊ GOLD CROCHET</h2>
+          <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color:#555;">Alta-Costura em Crochê • Encomenda Exclusiva</span>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size: 0.8rem; font-weight: bold; border: 1px solid #000; padding: 3px 8px; border-radius: 4px;">PAC / SEDEX</span>
+        </div>
+      </div>
+
+      <!-- DESTINATÁRIO (EM DESTAQUE) -->
+      <div style="border: 2px solid #000; padding: 14px; border-radius: 8px; margin-bottom: 14px; background: #fafafa;">
+        <div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #666; letter-spacing: 1px; margin-bottom: 4px;">DESTINATÁRIO</div>
+        <div style="font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; color:#000;">${custName}</div>
+        <div style="font-size: 0.95rem; line-height: 1.4; color:#222;">
+          ${addrLine1}<br>
+          ${addrLine2 ? addrLine2 + '<br>' : ''}
+          ${addrLine3}
+        </div>
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #999; display: flex; justify-content: space-between; align-items: flex-end;">
+          <div>
+            <span style="font-size: 0.72rem; color: #555; text-transform: uppercase; display: block;">CEP</span>
+            <strong style="font-size: 1.35rem; letter-spacing: 2px; color: #000;">${cep || 'A COMBINAR'}</strong>
+          </div>
+          <div style="font-size: 0.85rem; color: #333;">
+            ${phone ? `Tel: (${phone.slice(0,2)}) ${phone.slice(2)}` : ''}
+          </div>
+        </div>
+      </div>
+
+      <!-- REMETENTE -->
+      <div style="border: 1px solid #ccc; padding: 10px 14px; border-radius: 6px; font-size: 0.82rem; line-height: 1.35; color: #444; margin-bottom: 12px;">
+        <strong style="font-size: 0.72rem; text-transform: uppercase; color: #666; display: block; margin-bottom: 2px;">REMETENTE</strong>
+        <strong>Ateliê Gold Crochet (Rossi Pereira)</strong><br>
+        Rua do Ouro, 1024 — Bairro Serra<br>
+        Belo Horizonte / MG • <strong>CEP: 30220-000</strong><br>
+        WhatsApp: (31) 98456-6047
+      </div>
+
+      <!-- DECLARAÇÃO SIMPLIFICADA DE CONTEÚDO -->
+      <div style="font-size: 0.72rem; border-top: 1px solid #ddd; padding-top: 8px; display: flex; justify-content: space-between; color: #666;">
+        <span><strong>Pedido:</strong> ${orderCode(o)}</span>
+        <span><strong>Conteúdo:</strong> Peça Artesanal em Crochê</span>
+        <span><strong>Volume:</strong> 1/1</span>
+      </div>
+    </div>
+  `;
+
+  slip.style.display = 'block';
+  window.print();
+  setTimeout(() => { slip.style.display = 'none'; }, 1000);
+}
+
+export function printThankYouCard(orderId) {
+  const oid = orderId || adminState.activeDetailOrderId;
+  const o = adminState.orders.find(x => String(x.id) === String(oid)) || (adminState.orders && adminState.orders[0]) || null;
+  if (!o) {
+    showToast('Nenhum pedido selecionado para imprimir cartão.', 'warning');
+    return;
+  }
+
+  const slip = document.getElementById('printableSlip');
+  if (!slip) return;
+
+  const custName = (o.customerName || o.userName || 'Cliente VIP').trim();
+  const firstName = custName.split(' ')[0] || 'Cliente';
+
+  slip.innerHTML = `
+    <div class="thank-you-card-container" style="font-family: 'Playfair Display', Georgia, serif; max-width: 500px; margin: 30px auto; padding: 36px 32px; border: 2px solid #cda434; border-radius: 12px; background: #fffdfa; color: #221f1a; box-sizing: border-box; text-align: center; position: relative;">
+      <div style="border: 1px solid #e2cb8a; padding: 24px 20px; border-radius: 8px;">
+        <!-- LOGO & SELO -->
+        <div style="font-size: 1.8rem; margin-bottom: 4px;">✨</div>
+        <h1 style="margin: 0; font-size: 1.5rem; letter-spacing: 2px; color: #a67c00; font-weight: normal; text-transform: uppercase;">ATELIÊ GOLD CROCHET</h1>
+        <div style="font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #8c733e; margin-top: 4px; font-family: sans-serif;">Alta-Costura Feita à Mão</div>
+        
+        <div style="width: 60px; height: 1px; background: #cda434; margin: 20px auto;"></div>
+
+        <!-- MENSAGEM AFETUOSA EDITORIAL -->
+        <p style="font-size: 1.05rem; font-style: italic; line-height: 1.6; margin: 16px 0; color: #2e2820;">
+          Querida(o) <strong>${firstName}</strong>,<br><br>
+          Esta peça exclusiva foi tecida à mão especialmente para você com fios nobres, paciência e afeto genuíno. Cada ponto carrega nossa dedicação à alta-costura artesanal brasileira.<br><br>
+          Que esta criação traga beleza e elegância aos seus dias.
+        </p>
+
+        <div style="margin-top: 24px; font-family: sans-serif;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #a67c00;">Com carinho,</div>
+          <div style="font-size: 0.95rem; font-style: italic; color: #333; margin-top: 2px;">Rossi Pereira &amp; Equipe Ateliê Gold Crochet ✨</div>
+          <div style="font-size: 0.72rem; color: #777; margin-top: 4px;">Belo Horizonte • Brasil</div>
+        </div>
+
+        <div style="width: 80%; height: 1px; background: #eee; margin: 24px auto 16px;"></div>
+
+        <!-- GUIA RÁPIDO DE CUIDADOS -->
+        <div style="text-align: left; background: #fbf8f0; padding: 12px 16px; border-radius: 6px; font-family: sans-serif; font-size: 0.75rem; line-height: 1.5; color: #555;">
+          <strong style="color: #a67c00; display: block; margin-bottom: 4px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px;">🌿 Guia Rápido de Cuidados com seu Crochê:</strong>
+          1. Lavar à mão com água fria e sabão neutro.<br>
+          2. Não torcer; secar na horizontal à sombra.<br>
+          3. Guardar dobrada em local arejado, preservando as tramas.
+        </div>
+      </div>
+    </div>
+  `;
+
+  slip.style.display = 'block';
+  window.print();
+  setTimeout(() => { slip.style.display = 'none'; }, 1000);
+}
+
 export function openCreateOrderModal() {
   document.getElementById('createOrderForm').reset();
+  const phoneInp = document.getElementById('manualOrderPhone');
+  if (phoneInp) applyPhoneMask(phoneInp);
   document.getElementById('createOrderModal').classList.remove('hidden');
 }
 
@@ -3372,7 +3735,10 @@ function fillWhatsAppForm() {
 
 export async function saveWhatsAppSettings() {
   const get = id => (document.getElementById(id) || {}).value || '';
-  const phone = get('waPhoneInput').replace(/\D/g, '');
+  let phone = get('waPhoneInput').replace(/\D/g, '');
+  if (phone.length === 10 || phone.length === 11) {
+    phone = '55' + phone;
+  }
   if (phone.length < 12) {
     showToast('Informe o número com DDI + DDD (ex: 5531984566047).', 'error');
     return;
@@ -3400,7 +3766,10 @@ export async function saveWhatsAppSettings() {
 }
 
 export function testWhatsAppNumber() {
-  const phone = ((document.getElementById('waPhoneInput') || {}).value || '').replace(/\D/g, '');
+  let phone = ((document.getElementById('waPhoneInput') || {}).value || '').replace(/\D/g, '');
+  if (phone.length === 10 || phone.length === 11) {
+    phone = '55' + phone;
+  }
   const msg = (document.getElementById('waGreetingInput') || {}).value || '';
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
@@ -3409,12 +3778,49 @@ export function testWhatsAppNumber() {
 // MÓDULO DE CLIENTES & ACOMPANHAMENTO DE BRINDES
 // ════════════════════════════════════════
 
+export function filterCustomersByGift(filterType) {
+  adminState.customerGiftFilter = filterType || 'all';
+  document.querySelectorAll('#customerGiftsFilters .filter-tab-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.custFilter === adminState.customerGiftFilter);
+  });
+  renderCustomersList();
+}
+
 export function renderCustomersList() {
   const tbody = document.getElementById('customersTableBody');
   if (!tbody) return;
 
+  // Atualiza contadores nas abas de filtros de clientes & brindes
+  let countCustAll = adminState.customers ? adminState.customers.length : 0;
+  let countCustReady = 0;
+  let countCustProgress = 0;
+  let countCustNew = 0;
+
+  if (adminState.customers) {
+    adminState.customers.forEach(c => {
+      const p = Number(c.purchasesCount) || 0;
+      const cl = Number(c.giftsClaimed) || 0;
+      const avail = Math.max(0, Math.floor(p / 3) - cl);
+      if (avail > 0) countCustReady++;
+      if (p > 0 && avail === 0) countCustProgress++;
+      if (p === 0) countCustNew++;
+    });
+  }
+
+  const elCustAll = document.getElementById('countCustAll');
+  if (elCustAll) elCustAll.textContent = countCustAll;
+  const elCustReady = document.getElementById('countCustReady');
+  if (elCustReady) elCustReady.textContent = countCustReady;
+  const elCustProgress = document.getElementById('countCustProgress');
+  if (elCustProgress) elCustProgress.textContent = countCustProgress;
+  const elCustNew = document.getElementById('countCustNew');
+  if (elCustNew) elCustNew.textContent = countCustNew;
+
+  const badge = document.getElementById('navBadgeCustomers');
+  if (badge) badge.textContent = countCustAll;
+
   const query = (adminState.customerSearchQuery || '').toLowerCase().trim();
-  let filtered = [...adminState.customers];
+  let filtered = [...(adminState.customers || [])];
 
   if (query) {
     filtered = filtered.filter(c => {
@@ -3425,8 +3831,62 @@ export function renderCustomersList() {
     });
   }
 
+  const giftFilter = adminState.customerGiftFilter || 'all';
+  if (giftFilter === 'ready') {
+    filtered = filtered.filter(c => {
+      const p = Number(c.purchasesCount) || 0;
+      const cl = Number(c.giftsClaimed) || 0;
+      return Math.max(0, Math.floor(p / 3) - cl) > 0;
+    });
+  } else if (giftFilter === 'progress') {
+    filtered = filtered.filter(c => {
+      const p = Number(c.purchasesCount) || 0;
+      const cl = Number(c.giftsClaimed) || 0;
+      return p > 0 && Math.max(0, Math.floor(p / 3) - cl) === 0;
+    });
+  } else if (giftFilter === 'new') {
+    filtered = filtered.filter(c => (Number(c.purchasesCount) || 0) === 0);
+  }
+
   if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Nenhum cliente encontrado.</td></tr>`;
+    if (query) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" class="empty-state" style="padding:40px 20px;text-align:center">
+            <div style="font-size:2rem;margin-bottom:8px">🔍</div>
+            <strong style="color:var(--text-primary);font-size:1rem">Nenhum cliente encontrado</strong>
+            <p style="color:var(--text-muted);font-size:0.85rem;margin:4px 0 14px">Não encontramos nenhum resultado para "<strong>${query}</strong>".</p>
+            <button class="btn-secondary-action" onclick="document.getElementById('customerSearchInput').value=''; window.adminState.customerSearchQuery=''; window.AdminCore.renderCustomersList();">Limpar Busca</button>
+          </td>
+        </tr>
+      `;
+    } else if (giftFilter !== 'all') {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" class="empty-state" style="padding:40px 20px;text-align:center">
+            <div style="font-size:2rem;margin-bottom:8px">🎁</div>
+            <strong style="color:var(--text-primary);font-size:1rem">Nenhum cliente neste filtro</strong>
+            <p style="color:var(--text-muted);font-size:0.85rem;margin:4px 0 14px">Não há clientes na categoria selecionada no momento.</p>
+            <button class="btn-secondary-action" onclick="window.AdminCore.filterCustomersByGift('all')">Ver Todos os Clientes</button>
+          </td>
+        </tr>
+      `;
+    } else {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" class="empty-state" style="padding:48px 20px;text-align:center">
+            <div style="font-size:2.4rem;margin-bottom:10px">🎁</div>
+            <strong style="color:var(--text-primary);font-size:1.05rem">Nenhum cliente com compras ou cadastrado ainda</strong>
+            <p style="color:var(--text-muted);font-size:0.85rem;max-width:420px;margin:6px auto 16px;line-height:1.4">
+              Assim que pedidos forem realizados no ateliê ou você cadastrar um novo cliente, o progresso de compras e liberação de brindes aparecerá aqui automaticamente.
+            </p>
+            <button class="btn-primary-action" onclick="window.AdminCore.openManualCustomerModal()">
+              <span>+</span> Cadastrar Primeiro Cliente
+            </button>
+          </td>
+        </tr>
+      `;
+    }
     return;
   }
 
@@ -3451,8 +3911,19 @@ export function renderCustomersList() {
       giftStatusBadge = `<span class="gift-level-badge gift-progress">⏳ Faltam ${remaining} ${remaining === 1 ? 'compra' : 'compras'}</span>`;
     }
 
-    const waMsg = `Olá, ${c.name ? c.name.split(' ')[0] : 'Cliente'}! ✨ Aqui é do Ateliê Gold Crochet! Vimos que você já tem ${purchases} compras computadas no seu perfil e queríamos falar sobre seu brinde exclusivo de alta-costura feito à mão! 🎁`;
-    const waLink = phoneClean ? `https://wa.me/55${phoneClean}?text=${encodeURIComponent(waMsg)}` : `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+    const firstName = c.name ? c.name.split(' ')[0] : 'Cliente VIP';
+    let waMsg = '';
+    if (giftsAvailableToClaim > 0) {
+      const giftsText = giftsAvailableToClaim === 1 ? '1 brinde exclusivo de alta-costura' : `${giftsAvailableToClaim} brindes exclusivos de alta-costura`;
+      waMsg = `Olá, ${firstName}! ✨ Parabéns! Você atingiu ${purchases} compras no Ateliê Gold Crochet e conquistou ${giftsText} feito à mão! 🎁 Desejamos enviar seu mimo artesanal. Poderia nos confirmar seu endereço atual para envio? Muito obrigado pelo carinho e preferência!`;
+    } else {
+      waMsg = `Olá, ${firstName}! ✨ Passando para agradecer pelo carinho com nossas peças de crochê autoral. Você já tem ${purchases} compras computadas (faltam apenas ${remaining} para seu próximo brinde exclusivo!). Conte conosco para o que precisar.`;
+    }
+    const waLink = formatWhatsAppLink(phoneClean, waMsg);
+
+    const waBtnHtml = giftsAvailableToClaim > 0
+      ? `<a href="${waLink}" target="_blank" rel="noopener" class="btn-action whatsapp gift-congratulate-btn" style="background:#25d366;color:#ffffff;font-weight:700;padding:4px 10px;width:auto;border-radius:20px;display:inline-flex;align-items:center;gap:4px;text-decoration:none" title="Parabenizar no WhatsApp e combinar envio do brinde">🎁 💬 Parabenizar</a>`
+      : `<a href="${waLink}" target="_blank" rel="noopener" class="btn-action whatsapp" title="Falar no WhatsApp sobre o Brinde">💬</a>`;
 
     return `
       <tr>
@@ -3478,8 +3949,8 @@ export function renderCustomersList() {
         </td>
         <td>
           <div style="font-size:0.85rem">
-            ${giftsEarnedTotal} ${giftsEarnedTotal === 1 ? 'mimo conquistado' : 'mimos conquistados'}<br>
-            <small style="color:var(--text-muted)">(${giftsClaimed} entregues / ${giftsAvailableToClaim} pendentes)</small>
+            <strong>${giftsEarnedTotal} ${giftsEarnedTotal === 1 ? 'mimo conquistado' : 'mimos conquistados'}</strong><br>
+            <span style="font-size:0.75rem;color:var(--text-muted)">(${giftsClaimed} entregues • <strong style="color:var(--gold-deep)">${giftsAvailableToClaim} disponíveis</strong>)</span>
           </div>
         </td>
         <td>
@@ -3487,8 +3958,9 @@ export function renderCustomersList() {
         </td>
         <td class="table-actions">
           <button class="btn-action edit" onclick="window.AdminCore.editCustomer('${c.id}')" title="Editar Perfil e Brindes">✏️</button>
-          <button class="btn-action" onclick="window.AdminCore.adjustCustomerGiftsClaimed('${c.id}', 1)" title="Marcar +1 Brinde Entregue">🎁+1</button>
-          <a href="${waLink}" target="_blank" rel="noopener" class="btn-action whatsapp" title="Falar no WhatsApp sobre o Brinde">💬</a>
+          <button class="btn-action" onclick="window.AdminCore.adjustCustomerGiftsClaimed('${c.id}', 1)" title="Marcar +1 Brinde Entregue (🎁+1)">🎁+1</button>
+          <button class="btn-action" onclick="window.AdminCore.adjustCustomerGiftsClaimed('${c.id}', -1)" title="Estornar 1 Brinde Entregue (🎁-1)">🎁-1</button>
+          ${waBtnHtml}
         </td>
       </tr>
     `;
@@ -3501,6 +3973,8 @@ export function openManualCustomerModal() {
   document.getElementById('customerModalTitle').textContent = 'Novo Cliente';
   document.getElementById('custModalPurchases').value = 0;
   document.getElementById('custModalGiftsClaimed').value = 0;
+  const phoneInp = document.getElementById('custModalPhone');
+  if (phoneInp) applyPhoneMask(phoneInp);
   document.getElementById('customerModal').classList.remove('hidden');
 }
 
@@ -3516,7 +3990,11 @@ export function editCustomer(customerId) {
   document.getElementById('customerModalTitle').textContent = `Editar: ${c.name || 'Cliente'}`;
   document.getElementById('custModalName').value = c.name || '';
   document.getElementById('custModalEmail').value = c.email || '';
-  document.getElementById('custModalPhone').value = c.phone || '';
+  const phoneInp = document.getElementById('custModalPhone');
+  if (phoneInp) {
+    phoneInp.value = c.phone || '';
+    applyPhoneMask(phoneInp);
+  }
   document.getElementById('custModalPurchases').value = Number(c.purchasesCount) || 0;
   document.getElementById('custModalGiftsClaimed').value = Number(c.giftsClaimed) || 0;
 
@@ -3579,14 +4057,15 @@ export async function adjustCustomerGiftsClaimed(customerId, delta) {
   const c = adminState.customers.find(x => String(x.id) === String(customerId));
   if (!c) return;
 
-  c.giftsClaimed = Math.max(0, (Number(c.giftsClaimed) || 0) + delta);
+  const prev = Number(c.giftsClaimed) || 0;
+  c.giftsClaimed = Math.max(0, prev + delta);
   try { localStorage.setItem('gc_cached_customers', JSON.stringify(adminState.customers)); } catch(e) {}
   renderCustomersList();
-  showToast(`Brindes entregues de ${c.name}: ${c.giftsClaimed}`, 'success');
+  showToast(delta >= 0 ? `Brindes entregues de ${c.name}: ${c.giftsClaimed} (+1)` : `Estornado 1 brinde de ${c.name}. Saldo entregue: ${c.giftsClaimed}`, 'success');
 
   const fb = window.GoldFirebase;
   if (fb && fb.db) {
-    fb.setDoc(fb.fsDoc(fb.db, 'users', String(c.id)), { giftsClaimed: c.giftsClaimed }, { merge: true }).catch(() => {});
+    fb.setDoc(fb.fsDoc(fb.db, 'users', String(c.id)), { giftsClaimed: c.giftsClaimed, updatedAt: new Date().toISOString() }, { merge: true }).catch(() => {});
   }
 }
 
@@ -3835,6 +4314,8 @@ if (typeof window !== 'undefined') {
     buildCustomerWhatsAppLink,
     printOrderSlip,
     printSingleOrder,
+    printShippingLabel,
+    printThankYouCard,
     openCreateOrderModal,
     closeCreateOrderModal,
     createManualOrder,
@@ -3856,6 +4337,7 @@ if (typeof window !== 'undefined') {
     editCustomer,
     adjustCustomerPurchases,
     adjustCustomerGiftsClaimed,
+    filterCustomersByGift,
     openCollectionModal,
     closeCollectionModal,
     saveCollection,
@@ -3912,6 +4394,11 @@ if (typeof window !== 'undefined') {
     normalizeSearchTerm,
     highlightSearchMatch,
     clearSearchInput,
+    normalizeBrazilianPhone,
+    validateBrazilianPhone,
+    applyPhoneMask,
+    formatWhatsAppLink,
+    VALID_BRAZILIAN_DDDS,
     resolveProductTaxonomy,
     computeLegacyCategory,
     resolveCanonicalDepartment,
@@ -3934,6 +4421,17 @@ if (typeof window !== 'undefined') {
       if (icon) icon.textContent = '☀️';
       if (text) text.textContent = 'Modo Dia';
     }
+
+    // 1.1 Sincroniza ícone de alerta sonoro salvo no boot
+    const audioIcon = document.getElementById('audioToggleIcon');
+    if (audioIcon) {
+      audioIcon.textContent = adminState.audioAlertsEnabled ? '🔔' : '🔕';
+    }
+
+    // 1.2 Aplica máscara telefônica brasileira a todos os inputs de telefone
+    document.querySelectorAll('input[type="tel"], #manualOrderPhone, #custModalPhone, #waPhoneInput').forEach(inp => {
+      applyPhoneMask(inp);
+    });
 
     // 2. Relógio em tempo real no cabeçalho
     const clockEl = document.getElementById('adminLiveClock');

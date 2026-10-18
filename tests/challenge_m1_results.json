@@ -1,0 +1,415 @@
+{
+  "total": 34,
+  "passed": 34,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Order Code Generation: Format ^GC[0-9A-Z]{6}$ across 10,000 iterations",
+      "passed": true,
+      "details": "Valid formats: 10000/10000",
+      "error": null
+    },
+    {
+      "name": "Order Code Generation: Uniqueness across 10,000 incremental millisecond timestamps",
+      "passed": true,
+      "details": "Unique codes: 10000/10000",
+      "error": null
+    },
+    {
+      "name": "Order Code Generator Determinism: Same millisecond produces identical code (requires timestamp distinctness)",
+      "passed": true,
+      "details": "Timestamp 1776472000000 produced GC3LK7WG",
+      "error": null
+    },
+    {
+      "name": "Total Calculation: Multi-item subtotal without coupon",
+      "passed": true,
+      "details": {
+        "subtotal": 729.8,
+        "discountVal": 0,
+        "finalTotal": 729.8
+      },
+      "error": null
+    },
+    {
+      "name": "Total Calculation: Percentage discount coupon",
+      "passed": true,
+      "details": {
+        "subtotal": 100,
+        "discountVal": 15,
+        "finalTotal": 85
+      },
+      "error": null
+    },
+    {
+      "name": "Total Calculation: Clamping total to zero when discount > subtotal",
+      "passed": true,
+      "details": {
+        "subtotal": 50,
+        "discountVal": 50,
+        "finalTotal": 0
+      },
+      "error": null
+    },
+    {
+      "name": "Total Calculation: Handled 0-price / Sob consulta items",
+      "passed": true,
+      "details": {
+        "subtotal": 120.5,
+        "discountVal": 0,
+        "finalTotal": 120.5
+      },
+      "error": null
+    },
+    {
+      "name": "Empty Cart: Alerts \"Sua sacola está vazia.\"",
+      "passed": true,
+      "details": {
+        "alertedMessage": "Sua sacola está vazia.",
+        "cachedOrdersCount": 0,
+        "purchasesCount": 0,
+        "ordersLength": 0,
+        "orderPlacedFired": false
+      },
+      "error": null
+    },
+    {
+      "name": "Empty Cart: Does NOT write to gc_cached_orders",
+      "passed": true,
+      "details": "Cached orders: 0",
+      "error": null
+    },
+    {
+      "name": "Empty Cart: Does NOT increment customer purchasesCount or orders array",
+      "passed": true,
+      "details": "Purchases: 0, orders: 0",
+      "error": null
+    },
+    {
+      "name": "Empty Cart: Does NOT dispatch gc:order-placed event",
+      "passed": true,
+      "details": "Event fired: false",
+      "error": null
+    },
+    {
+      "name": "Checkout (0 Orders): Order code starts with \"GC\" and has 6 base36 uppercase chars",
+      "passed": true,
+      "details": "Generated code: GCD8RDJD",
+      "error": null
+    },
+    {
+      "name": "Checkout (0 Orders): Total and subtotal calculated accurately (579.00)",
+      "passed": true,
+      "details": "Subtotal: 579, Total: 579",
+      "error": null
+    },
+    {
+      "name": "Checkout (0 Orders): Items array format ({ name, qty, price, color })",
+      "passed": true,
+      "details": [
+        {
+          "name": "Vestido Sol Dourado",
+          "qty": 1,
+          "price": 489,
+          "color": "Ouro Real"
+        },
+        {
+          "name": "Porta-Copos Búzio Dourado",
+          "qty": 2,
+          "price": 45,
+          "color": "Cru Natural"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "Checkout (0 Orders): Address correctly embedded in cached order",
+      "passed": true,
+      "details": {
+        "street": "Rua das Flores",
+        "number": "120",
+        "neighborhood": "Lourdes",
+        "city": "Belo Horizonte",
+        "state": "MG",
+        "cep": "30180-000"
+      },
+      "error": null
+    },
+    {
+      "name": "Checkout (0 Orders): Customer purchasesCount incremented 0 -> 1",
+      "passed": true,
+      "details": "New purchasesCount: 1",
+      "error": null
+    },
+    {
+      "name": "Checkout (0 Orders): Customer orders array has new clientOrderItem",
+      "passed": true,
+      "details": {
+        "id": "GCD8RDJD",
+        "code": "GCD8RDJD",
+        "date": "18/10/2026",
+        "item": "1x Vestido Sol Dourado, 2x Porta-Copos Búzio Dourado",
+        "color": "Ouro Real",
+        "total": "R$ 579,00",
+        "step": 1,
+        "status": "pendente"
+      },
+      "error": null
+    },
+    {
+      "name": "Checkout (0 Orders): Cart emptied after checkout",
+      "passed": true,
+      "details": "Cart length: 0",
+      "error": null
+    },
+    {
+      "name": "WhatsApp URL: Targets official concierge 5531984566047 without duplicate 55",
+      "passed": true,
+      "details": "URL: https://wa.me/5531984566047?text=%E2%9C%A8%20*Pedido%20Gold%20Crochet%...",
+      "error": null
+    },
+    {
+      "name": "WhatsApp URL: Message contains generated order code",
+      "passed": true,
+      "details": "Order code present in link",
+      "error": null
+    },
+    {
+      "name": "Event Dispatch: gc:order-placed dispatched with orderCode and payload",
+      "passed": true,
+      "details": {
+        "orderCode": "GCD8RDJD",
+        "order": {
+          "id": "GCD8RDJD",
+          "code": "GCD8RDJD",
+          "source": "whatsapp-checkout",
+          "userId": "cust_initial_zero",
+          "userName": "Carolina Mendes",
+          "userEmail": "carolina.mendes@teste.com",
+          "phone": "31984566047",
+          "items": [
+            {
+              "name": "Vestido Sol Dourado",
+              "qty": 1,
+              "price": 489,
+              "color": "Ouro Real"
+            },
+            {
+              "name": "Porta-Copos Búzio Dourado",
+              "qty": 2,
+              "price": 45,
+              "color": "Cru Natural"
+            }
+          ],
+          "subtotal": 579,
+          "discount": 0,
+          "coupon": "",
+          "total": 579,
+          "status": "pendente",
+          "address": {
+            "street": "Rua das Flores",
+            "number": "120",
+            "neighborhood": "Lourdes",
+            "city": "Belo Horizonte",
+            "state": "MG",
+            "cep": "30180-000"
+          },
+          "createdAt": "2026-10-18T03:03:57.018Z"
+        },
+        "customer": {
+          "id": "cust_initial_zero",
+          "uid": "cust_initial_zero",
+          "name": "Carolina Mendes",
+          "email": "carolina.mendes@teste.com",
+          "phone": "31984566047",
+          "role": "customer",
+          "purchasesCount": 1,
+          "giftsClaimed": 0,
+          "orders": [
+            {
+              "id": "GCD8RDJD",
+              "code": "GCD8RDJD",
+              "date": "18/10/2026",
+              "item": "1x Vestido Sol Dourado, 2x Porta-Copos Búzio Dourado",
+              "color": "Ouro Real",
+              "total": "R$ 579,00",
+              "step": 1,
+              "status": "pendente"
+            }
+          ],
+          "address": {
+            "street": "Rua das Flores",
+            "number": "120",
+            "neighborhood": "Lourdes",
+            "city": "Belo Horizonte",
+            "state": "MG",
+            "cep": "30180-000"
+          },
+          "favs": []
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "Checkout (Existing Orders): Customer purchasesCount incremented 2 -> 3",
+      "passed": true,
+      "details": "New purchasesCount: 3",
+      "error": null
+    },
+    {
+      "name": "Checkout (Existing Orders): Existing orders array preserved and new order prepended at index 0",
+      "passed": true,
+      "details": "Total customer orders: 3",
+      "error": null
+    },
+    {
+      "name": "Loyalty Invariant: purchasesCount = 3 mathematically unlocks 1 gift (Math.floor(purchases/3) === 1)",
+      "passed": true,
+      "details": "Gifts unlocked: 1",
+      "error": null
+    },
+    {
+      "name": "Phone Normalization: Malformed \"555531984566047\" normalized to \"31984566047\" in customer",
+      "passed": true,
+      "details": "Normalized phone: 31984566047",
+      "error": null
+    },
+    {
+      "name": "Phone Normalization: Malformed phone normalized in order record",
+      "passed": true,
+      "details": "Order phone: 31984566047",
+      "error": null
+    },
+    {
+      "name": "Phone Normalization: WhatsApp URL does not contain \"5555\"",
+      "passed": true,
+      "details": "WhatsApp URL: https://wa.me/5531984566047?text=%E2%9C%A8%20*Pedi",
+      "error": null
+    },
+    {
+      "name": "Customer Without Email: Checkout halts and opens authentication modal",
+      "passed": true,
+      "details": {
+        "userModalOpened": true,
+        "cachedOrdersCount": 0
+      },
+      "error": null
+    },
+    {
+      "name": "Offline Fallback: gc_cached_orders updated immediately despite network/writeBatch failure",
+      "passed": true,
+      "details": "Cached orders: 1, Total: 650",
+      "error": null
+    },
+    {
+      "name": "Offline Fallback: gc_customer_account_v2 updated immediately (purchasesCount = 1)",
+      "passed": true,
+      "details": "PurchasesCount: 1, Orders: 1",
+      "error": null
+    },
+    {
+      "name": "Offline Event: gc:order-placed fired during offline checkout",
+      "passed": true,
+      "details": {
+        "orderCode": "GCD8RDU7",
+        "order": {
+          "id": "GCD8RDU7",
+          "code": "GCD8RDU7",
+          "source": "whatsapp-checkout",
+          "userId": "cust_offline_test",
+          "userName": "Mariana Offline",
+          "userEmail": "mariana.offline@teste.com",
+          "phone": "31984566047",
+          "items": [
+            {
+              "name": "Manta Artesanal",
+              "qty": 1,
+              "price": 650,
+              "color": "Natural"
+            }
+          ],
+          "subtotal": 650,
+          "discount": 0,
+          "coupon": "",
+          "total": 650,
+          "status": "pendente",
+          "address": {},
+          "createdAt": "2026-10-18T03:03:57.392Z"
+        },
+        "customer": {
+          "id": "cust_offline_test",
+          "name": "Mariana Offline",
+          "email": "mariana.offline@teste.com",
+          "phone": "31984566047",
+          "purchasesCount": 1,
+          "orders": [
+            {
+              "id": "GCD8RDU7",
+              "code": "GCD8RDU7",
+              "date": "18/10/2026",
+              "item": "1x Manta Artesanal",
+              "color": "Natural",
+              "total": "R$ 650,00",
+              "step": 1,
+              "status": "pendente"
+            }
+          ],
+          "giftsClaimed": 0,
+          "favs": [],
+          "role": "customer"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "js/cart.js: Exports checkout() function",
+      "passed": true,
+      "details": {
+        "hasCheckout": true
+      },
+      "error": null
+    },
+    {
+      "name": "Event Dispatch: gc:user-synced emitted with canonical user payload upon successful sync",
+      "passed": true,
+      "details": {
+        "id": "cust_sync_test",
+        "uid": "cust_sync_test",
+        "name": "Juliana Paes",
+        "email": "juliana.paes@teste.com",
+        "phone": "31984566047",
+        "role": "customer",
+        "cart": [],
+        "favs": [],
+        "purchasesCount": 1,
+        "giftsClaimed": 0,
+        "orders": [],
+        "measures": {},
+        "measurements": {},
+        "address": {},
+        "createdAt": "2026-10-18T03:03:58.502Z",
+        "updatedAt": "2026-10-18T03:03:58.502Z"
+      },
+      "error": null
+    },
+    {
+      "name": "js/cart.js Fallback Target Analysis: Captured destination URL",
+      "passed": true,
+      "details": {
+        "openedUrl": "https://wa.me/5531984566047?text=%E2%9C%A8%20*Pedido%20Gold%20Crochet%20Brasil%20%E2%80%94%20Alta-Costura*%0A%F0%9F%A7%BE%20C%C3%B3digo%3A%20*GCD8RESE*%0A%0A%F0%9F%91%A4%20Cliente%3A%20*Fernanda%20Lima*%0A%F0%9F%93%B1%20WhatsApp%3A%20*(31)%2098765-4321*%0A%0AGostaria%20de%20encomendar%20as%20seguintes%20pe%C3%A7as%3A%0A%0A%E2%96%AA%201x%20*Item%20Fallback*%20%20%E2%80%94%20R%24%C2%A0150%2C00%0A%0A*Total%20Estimado%3A*%20R%24%C2%A0150%2C00%0A%0APoderiam%20me%20informar%20sobre%20prazos%20de%20confec%C3%A7%C3%A3o%20e%20envio%3F%20%E2%9C%A8",
+        "customerPhone": "31987654321",
+        "waUrlTargetsCustomerPhone": false,
+        "waUrlTargetsConcierge": true
+      },
+      "error": null
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "title": "gc:user-synced event is suppressed when customer is not authenticated with Firebase Auth or is offline",
+      "description": "In js/shared-ui.js:889-970 (syncUserCrossDevice), document.dispatchEvent(\"gc:user-synced\") is located strictly after await setDoc(userRef, userPayload). If the user is unauthenticated or network is unavailable, setDoc throws permission-denied / network error and is caught by catch(err), which suppresses gc:user-synced from firing. UI listeners relying on gc:user-synced will not update locally unless authenticated.",
+      "recommendation": "Dispatch gc:user-synced immediately when saveCustomer updates local state, or ensure local listeners listen to saveCustomer or localStorage updates in addition to remote sync."
+    }
+  ]
+}

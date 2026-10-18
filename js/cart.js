@@ -1,5 +1,15 @@
 // Gold Crochet - Módulo do Carrinho e Sacola de Compras
-import { auth, db, fsCollection, addDoc, serverTimestamp } from "./firebase.js";
+import {
+  auth,
+  db,
+  fsDoc,
+  setDoc,
+  fsCollection,
+  writeBatch,
+  increment,
+  arrayUnion,
+  serverTimestamp
+} from "./firebase.js";
 
 export let cart = JSON.parse(localStorage.getItem('goldcrochet_cart') || '[]');
 
@@ -139,39 +149,128 @@ export async function checkout() {
     return;
   }
 
-  const user = auth.currentUser;
-  const total = cart.reduce((sum, i) => sum + (Number(i.price) || 0) * i.qty, 0);
+  // Se a interface global do ateliê estiver disponível, delega ao checkout padronizado
+  if (window.GoldCart && typeof window.GoldCart.checkout === 'function' && document.getElementById('gcCartDrawer')) {
+    return window.GoldCart.checkout();
+  }
 
-  // Se logado, registra pedido no Firestore
-  if (user && db) {
+  const user = auth.currentUser;
+  let customer = null;
+  try {
+    const raw = localStorage.getItem('gc_customer_account_v2');
+    if (raw) customer = JSON.parse(raw);
+  } catch (e) {}
+
+  const orderCode = 'GC' + Date.now().toString(36).toUpperCase().slice(-6);
+  const total = cart.reduce((sum, i) => sum + (Number(i.price) || 0) * i.qty, 0);
+  const targetUserId = (user && user.uid) || (customer && (customer.id || customer.uid)) || 'guest-' + Date.now();
+  const userName = (customer && customer.name) || (user && user.displayName) || 'Cliente VIP';
+  const userEmail = (customer && customer.email) || (user && user.email) || '';
+  const rawPhone = (customer && (customer.phone || customer.whatsapp)) || (user && user.phoneNumber) || '';
+  const normPhone = window.GoldPhone ? window.GoldPhone.normalize(rawPhone) : String(rawPhone).replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, '');
+
+  const orderPayload = {
+    code: orderCode,
+    source: 'whatsapp-checkout',
+    userId: targetUserId,
+    userName: userName,
+    userEmail: userEmail,
+    phone: normPhone,
+    items: cart.map(i => ({ name: i.name || '', qty: Number(i.qty) || 1, price: Number(i.price) || 0, color: i.color || '' })),
+    total: Number(total.toFixed(2)),
+    status: 'pendente',
+    address: (customer && customer.address) || {},
+    createdAt: (serverTimestamp && serverTimestamp()) || new Date().toISOString()
+  };
+
+  const clientOrderItem = {
+    id: orderCode,
+    code: orderCode,
+    date: new Date().toLocaleDateString('pt-BR'),
+    item: cart.map(i => `${i.qty}x ${i.name}`).join(', '),
+    color: cart[0]?.color || 'Artesanal Gold',
+    total: formatBRL(total),
+    step: 1,
+    status: 'pendente'
+  };
+
+  // Salva no cache local de pedidos
+  try {
+    const cachedOrders = JSON.parse(localStorage.getItem('gc_cached_orders') || '[]');
+    cachedOrders.unshift({ ...orderPayload, id: orderCode, createdAt: new Date().toISOString() });
+    localStorage.setItem('gc_cached_orders', JSON.stringify(cachedOrders.slice(0, 100)));
+  } catch (e) {}
+
+  // Atualiza perfil local da cliente se existir
+  if (customer) {
+    customer.purchasesCount = (customer.purchasesCount || 0) + 1;
+    if (!Array.isArray(customer.orders)) customer.orders = [];
+    customer.orders.unshift(clientOrderItem);
     try {
-      const orderRef = fsCollection(db, 'orders');
-      await addDoc(orderRef, {
-        userId: user.uid,
-        userEmail: user.email || '',
-        userName: user.displayName || 'Cliente',
-        items: cart,
-        total: total,
-        status: 'pendente',
-        createdAt: new Date().toISOString()
-      });
-    } catch (e) {
-      console.warn('Erro ao salvar pedido no Firestore:', e);
+      localStorage.setItem('gc_customer_account_v2', JSON.stringify(customer));
+    } catch (e) {}
+  }
+
+  // Gravação atômica no Firestore via writeBatch ou setDoc
+  if (db && fsDoc) {
+    try {
+      const orderRef = fsDoc(db, 'orders', orderCode);
+      const isRealUser = targetUserId && !targetUserId.startsWith('guest');
+
+      if (writeBatch && isRealUser) {
+        const batch = writeBatch(db);
+        batch.set(orderRef, orderPayload);
+        const userRef = fsDoc(db, 'users', targetUserId);
+        batch.set(userRef, {
+          purchasesCount: increment ? increment(1) : ((customer && customer.purchasesCount) || 1),
+          orders: arrayUnion ? arrayUnion(clientOrderItem) : [clientOrderItem],
+          updatedAt: (serverTimestamp && serverTimestamp()) || new Date().toISOString()
+        }, { merge: true });
+        await batch.commit();
+      } else {
+        await setDoc(orderRef, orderPayload);
+        if (isRealUser) {
+          const userRef = fsDoc(db, 'users', targetUserId);
+          await setDoc(userRef, {
+            purchasesCount: increment ? increment(1) : ((customer && customer.purchasesCount) || 1),
+            orders: arrayUnion ? arrayUnion(clientOrderItem) : [clientOrderItem],
+            updatedAt: (serverTimestamp && serverTimestamp()) || new Date().toISOString()
+          }, { merge: true }).catch(() => {});
+        }
+      }
+    } catch (err) {
+      console.warn('[Cart Checkout] Erro na gravação Firestore:', err);
     }
   }
 
-  // Prepara mensagem WhatsApp
-  let text = `Olá, Gold Crochet! Gostaria de encomendar as seguintes peças:\n\n`;
-  cart.forEach(item => {
-    text += `• ${item.name} (${item.color || 'Padrão'}) x${item.qty} - ${formatBRL((item.price || 0) * item.qty)}\n`;
-  });
-  text += `\n*Total:* ${formatBRL(total)}\n`;
-  if (user) {
-    text += `*Cliente:* ${user.displayName || user.email}\n`;
-  }
-  text += `\nPoderiam me informar sobre prazos de confecção e envio? ✨`;
+  // Dispara evento reativo de novo pedido
+  const eventDetail = { orderCode, order: orderPayload, customer };
+  document.dispatchEvent(new CustomEvent('gc:order-placed', { detail: eventDetail }));
+  window.dispatchEvent(new CustomEvent('gc:order-placed', { detail: eventDetail }));
 
-  const phone = '5531984566047';
-  const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+  // Prepara mensagem WhatsApp sem duplicação de 55
+  let text = `✨ *Pedido Gold Crochet Brasil — Alta-Costura*\n`;
+  text += `🧾 Código: *${orderCode}*\n\n`;
+  if (userName) text += `👤 Cliente: *${userName}*\n`;
+  if (normPhone) {
+    const displayPhone = window.GoldPhone && typeof window.GoldPhone.formatDisplay === 'function'
+      ? window.GoldPhone.formatDisplay(normPhone)
+      : normPhone;
+    text += `📱 WhatsApp: *${displayPhone}*\n`;
+  }
+  text += `\nGostaria de encomendar as seguintes peças:\n\n`;
+  cart.forEach(item => {
+    text += `▪ ${item.qty}x *${item.name}* ${item.color ? `(Cor: ${item.color})` : ''} — ${formatBRL((item.price || 0) * item.qty)}\n`;
+  });
+  text += `\n*Total Estimado:* ${formatBRL(total)}\n\n`;
+  text += `Poderiam me informar sobre prazos de confecção e envio? ✨`;
+
+  const atelierPhone = (window.GCWhatsApp && typeof window.GCWhatsApp.getPhone === 'function' && window.GCWhatsApp.getPhone()) || '31984566047';
+  const waUrl = window.GoldPhone && typeof window.GoldPhone.formatWhatsAppLink === 'function'
+    ? window.GoldPhone.formatWhatsAppLink(atelierPhone, text)
+    : `https://wa.me/55${atelierPhone}?text=${encodeURIComponent(text)}`;
+
   window.open(waUrl, '_blank', 'noopener,noreferrer');
+  cart = [];
+  saveCart();
 }

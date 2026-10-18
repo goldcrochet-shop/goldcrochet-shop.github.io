@@ -48,6 +48,7 @@
       align-items: center;
       margin: 30px auto 60px;
       box-shadow: var(--shadow-luxury);
+      position: relative;
     }
     @media (max-width: 860px) {
       .gc-spotlight-card {
@@ -62,6 +63,12 @@
       border-radius: var(--radius-md);
       object-fit: cover;
       box-shadow: var(--shadow-subtle);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .gc-spotlight-img:hover {
+      transform: scale(1.015);
+      box-shadow: var(--shadow-floating);
     }
     .gc-spotlight-info h2 {
       font-family: var(--font-display);
@@ -73,6 +80,259 @@
       color: var(--color-muted);
       line-height: 1.7;
       margin-bottom: 24px;
+    }
+
+    /* Skeletons Dourados Anti-CLS */
+    @keyframes shimmerGold {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .gc-skeleton-shimmer {
+      background: linear-gradient(90deg, #f7f3e9 25%, #fdf6d6 50%, #f7f3e9 75%);
+      background-size: 200% 100%;
+      animation: shimmerGold 1.6s ease-in-out infinite;
+      border-radius: var(--radius-sm);
+    }
+    .gc-skeleton-card {
+      background: var(--color-tertiary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .gc-skeleton-img {
+      width: 100%;
+      aspect-ratio: 4/5;
+    }
+    .gc-skeleton-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .gc-skeleton-line {
+      height: 14px;
+    }
+    .gc-skeleton-line.short { width: 40%; }
+    .gc-skeleton-line.mid { width: 70%; }
+    .gc-skeleton-line.long { width: 90%; }
+
+    /* Selos de Alta-Costura Especiais */
+    .gc-badge-haute-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 6px 0 10px;
+    }
+    .gc-badge-haute {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(205, 164, 52, 0.12);
+      color: var(--color-gold-deep);
+      border: 1px solid rgba(205, 164, 52, 0.35);
+    }
+    .gc-badge-haute.limited {
+      background: rgba(42, 34, 16, 0.08);
+      color: #3d321d;
+      border-color: rgba(42, 34, 16, 0.2);
+    }
+
+    /* Botão de Compra Rápida pelo WhatsApp nos Cards */
+    .gc-btn-wa-quick {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px 14px;
+      background: #fbf8f0;
+      color: #1a4d2e;
+      border: 1.5px solid #25d366;
+      border-radius: var(--radius-pill);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: var(--transition-smooth);
+      cursor: pointer;
+    }
+    .gc-btn-wa-quick:hover {
+      background: #25d366;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.28);
+      transform: translateY(-2px);
+    }
+
+    /* Botão Flutuante de Ver Galeria no Card */
+    .gc-card-gallery-btn {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-pill);
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--color-ebony);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      transition: var(--transition-smooth);
+      z-index: 2;
+    }
+    .gc-card-gallery-btn:hover {
+      background: var(--color-primary-gold);
+      color: #fff;
+    }
+
+    /* Modal de Galeria de Fotos em Alta Resolução */
+    .gc-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(18, 16, 12, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: tabFadeIn 0.25s ease;
+    }
+    .gc-gallery-modal-dialog {
+      background: #fff;
+      border-radius: var(--radius-card);
+      border: 1.5px solid var(--color-primary-gold);
+      max-width: 680px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+    }
+    .gc-gallery-modal-close {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      background: var(--color-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: var(--color-charcoal);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      z-index: 10;
+    }
+    .gc-gallery-modal-close:hover {
+      background: var(--color-primary-gold);
+      color: #fff;
+      transform: scale(1.1);
+    }
+    .gc-gallery-modal-viewer {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 16px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #faf8f5;
+    }
+    .gc-gallery-modal-img-wrap {
+      width: 100%;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gc-gallery-modal-main-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: var(--radius-md);
+      transition: opacity 0.2s ease;
+    }
+    .gc-gallery-modal-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--color-border);
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: var(--color-ebony);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      box-shadow: var(--shadow-organic);
+      z-index: 5;
+    }
+    .gc-gallery-modal-nav:hover {
+      background: var(--color-primary-gold);
+      color: #fff;
+    }
+    .gc-gallery-modal-nav.prev { left: 10px; }
+    .gc-gallery-modal-nav.next { right: 10px; }
+    .gc-gallery-modal-thumbs {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 8px 0;
+      margin-bottom: 18px;
+    }
+    .gc-gallery-thumb-item {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid transparent;
+      opacity: 0.6;
+      transition: var(--transition-smooth);
+      flex-shrink: 0;
+    }
+    .gc-gallery-thumb-item.active,
+    .gc-gallery-thumb-item:hover {
+      opacity: 1;
+      border-color: var(--color-primary-gold);
+      box-shadow: 0 2px 10px rgba(205, 164, 52, 0.45);
+    }
+    .gc-gallery-modal-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    @media (max-width: 600px) {
+      .gc-gallery-modal-actions {
+        flex-direction: column;
+      }
+      .gc-gallery-modal-img-wrap {
+        height: 280px;
+      }
     }
   </style>
 </head>
@@ -90,7 +350,18 @@
 
     <!-- Destaque Especial de Lançamento -->
     <section id="spotlightSection">
-      <!-- Injetado dinamicamente via JS -->
+      <!-- Skeleton Inicial Dourado (Anti-CLS) -->
+      <div class="gc-spotlight-card gc-skeleton-card" id="spotlightSkeleton">
+        <div class="gc-spotlight-img gc-skeleton-shimmer" style="height:420px"></div>
+        <div class="gc-spotlight-info">
+          <div class="gc-skeleton-shimmer gc-skeleton-line short" style="height:20px;margin-bottom:12px"></div>
+          <div class="gc-skeleton-shimmer gc-skeleton-line long" style="height:32px;margin-bottom:14px"></div>
+          <div class="gc-skeleton-shimmer gc-skeleton-line mid" style="height:16px;margin-bottom:8px"></div>
+          <div class="gc-skeleton-shimmer gc-skeleton-line long" style="height:16px;margin-bottom:24px"></div>
+          <div class="gc-skeleton-shimmer gc-skeleton-line short" style="height:28px;margin-bottom:24px"></div>
+          <div class="gc-skeleton-shimmer gc-skeleton-line mid" style="height:44px;border-radius:24px"></div>
+        </div>
+      </div>
     </section>
 
     <!-- Grade de Todas as Novidades -->
@@ -99,98 +370,379 @@
         <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-ebony)">Últimas Adições ao Ateliê</h2>
       </div>
       <div id="gridNovidades" class="gc-grid-products">
-        <!-- Injetado dinamicamente via JS -->
+        <!-- Skeletons Iniciais Dourados (Anti-CLS) -->
+        <div class="gc-product-card gc-skeleton-card">
+          <div class="gc-skeleton-shimmer gc-skeleton-img"></div>
+          <div class="gc-skeleton-body">
+            <div class="gc-skeleton-shimmer gc-skeleton-line short"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line long"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line mid"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line short"></div>
+          </div>
+        </div>
+        <div class="gc-product-card gc-skeleton-card">
+          <div class="gc-skeleton-shimmer gc-skeleton-img"></div>
+          <div class="gc-skeleton-body">
+            <div class="gc-skeleton-shimmer gc-skeleton-line short"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line long"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line mid"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line short"></div>
+          </div>
+        </div>
+        <div class="gc-product-card gc-skeleton-card">
+          <div class="gc-skeleton-shimmer gc-skeleton-img"></div>
+          <div class="gc-skeleton-body">
+            <div class="gc-skeleton-shimmer gc-skeleton-line short"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line long"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line mid"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line short"></div>
+          </div>
+        </div>
+        <div class="gc-product-card gc-skeleton-card">
+          <div class="gc-skeleton-shimmer gc-skeleton-img"></div>
+          <div class="gc-skeleton-body">
+            <div class="gc-skeleton-shimmer gc-skeleton-line short"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line long"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line mid"></div>
+            <div class="gc-skeleton-shimmer gc-skeleton-line short"></div>
+          </div>
+        </div>
       </div>
     </section>
+
+    <!-- Modal de Galeria em Alta Resolução -->
+    <div id="novidadesGalleryModal" class="gc-modal-backdrop" style="display:none" role="dialog" aria-modal="true" aria-label="Galeria da Peça">
+      <div class="gc-gallery-modal-dialog">
+        <button class="gc-gallery-modal-close" id="galleryModalCloseBtn" onclick="window.closeNovidadesGallery()" aria-label="Fechar Galeria">&times;</button>
+        <div class="gc-gallery-modal-header">
+          <span class="gc-badge-tag" style="position:static" id="galleryModalBadge">Recém-Tecida</span>
+          <h3 id="galleryModalTitle" style="font-family:var(--font-display);font-size:1.5rem;color:var(--color-ebony);margin:6px 0 2px">Nome da Peça</h3>
+          <div id="galleryModalPrice" style="font-family:var(--font-body);font-size:1.25rem;font-weight:700;color:var(--color-gold-deep)">R$ 0,00</div>
+        </div>
+        <div class="gc-gallery-modal-viewer">
+          <button class="gc-gallery-modal-nav prev" id="galleryModalPrevBtn" onclick="window.prevGalleryPhoto()" aria-label="Foto Anterior">&#10094;</button>
+          <div class="gc-gallery-modal-img-wrap">
+            <img id="galleryModalMainImg" src="./assets/icon.svg" alt="Foto da Peça" class="gc-gallery-modal-main-img">
+          </div>
+          <button class="gc-gallery-modal-nav next" id="galleryModalNextBtn" onclick="window.nextGalleryPhoto()" aria-label="Próxima Foto">&#10095;</button>
+        </div>
+        <div class="gc-gallery-modal-thumbs" id="galleryModalThumbs">
+          <!-- Thumbnails injetadas dinamicamente -->
+        </div>
+        <div class="gc-gallery-modal-actions">
+          <button id="galleryModalAddBagBtn" class="gc-btn-pill-primary" style="flex:1;padding:12px 20px;font-size:0.88rem">
+            + Adicionar à Sacola
+          </button>
+          <a id="galleryModalWaBtn" href="#" target="_blank" rel="noopener noreferrer" class="gc-filter-pill" style="display:inline-flex;align-items:center;gap:6px;padding:12px 20px;font-size:0.88rem;text-decoration:none;border-color:var(--color-primary-gold);color:var(--color-gold-deep);font-weight:700">
+            💬 Pedir pelo WhatsApp
+          </a>
+          <a id="galleryModalLinkBtn" href="#" class="gc-filter-pill" style="display:inline-flex;align-items:center;gap:6px;padding:12px 16px;font-size:0.88rem;text-decoration:none">
+            Ver Peça Completa &gt;
+          </a>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- Scripts Essenciais de Luxo -->
   <script src="./js/loader.js?v=2026"></script>
   <script src="./js/shared-ui.js?v=2026"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const products = await window.fetchCatalog();
-      if (!products || !products.length) return;
+    (function() {
+      window._catalogProducts = [];
+      let currentGalleryProduct = null;
+      let currentGalleryIndex = 0;
 
-      // Ordenar pelas novidades ou por ID decrescente
-      const novidades = [...products].sort((a, b) => {
-        if (a.badge === 'Novo' && b.badge !== 'Novo') return -1;
-        if (b.badge === 'Novo' && a.badge !== 'Novo') return 1;
-        return (b.id || 0) - (a.id || 0);
-      });
+      // Controle do Modal de Galeria
+      window.openNovidadesGallery = function(productId) {
+        const p = (window._catalogProducts || []).find(item => Number(item.id) === Number(productId));
+        if (!p) return;
+        currentGalleryProduct = p;
+        currentGalleryIndex = 0;
 
-      // Destaque de lançamento
-      const spotlight = novidades[0];
-      const spotEl = document.getElementById('spotlightSection');
-      if (spotlight && spotEl) {
-        const spotPrice = spotlight.price ? `R$ ${Number(spotlight.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
-        const sDept = spotlight.department || (spotlight.gender === 'masculino' ? 'Para Ele' : (spotlight.section === 'casa' || spotlight.category === 'decoracoes' ? 'Para Casa' : (spotlight.category === 'bolsas' ? 'Acessórios & Bijuterias' : 'Para Ela')));
-        const sSubcat = spotlight.subcategory || (spotlight.category === 'saias-vestidos' ? 'Saias e Vestidos' : (spotlight.category === 'tops' ? 'Tops' : (spotlight.category === 'calcas' ? 'Calças e Shorts' : (spotlight.category === 'bolsas' ? 'Bolsas' : 'Alta-Costura'))));
+        const gallery = (Array.isArray(p.gallery) && p.gallery.length) ? p.gallery : [p.image || './assets/icon.svg'];
+        const modal = document.getElementById('novidadesGalleryModal');
+        const mainImg = document.getElementById('galleryModalMainImg');
+        const title = document.getElementById('galleryModalTitle');
+        const price = document.getElementById('galleryModalPrice');
+        const badge = document.getElementById('galleryModalBadge');
+        const thumbsContainer = document.getElementById('galleryModalThumbs');
+        const waBtn = document.getElementById('galleryModalWaBtn');
+        const linkBtn = document.getElementById('galleryModalLinkBtn');
 
-        spotEl.innerHTML = `
-          <div class="gc-spotlight-card">
-            <img src="${spotlight.image || (spotlight.gallery && spotlight.gallery[0]) || './assets/icon.svg'}" alt="${spotlight.name}" class="gc-spotlight-img" onerror="this.src='./assets/icon.svg'">
-            <div class="gc-spotlight-info">
-              <span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:8px">Destaque Exclusivo</span>
-              <div class="gc-product-tax-badges" style="margin-bottom:8px">
-                <span class="gc-badge-dept">${sDept}</span>
-                <span class="gc-badge-tax-divider">·</span>
-                <span class="gc-badge-subcat">${sSubcat}</span>
-              </div>
-              <h2>${spotlight.name}</h2>
-              <p>${spotlight.desc || 'Peça artesanal recém-adicionada ao catálogo oficial com fio nobre e caimento incomparável.'}</p>
-              <div style="font-family:var(--font-body);font-size:1.6rem;font-weight:700;color:var(--color-gold-deep);margin-bottom:24px">${spotPrice}</div>
-              <a href="./produtos/${spotlight.slug || 'produto'}.html" class="gc-btn-checkout" style="text-decoration:none;display:inline-flex;padding:14px 28px">
-                Conhecer a Peça &gt;
-              </a>
-            </div>
-          </div>
-        `;
+        if (title) title.textContent = p.name || 'Peça Gold Crochet';
+        const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+        if (price) price.textContent = priceStr;
+        if (badge) badge.textContent = p.badge || 'Recém-Tecida';
+
+        const waMsg = `Olá! Vi a peça *${p.name}* (${priceStr}) na galeria de Novidades da Gold Crochet e gostaria de encomendar com a estilista! ✨`;
+        if (waBtn) {
+          waBtn.href = window.GoldPhone && window.GoldPhone.formatWhatsAppLink 
+            ? window.GoldPhone.formatWhatsAppLink(null, waMsg) 
+            : `https://wa.me/5531984566047?text=${encodeURIComponent(waMsg)}`;
+        }
+        if (linkBtn) {
+          linkBtn.href = `./produtos/${p.slug || 'produto'}.html`;
+        }
+
+        const updateModalPhoto = (index) => {
+          currentGalleryIndex = (index + gallery.length) % gallery.length;
+          if (mainImg) {
+            mainImg.style.opacity = '0.4';
+            mainImg.src = gallery[currentGalleryIndex];
+            mainImg.onload = () => { mainImg.style.opacity = '1'; };
+          }
+          document.querySelectorAll('.gc-gallery-thumb-item').forEach((t, i) => {
+            if (i === currentGalleryIndex) t.classList.add('active');
+            else t.classList.remove('active');
+          });
+        };
+
+        if (thumbsContainer) {
+          thumbsContainer.innerHTML = gallery.map((imgSrc, i) => `
+            <img src="${imgSrc}" alt="Miniatura ${i + 1}" class="gc-gallery-thumb-item ${i === 0 ? 'active' : ''}" onclick="window.selectGalleryThumb(${i})" onerror="this.src='./assets/icon.svg'">
+          `).join('');
+        }
+
+        window.selectGalleryThumb = function(i) {
+          updateModalPhoto(i);
+        };
+
+        window.nextGalleryPhoto = function() {
+          updateModalPhoto(currentGalleryIndex + 1);
+        };
+
+        window.prevGalleryPhoto = function() {
+          updateModalPhoto(currentGalleryIndex - 1);
+        };
+
+        updateModalPhoto(0);
+
+        if (modal) {
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+      };
+
+      window.closeNovidadesGallery = function() {
+        const modal = document.getElementById('novidadesGalleryModal');
+        if (modal) {
+          modal.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+        currentGalleryProduct = null;
+      };
+
+      // Adicionar à sacola direto do modal
+      const addBagBtn = document.getElementById('galleryModalAddBagBtn');
+      if (addBagBtn) {
+        addBagBtn.addEventListener('click', () => {
+          if (currentGalleryProduct && window.GoldCart && window.GoldCart.add) {
+            window.GoldCart.add(currentGalleryProduct, 1);
+            if (window.GoldToast && window.GoldToast.show) {
+              window.GoldToast.show(`✨ ${currentGalleryProduct.name} adicionada à sacola!`);
+            }
+          }
+        });
       }
 
-      // Grade com as outras novidades
-      const grid = document.getElementById('gridNovidades');
-      if (grid) {
-        grid.innerHTML = novidades.slice(1).map(p => {
-          const slug = p.slug || 'produto';
-          const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
-          const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
-          const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '<span class="gc-badge-tag">Lançamento</span>';
-          const dept = p.department || (p.gender === 'masculino' ? 'Para Ele' : (p.section === 'casa' || p.category === 'decoracoes' ? 'Para Casa' : (p.category === 'bolsas' ? 'Acessórios & Bijuterias' : 'Para Ela')));
-          const subcat = p.subcategory || (p.category === 'saias-vestidos' ? 'Saias e Vestidos' : (p.category === 'tops' ? 'Tops' : (p.category === 'calcas' ? 'Calças e Shorts' : (p.category === 'bolsas' ? 'Bolsas' : 'Alta-Costura'))));
+      // Fechamento e Navegação do Modal por Teclado e Toque
+      const modalBackdrop = document.getElementById('novidadesGalleryModal');
+      if (modalBackdrop) {
+        modalBackdrop.addEventListener('click', (e) => {
+          if (e.target === modalBackdrop) {
+            window.closeNovidadesGallery();
+          }
+        });
+      }
 
-          return `
-            <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
-              <div class="gc-product-card-img-wrap">
-                ${badge}
-                <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
-                </button>
-                <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
+      document.addEventListener('keydown', (e) => {
+        if (!modalBackdrop || modalBackdrop.style.display === 'none') return;
+        if (e.key === 'Escape') {
+          window.closeNovidadesGallery();
+        } else if (e.key === 'ArrowRight') {
+          if (window.nextGalleryPhoto) window.nextGalleryPhoto();
+        } else if (e.key === 'ArrowLeft') {
+          if (window.prevGalleryPhoto) window.prevGalleryPhoto();
+        }
+      });
+
+      // Gesto de Swipe no Celular
+      let touchStartX = 0;
+      let touchEndX = 0;
+      if (modalBackdrop) {
+        modalBackdrop.addEventListener('touchstart', (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        modalBackdrop.addEventListener('touchend', (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          const diff = touchEndX - touchStartX;
+          if (Math.abs(diff) > 45) {
+            if (diff < 0 && window.nextGalleryPhoto) window.nextGalleryPhoto();
+            else if (diff > 0 && window.prevGalleryPhoto) window.prevGalleryPhoto();
+          }
+        }, { passive: true });
+      }
+
+      // Sincronização de Favoritos com Nuvem / Perfil
+      window.toggleNovidadesFav = function(productId) {
+        if (window.GoldFav && window.GoldFav.toggle) {
+          window.GoldFav.toggle(productId);
+        }
+        try {
+          const userStr = localStorage.getItem('gc_customer_account_v2');
+          if (userStr) {
+            const user = JSON.parse(userStr);
+            if (user && user.id) {
+              user.favs = window.GoldFav ? window.GoldFav.list() : [];
+              localStorage.setItem('gc_customer_account_v2', JSON.stringify(user));
+              if (window.GoldFirebase && window.GoldFirebase.db && window.GoldFirebase.fsDoc && window.GoldFirebase.setDoc) {
+                window.GoldFirebase.setDoc(
+                  window.GoldFirebase.fsDoc(window.GoldFirebase.db, 'users', user.id),
+                  { favs: user.favs },
+                  { merge: true }
+                ).catch(console.warn);
+              }
+            }
+          }
+        } catch(e) {}
+      };
+
+      // Carregamento e Renderização Oficial
+      document.addEventListener('DOMContentLoaded', async () => {
+        const products = await window.fetchCatalog();
+        if (!products || !products.length) {
+          const spotEl = document.getElementById('spotlightSection');
+          const gridEl = document.getElementById('gridNovidades');
+          if (spotEl) spotEl.innerHTML = '';
+          if (gridEl) {
+            gridEl.innerHTML = `
+              <div style="grid-column:1/-1;background:var(--color-tertiary);border:1px solid var(--color-border);border-radius:var(--radius-card);padding:44px 20px;text-align:center">
+                <div style="font-size:2.2rem;margin-bottom:12px">✨</div>
+                <h3 style="font-family:var(--font-display);font-size:1.5rem;color:var(--color-ebony);margin:0 0 8px">Novas Criações em Confecção</h3>
+                <p style="color:var(--color-muted);max-width:440px;margin:0 auto 16px;font-size:0.92rem">Nossas artesãs estão tecendo novas peças exclusivas. Em breve lançamentos disponíveis aqui.</p>
+                <a href="./pecas.html" class="gc-btn-pill-primary" style="display:inline-flex;width:auto;padding:12px 28px;text-decoration:none">Ver Catálogo Completo &gt;</a>
               </div>
-              <div class="gc-product-card-body">
-                <div class="gc-product-tax-badges">
-                  <span class="gc-badge-dept">${dept}</span>
+            `;
+          }
+          return;
+        }
+
+        window._catalogProducts = products;
+
+        // Ordenar pelas novidades ou por ID decrescente
+        const novidades = [...products].sort((a, b) => {
+          if (a.badge === 'Novo' && b.badge !== 'Novo') return -1;
+          if (b.badge === 'Novo' && a.badge !== 'Novo') return 1;
+          return (b.id || 0) - (a.id || 0);
+        });
+
+        // Destaque de lançamento
+        const spotlight = novidades[0];
+        const spotEl = document.getElementById('spotlightSection');
+        if (spotlight && spotEl) {
+          const spotPrice = spotlight.price ? `R$ ${Number(spotlight.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+          const sDept = spotlight.department || (spotlight.gender === 'masculino' ? 'Para Ele' : (spotlight.section === 'casa' || spotlight.category === 'decoracoes' ? 'Para Casa' : (spotlight.category === 'bolsas' ? 'Acessórios & Bijuterias' : 'Para Ela')));
+          const sSubcat = spotlight.subcategory || (spotlight.category === 'saias-vestidos' ? 'Saias e Vestidos' : (spotlight.category === 'tops' ? 'Tops' : (spotlight.category === 'calcas' ? 'Calças e Shorts' : (spotlight.category === 'bolsas' ? 'Bolsas' : 'Alta-Costura'))));
+          const spotWaMsg = `Olá! Vi o lançamento *${spotlight.name}* (${spotPrice}) no destaque das Novidades da Gold Crochet e gostaria de encomendar com a estilista! ✨`;
+          const spotWaLink = window.GoldPhone && window.GoldPhone.formatWhatsAppLink 
+            ? window.GoldPhone.formatWhatsAppLink(null, spotWaMsg) 
+            : `https://wa.me/5531984566047?text=${encodeURIComponent(spotWaMsg)}`;
+
+          spotEl.innerHTML = `
+            <div class="gc-spotlight-card">
+              <div style="position:relative">
+                <img src="${spotlight.image || (spotlight.gallery && spotlight.gallery[0]) || './assets/icon.svg'}" alt="${spotlight.name}" class="gc-spotlight-img" onerror="this.src='./assets/icon.svg'" onclick="window.openNovidadesGallery(${spotlight.id})">
+                <button class="gc-card-gallery-btn" onclick="event.stopPropagation(); window.openNovidadesGallery(${spotlight.id});">
+                  📸 Ver Galeria
+                </button>
+              </div>
+              <div class="gc-spotlight-info">
+                <span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:8px">Destaque Exclusivo</span>
+                <div class="gc-product-tax-badges" style="margin-bottom:6px">
+                  <span class="gc-badge-dept">${sDept}</span>
                   <span class="gc-badge-tax-divider">·</span>
-                  <span class="gc-badge-subcat">${subcat}</span>
+                  <span class="gc-badge-subcat">${sSubcat}</span>
                 </div>
-                <h3 class="gc-product-title">${p.name}</h3>
-                <p class="gc-product-desc">${p.desc || ''}</p>
-                <div class="gc-product-price-row">
-                  <span class="gc-product-price">${priceStr}</span>
+                <div class="gc-badge-haute-row">
+                  <span class="gc-badge-haute">Recém-Tecida</span>
+                  <span class="gc-badge-haute">100% Algodão Nobre</span>
+                  <span class="gc-badge-haute limited">Tiragem Limitada</span>
+                </div>
+                <h2>${spotlight.name}</h2>
+                <p>${spotlight.desc || 'Peça artesanal recém-adicionada ao catálogo oficial com fio nobre e caimento incomparável.'}</p>
+                <div style="font-family:var(--font-body);font-size:1.6rem;font-weight:700;color:var(--color-gold-deep);margin-bottom:18px">${spotPrice}</div>
+                <div style="display:flex;gap:12px;flex-wrap:wrap">
+                  <a href="./produtos/${spotlight.slug || 'produto'}.html" class="gc-btn-checkout" style="text-decoration:none;display:inline-flex;padding:12px 24px">
+                    Conhecer a Peça &gt;
+                  </a>
+                  <a href="${spotWaLink}" target="_blank" rel="noopener noreferrer" class="gc-filter-pill" style="display:inline-flex;align-items:center;gap:6px;padding:12px 20px;border-color:#25d366;color:#1a4d2e;font-weight:700;text-decoration:none">
+                    Pedir no WhatsApp 💬
+                  </a>
                 </div>
               </div>
             </div>
           `;
-        }).join('');
-      }
+        }
 
-      if (window.GoldFav && window.GoldFav.updateUI) {
-        window.GoldFav.updateUI();
-      }
-    });
+        // Grade com as outras novidades
+        const grid = document.getElementById('gridNovidades');
+        if (grid) {
+          grid.innerHTML = novidades.slice(1).map(p => {
+            const slug = p.slug || 'produto';
+            const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
+            const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
+            const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '<span class="gc-badge-tag">Recém-Tecida</span>';
+            const dept = p.department || (p.gender === 'masculino' ? 'Para Ele' : (p.section === 'casa' || p.category === 'decoracoes' ? 'Para Casa' : (p.category === 'bolsas' ? 'Acessórios & Bijuterias' : 'Para Ela')));
+            const subcat = p.subcategory || (p.category === 'saias-vestidos' ? 'Saias e Vestidos' : (p.category === 'tops' ? 'Tops' : (p.category === 'calcas' ? 'Calças e Shorts' : (p.category === 'bolsas' ? 'Bolsas' : 'Alta-Costura'))));
+            const cardWaMsg = `Olá! Vi a criação *${p.name}* (${priceStr}) nas Novidades da Gold Crochet e gostaria de encomendar com a estilista! ✨`;
+            const cardWaLink = window.GoldPhone && window.GoldPhone.formatWhatsAppLink 
+              ? window.GoldPhone.formatWhatsAppLink(null, cardWaMsg) 
+              : `https://wa.me/5531984566047?text=${encodeURIComponent(cardWaMsg)}`;
+
+            return `
+              <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
+                <div class="gc-product-card-img-wrap">
+                  ${badge}
+                  <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.toggleNovidadesFav(${p.id});" aria-label="Favoritar">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
+                  <button class="gc-card-gallery-btn" onclick="event.stopPropagation(); window.openNovidadesGallery(${p.id});" title="Ver galeria de fotos">
+                    📸 Fotos
+                  </button>
+                  <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
+                </div>
+                <div class="gc-product-card-body">
+                  <div class="gc-product-tax-badges">
+                    <span class="gc-badge-dept">${dept}</span>
+                    <span class="gc-badge-tax-divider">·</span>
+                    <span class="gc-badge-subcat">${subcat}</span>
+                  </div>
+                  <div class="gc-badge-haute-row">
+                    <span class="gc-badge-haute">100% Algodão Nobre</span>
+                    <span class="gc-badge-haute limited">Tiragem Limitada</span>
+                  </div>
+                  <h3 class="gc-product-title">${p.name}</h3>
+                  <p class="gc-product-desc">${p.desc || ''}</p>
+                  <div class="gc-product-price-row">
+                    <span class="gc-product-price">${priceStr}</span>
+                  </div>
+                  <a href="${cardWaLink}" target="_blank" rel="noopener noreferrer" class="gc-btn-wa-quick" onclick="event.stopPropagation();">
+                    Pedir no WhatsApp 💬
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        if (window.GoldFav && window.GoldFav.updateUI) {
+          window.GoldFav.updateUI();
+        }
+      });
+    })();
   </script>
 </body>
 </html>

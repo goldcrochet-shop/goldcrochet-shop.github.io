@@ -1787,7 +1787,13 @@
                 </tr>
               </thead>
               <tbody id="overviewRecentOrders">
-                <tr><td colspan="6" class="empty-state">Carregando pedidos do Firestore...</td></tr>
+                <tr>
+                  <td colspan="6" class="empty-state" style="padding:28px 16px;text-align:center">
+                    <div style="font-size:1.8rem;margin-bottom:6px">📦</div>
+                    <strong style="color:var(--text-primary);font-size:0.95rem">Nenhum pedido recente no momento</strong>
+                    <p style="color:var(--text-muted);font-size:0.8rem;margin:4px 0 0">Novos pedidos feitos pelo WhatsApp ou cadastrados manualmente aparecerão aqui em tempo real.</p>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -1958,7 +1964,16 @@
                 </tr>
               </thead>
               <tbody id="productsTableBody">
-                <tr><td colspan="8" class="empty-state">Carregando catálogo...</td></tr>
+                <tr>
+                  <td colspan="8" class="empty-state" style="padding:36px 16px;text-align:center">
+                    <div style="font-size:2rem;margin-bottom:8px">🧶</div>
+                    <strong style="color:var(--text-primary);font-size:1rem">Nenhuma peça cadastrada no catálogo</strong>
+                    <p style="color:var(--text-muted);font-size:0.82rem;margin:4px 0 12px">Adicione criações de alta-costura ou sincronize com o repositório.</p>
+                    <button type="button" class="btn-primary-action" onclick="window.AdminCore.openNewProductModal()" style="margin:0 auto">
+                      <span>+</span> Cadastrar Primeira Peça
+                    </button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -2040,7 +2055,16 @@
                 </tr>
               </thead>
               <tbody id="ordersTableBody">
-                <tr><td colspan="6" class="empty-state">Carregando pedidos...</td></tr>
+                <tr>
+                  <td colspan="6" class="empty-state" style="padding:36px 16px;text-align:center">
+                    <div style="font-size:2rem;margin-bottom:8px">📦</div>
+                    <strong style="color:var(--text-primary);font-size:1rem">Nenhum pedido registrado no ateliê</strong>
+                    <p style="color:var(--text-muted);font-size:0.82rem;margin:4px 0 12px">Acompanhe os pedidos de clientes e atendimento em tempo real.</p>
+                    <button type="button" class="btn-primary-action" onclick="window.AdminCore.openCreateOrderModal()" style="margin:0 auto">
+                      <span>+</span> Registrar Pedido Manual
+                    </button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -2063,6 +2087,14 @@
             </div>
           </div>
 
+          <!-- Filtros de Brindes e Clientes em Pills -->
+          <div class="filter-tabs-row" id="customerGiftsFilters" style="margin-bottom:16px;">
+            <button type="button" class="filter-tab-pill active" data-cust-filter="all" onclick="window.AdminCore.filterCustomersByGift('all')">Todos (<span id="countCustAll">0</span>)</button>
+            <button type="button" class="filter-tab-pill" data-cust-filter="ready" onclick="window.AdminCore.filterCustomersByGift('ready')">🎁 Brindes Prontos (<span id="countCustReady">0</span>)</button>
+            <button type="button" class="filter-tab-pill" data-cust-filter="progress" onclick="window.AdminCore.filterCustomersByGift('progress')">⏳ Em Progresso (<span id="countCustProgress">0</span>)</button>
+            <button type="button" class="filter-tab-pill" data-cust-filter="new" onclick="window.AdminCore.filterCustomersByGift('new')">✨ Novos (<span id="countCustNew">0</span>)</button>
+          </div>
+
           <div class="data-table-wrapper">
             <table class="data-table">
               <thead>
@@ -2076,7 +2108,16 @@
                 </tr>
               </thead>
               <tbody id="customersTableBody">
-                <tr><td colspan="6" class="empty-state">Carregando clientes e brindes...</td></tr>
+                <tr>
+                  <td colspan="6" class="empty-state" style="padding:36px 16px;text-align:center">
+                    <div style="font-size:2rem;margin-bottom:8px">🎁</div>
+                    <strong style="color:var(--text-primary);font-size:1rem">Nenhum cliente cadastrado ainda</strong>
+                    <p style="color:var(--text-muted);font-size:0.82rem;margin:4px 0 12px">Clientes cadastrados na loja e compradores de pedidos aparecerão aqui com cálculo automático de brindes.</p>
+                    <button type="button" class="btn-primary-action" onclick="window.AdminCore.openManualCustomerModal()" style="margin:0 auto">
+                      <span>+</span> Cadastrar Primeiro Cliente
+                    </button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -2368,9 +2409,11 @@
             <div id="orderDetailStatusBadge" style="margin-top:4px"></div>
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="btn-secondary-action" onclick="window.AdminCore.printOrderSlip()" title="Imprimir comprovante">🖨️ Imprimir</button>
-            <button class="btn-secondary-action" onclick="window.AdminCore.copyOrderSummary()" title="Copiar resumo">📋 Copiar</button>
-            <button class="btn-secondary-action" onclick="window.AdminCore.copyOrderShippingManifest()" title="Copiar manifesto de despacho">📦 Manifesto</button>
+            <button type="button" class="btn-secondary-action" onclick="window.AdminCore.printOrderSlip()" title="Imprimir comprovante de pedido">🖨️ Comprovante</button>
+            <button type="button" class="btn-secondary-action" onclick="window.AdminCore.printShippingLabel()" title="Imprimir etiqueta de envio dos Correios/Transportadora">🏷️ Etiqueta</button>
+            <button type="button" class="btn-secondary-action" onclick="window.AdminCore.printThankYouCard()" title="Imprimir cartão com afeto de alta-costura">💌 Cartão</button>
+            <button type="button" class="btn-secondary-action" onclick="window.AdminCore.copyOrderSummary()" title="Copiar resumo">📋 Copiar</button>
+            <button type="button" class="btn-secondary-action" onclick="window.AdminCore.copyOrderShippingManifest()" title="Copiar manifesto de despacho">📦 Manifesto</button>
           </div>
         </div>
 
@@ -2396,8 +2439,14 @@
               <button class="btn-action edit" style="width:26px;height:26px;font-size:0.75rem" onclick="window.AdminCore.editCurrentOrderPhone()">✏️</button>
             </div>
             <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
-              <a id="orderDetailWhatsAppBtn" href="#" target="_blank" class="btn-action whatsapp" style="width:auto;padding:3px 8px;font-size:0.75rem;display:inline-flex">💬 Abrir Conversa</a>
-              <a id="orderWhatsappBtn" href="#" target="_blank" class="btn-action whatsapp" style="width:auto;padding:3px 8px;font-size:0.75rem;display:none">💬 WhatsApp</a>
+              <a id="orderDetailWhatsAppBtn" href="#" target="_blank" rel="noopener" class="btn-action whatsapp" style="width:auto;padding:4px 10px;font-size:0.78rem;display:inline-flex;align-items:center;gap:4px">💬 Falar no WhatsApp</a>
+              <a id="orderWhatsappBtn" href="#" target="_blank" rel="noopener" class="btn-action whatsapp" style="width:auto;padding:4px 10px;font-size:0.78rem;display:none">💬 WhatsApp</a>
+            </div>
+            <div id="orderDetailWaStatusRow" style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
+              <a id="waStatusLinkPendente" href="#" target="_blank" rel="noopener" class="btn-action" style="font-size:0.72rem;padding:3px 8px;text-decoration:none" title="WhatsApp: Aviso de pedido recebido">⏳ Recebido</a>
+              <a id="waStatusLinkProducao" href="#" target="_blank" rel="noopener" class="btn-action" style="font-size:0.72rem;padding:3px 8px;text-decoration:none" title="WhatsApp: Aviso de peça em confecção">🧶 Confecção</a>
+              <a id="waStatusLinkAcabamento" href="#" target="_blank" rel="noopener" class="btn-action" style="font-size:0.72rem;padding:3px 8px;text-decoration:none" title="WhatsApp: Aviso de acabamento de alta-costura">✨ Acabamento</a>
+              <a id="waStatusLinkEnviado" href="#" target="_blank" rel="noopener" class="btn-action" style="font-size:0.72rem;padding:3px 8px;text-decoration:none" title="WhatsApp: Aviso de pedido despachado e rastreio">📦 Enviado</a>
             </div>
           </div>
         </div>
@@ -2468,7 +2517,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">WhatsApp (com DDD) *</label>
-              <input type="tel" id="manualOrderPhone" class="form-input" placeholder="31984566047" required>
+              <input type="tel" id="manualOrderPhone" class="form-input" placeholder="(31) 98456-6047" maxlength="15" required>
             </div>
           </div>
           <div class="modal-grid-2">
@@ -2535,7 +2584,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">WhatsApp com DDD</label>
-              <input type="tel" id="custModalPhone" class="form-input" placeholder="(31) 98456-6047">
+              <input type="tel" id="custModalPhone" class="form-input" placeholder="(31) 98456-6047" maxlength="15">
             </div>
           </div>
 

@@ -1,0 +1,350 @@
+{
+  "total": 65,
+  "passed": 65,
+  "failed": 0,
+  "categories": {
+    "phone_normalization": {
+      "passed": 58,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "GoldPhone namespace and exports",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: Standard mobile with +55 and formatting [+55 (31) 98456-6047] -> 31984566047",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: Double 5555 prefix duplicate [555531984566047] -> 31984566047",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: Triple 555555 prefix duplicate [55555531984566047] -> 31984566047",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: Spaces without country code [31 98456-6047] -> 31984566047",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: Single 55 prefix with spaces (SP) [55 11 91234 5678] -> 11912345678",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: 10-digit number (8-digit phone with DDD 85) [(85) 9999-9999] -> 8599999999",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: 10-digit number with +55 prefix [+55 (85) 9999-9999] -> 8599999999",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: Extraneous whitespaces around +55 [  +55  31  98456  6047  ] -> 31984566047",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: Surrounded by letters and punctuation [abc+55 (31) 98456-6047xyz] -> 31984566047",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: Non-standard punctuation dashes and periods [+55-(31)-9.8456_6047] -> 31984566047",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: Numeric type input [31984566047] -> 31984566047",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: Empty string returns empty [] -> ",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: null returns empty [null] -> ",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "normalize: undefined returns empty [undefined] -> ",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "DDD 55 (Rio Grande do Sul) boundary condition",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 00",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 01",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 10",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 20",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 23",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 25",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 26",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 29",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 30",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 36",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Invalid DDD 39",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Too short (5 digits)",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Missing DDD (9 digits)",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid rejects: Too long (13 digits without DDI)",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 11",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 19",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 21",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 24",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 27",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 28",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 31",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 35",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 41",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 48",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 51",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 55",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 61",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 62",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 65",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 67",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 71",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 79",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 81",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 85",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 91",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "isValid accepts DDD 92",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "formatWhatsAppLink: 31984566047 -> https://wa.me/5531984566047?text=Ol%C3%A1",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "formatWhatsAppLink: +55 (31) 98456-6047 -> https://wa.me/5531984566047?text=Teste",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "formatWhatsAppLink: 555531984566047 -> https://wa.me/5531984566047?text=Duplo%2055",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "formatWhatsAppLink: 55 11 91234 5678 -> https://wa.me/5511912345678",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "formatWhatsAppLink: (85) 9999-9999 -> https://wa.me/558599999999?text=Pedido",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "formatWhatsAppLink: (fallback) -> https://wa.me/5531984566047?text=Fallback",
+          "status": "PASS",
+          "details": null
+        }
+      ]
+    },
+    "schema_integrity": {
+      "passed": 4,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Canonical schema default initialization (0 purchases, 0 gifts, [] orders)",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "Profile update preserves purchasesCount, giftsClaimed, and orders",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "Bidirectional sync between measures and measurements",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "Cross-device sync merges remote data, orders deduplicated, counter max",
+          "status": "PASS",
+          "details": null
+        }
+      ]
+    },
+    "atomic_batch_logic": {
+      "passed": 3,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "firebase.js modular imports, exports & window.GoldFirebase primitives",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "Atomic checkout via writeBatch: order written, user increment(1), arrayUnion, commit & event",
+          "status": "PASS",
+          "details": null
+        },
+        {
+          "name": "cart.js atomic primitives, delegation & fallback writeBatch",
+          "status": "PASS",
+          "details": null
+        }
+      ]
+    }
+  }
+}

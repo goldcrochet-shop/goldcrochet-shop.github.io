@@ -391,6 +391,96 @@
       box-shadow: var(--shadow-floating);
       text-align: center;
     }
+
+    /* Brilho e Pulso Dourado de Brinde Liberado */
+    @keyframes pulseGoldGlow {
+      0%, 100% {
+        filter: drop-shadow(0 0 5px rgba(205, 164, 52, 0.85)) drop-shadow(0 0 12px rgba(230, 190, 80, 0.55));
+      }
+      50% {
+        filter: drop-shadow(0 0 12px rgba(205, 164, 52, 1)) drop-shadow(0 0 24px rgba(230, 190, 80, 0.9));
+      }
+    }
+    .gc-gift-circle-progress.gift-unlocked-glow {
+      stroke: var(--color-primary-gold) !important;
+      animation: pulseGoldGlow 2s infinite ease-in-out;
+    }
+    .pulse-gold {
+      animation: pulseGoldBtn 2s infinite ease-in-out;
+    }
+    @keyframes pulseGoldBtn {
+      0%, 100% {
+        box-shadow: 0 4px 14px rgba(166, 124, 0, 0.28);
+      }
+      50% {
+        box-shadow: 0 8px 24px rgba(205, 164, 52, 0.65);
+        transform: translateY(-2px);
+      }
+    }
+
+    /* Banner Comemorativo de Alta-Costura */
+    .gc-celebration-banner {
+      background: linear-gradient(135deg, #fffcf0 0%, #fbf3d3 50%, #fdf8e6 100%);
+      border: 1.5px solid var(--color-primary-gold);
+      border-radius: var(--radius-card);
+      padding: 26px 30px;
+      box-shadow: 0 14px 34px rgba(166, 124, 0, 0.18);
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+      animation: tabFadeIn 0.4s ease;
+    }
+    .gc-celebration-banner::after {
+      content: '✨';
+      position: absolute;
+      top: -10px;
+      right: 15px;
+      font-size: 4rem;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .gc-celebration-content {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .gc-celebration-icon {
+      font-size: 2.8rem;
+      background: var(--color-secondary);
+      border: 1.5px solid var(--color-border);
+      border-radius: 50%;
+      width: 74px;
+      height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(205, 164, 52, 0.25);
+    }
+    @media (max-width: 640px) {
+      .gc-celebration-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 14px;
+      }
+      .gc-celebration-icon {
+        margin: 0 auto;
+      }
+    }
+
+    /* Rastreio e Detalhes do Pedido */
+    .gc-tracking-box {
+      margin-top: 14px;
+      padding: 12px 18px;
+      background: var(--color-secondary);
+      border: 1px solid var(--color-primary-gold);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
   </style>
 </head>
 <body>
@@ -489,6 +579,30 @@
 
       <!-- ABA 1: VISÃO GERAL -->
       <div id="tab-visao-geral" class="gc-tab-pane active">
+        <!-- Banner Comemorativo de Brinde Liberado (Ativado dinamicamente) -->
+        <div id="dashCelebrationBanner" class="gc-celebration-banner" style="display:none">
+          <div class="gc-celebration-content">
+            <div class="gc-celebration-icon">🎁✨</div>
+            <div class="gc-celebration-text" style="flex:1">
+              <span class="gc-vip-tier-pill" style="margin-bottom:6px;display:inline-block">Alta-Costura VIP</span>
+              <h3 id="dashCelebrationTitle" style="font-family:var(--font-display);font-size:1.45rem;color:var(--color-ebony);margin:0 0 6px">
+                🎉 Parabéns! Brinde Exclusivo Liberado!
+              </h3>
+              <p id="dashCelebrationMsg" style="color:var(--color-charcoal);font-size:0.92rem;margin:0 0 14px;line-height:1.5">
+                Você atingiu a meta e conquistou um brinde exclusivo do Ateliê Gold Crochet pronto para resgate!
+              </p>
+              <div style="display:flex;gap:12px;flex-wrap:wrap">
+                <button class="gc-btn-pill-primary pulse-gold" style="width:auto;padding:10px 24px;font-size:0.85rem" onclick="window.ClientPortal.claimGift('Porta-Copos Búzio Dourado')">
+                  🎁 Resgatar Brinde pelo WhatsApp &gt;
+                </button>
+                <button class="gc-filter-pill" style="width:auto;padding:10px 20px;font-size:0.85rem" onclick="window.ClientPortal.switchTab('brindes')">
+                  Ver Mais Brindes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Grade de Estatísticas Rápidas -->
         <div class="gc-stats-grid">
           <div class="gc-stat-box">
@@ -863,77 +977,245 @@
       },
 
       init: async function() {
+        this.setupPhoneMask();
+        this.setupRealtimeListeners();
         let client = getLocalClient();
         if (client && client.email) {
           client = await this.syncWithFirestore(client);
           this.renderLoggedPortal(client);
+          this.listenFirestoreUser(client.id);
         } else {
           document.getElementById('clientAuthSection').style.display = 'block';
           document.getElementById('clientPortalSection').style.display = 'none';
         }
       },
 
+      setupPhoneMask: function() {
+        const phoneInput = document.getElementById('clientInputPhone');
+        if (!phoneInput || phoneInput._maskAttached) return;
+        phoneInput._maskAttached = true;
+        phoneInput.addEventListener('input', function(e) {
+          let v = e.target.value.replace(/\D/g, '');
+          if (v.startsWith('55') && v.length >= 12) v = v.slice(2);
+          if (v.length > 11) v = v.slice(0, 11);
+          if (v.length > 6) {
+            if (v.length === 11) {
+              v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+            } else {
+              v = v.replace(/^(\d{2})(\d{4,5})(\d{0,4})$/, '($1) $2-$3');
+            }
+          } else if (v.length > 2) {
+            v = v.replace(/^(\d{2})(\d{0,5})$/, '($1) $2');
+          } else if (v.length > 0) {
+            v = v.replace(/^(\d{0,2})$/, '($1');
+          }
+          e.target.value = v;
+        });
+      },
+
+      setupRealtimeListeners: function() {
+        const refreshHandler = (e) => {
+          const current = getLocalClient();
+          if (current) {
+            if (e && e.detail) {
+              if (e.detail.name) current.name = e.detail.name;
+              if (e.detail.phone) current.phone = e.detail.phone;
+              if (e.detail.purchasesCount !== undefined) current.purchasesCount = Number(e.detail.purchasesCount);
+              if (e.detail.giftsClaimed !== undefined) current.giftsClaimed = Number(e.detail.giftsClaimed);
+              if (Array.isArray(e.detail.orders)) current.orders = e.detail.orders;
+              if (e.detail.measures) current.measures = e.detail.measures;
+              if (e.detail.measurements) current.measurements = e.detail.measurements;
+              if (e.detail.address) current.address = e.detail.address;
+              saveLocalClient(current);
+            }
+            this.renderLoggedPortal(current);
+          }
+        };
+
+        const orderHandler = (e) => {
+          const current = getLocalClient();
+          if (current) {
+            current.purchasesCount = (Number(current.purchasesCount) || 0) + 1;
+            if (e && e.detail && e.detail.order) {
+              current.orders = Array.isArray(current.orders) ? current.orders : [];
+              const ord = e.detail.order;
+              if (!current.orders.some(o => o.id === ord.id || o.id === ord.code || o.code === ord.code)) {
+                current.orders.unshift(ord);
+              }
+            }
+            saveLocalClient(current);
+            this.renderLoggedPortal(current);
+          }
+        };
+
+        window.addEventListener('gc:user-synced', refreshHandler);
+        document.addEventListener('gc:user-synced', refreshHandler);
+        window.addEventListener('gc:order-placed', orderHandler);
+        document.addEventListener('gc:order-placed', orderHandler);
+      },
+
+      listenFirestoreUser: function(userId) {
+        if (!userId || !db || !fsDoc || !onSnapshot) return;
+        try {
+          onSnapshot(fsDoc(db, 'users', userId), (snap) => {
+            if (snap.exists()) {
+              const remote = snap.data();
+              const current = getLocalClient() || {};
+              let changed = false;
+              if (remote.purchasesCount !== undefined && remote.purchasesCount !== current.purchasesCount) {
+                current.purchasesCount = Number(remote.purchasesCount);
+                changed = true;
+              }
+              if (remote.giftsClaimed !== undefined && remote.giftsClaimed !== current.giftsClaimed) {
+                current.giftsClaimed = Number(remote.giftsClaimed);
+                changed = true;
+              }
+              if (Array.isArray(remote.orders)) {
+                current.orders = remote.orders;
+                changed = true;
+              }
+              if (remote.measures) {
+                current.measures = remote.measures;
+                changed = true;
+              }
+              if (remote.measurements) {
+                current.measurements = remote.measurements;
+                changed = true;
+              }
+              if (remote.address) {
+                current.address = remote.address;
+                changed = true;
+              }
+              if (changed) {
+                saveLocalClient(current);
+                this.renderLoggedPortal(current);
+              }
+            }
+          }, (err) => console.warn('[Cliente] onSnapshot listener warning:', err));
+        } catch(e) {}
+      },
+
       renderLoggedPortal: function(client) {
         document.getElementById('clientAuthSection').style.display = 'none';
         document.getElementById('clientPortalSection').style.display = 'block';
 
-        // Preenche Dados VIP
-        document.getElementById('clientDisplayName').textContent = client.name || 'Cliente';
-        document.getElementById('clientDisplayEmail').textContent = client.email || '';
+        // Preenche Dados VIP com escape seguro
+        const nameEl = document.getElementById('clientDisplayName');
+        if (nameEl) nameEl.textContent = client.name || 'Cliente';
+        const emailEl = document.getElementById('clientDisplayEmail');
+        if (emailEl) emailEl.textContent = client.email || '';
+        
         const phoneEl = document.getElementById('clientDisplayPhone');
         if (phoneEl) {
-          phoneEl.textContent = client.phone ? `📱 WhatsApp: ${client.phone}` : '📱 WhatsApp: Não cadastrado';
+          const displayPhone = window.GoldPhone && window.GoldPhone.formatDisplay ? window.GoldPhone.formatDisplay(client.phone) : client.phone;
+          phoneEl.textContent = client.phone ? `📱 WhatsApp: ${displayPhone}` : '📱 WhatsApp: Não cadastrado';
         }
-        document.getElementById('clientVipCardNum').textContent = client.cardNum || '#GC-BR-' + (client.id || Date.now().toString().slice(-4));
 
         const purchases = Number(client.purchasesCount || 0);
+        const giftsClaimed = Number(client.giftsClaimed || 0);
+        const giftsEarnedTotal = Math.floor(purchases / 3);
+        const giftsAvailableToClaim = Math.max(0, giftsEarnedTotal - giftsClaimed);
+
+        // Nível VIP & Status no Ateliê
+        let vipTier = 'Membro Ouro';
+        let statusTitle = 'Membro Ouro';
+        if (purchases >= 10) {
+          vipTier = 'Embaixadora Gold';
+          statusTitle = 'Embaixadora Gold';
+        } else if (purchases >= 3) {
+          vipTier = 'VIP Alta-Costura';
+          statusTitle = 'VIP Alta-Costura';
+        }
+        const tierPill = document.getElementById('clientVipTier');
+        if (tierPill) tierPill.textContent = vipTier;
+        const statusPill = document.getElementById('statStatusPill');
+        if (statusPill) statusPill.textContent = statusTitle;
+
+        document.getElementById('clientVipCardNum').textContent = client.cardNum || '#GC-BR-' + (client.id || Date.now().toString().slice(-4));
+
         document.getElementById('statPurchasesCount').textContent = purchases;
         document.getElementById('dashCirclePurchases').textContent = purchases;
-
-        // Calcula brindes
-        const giftsClaimed = Number(client.giftsClaimed || 0);
         document.getElementById('statGiftsCount').textContent = giftsClaimed;
 
-        const mod3 = purchases % 3;
-        const remaining = 3 - mod3;
-        document.getElementById('tabGiftRemaining').textContent = (purchases > 0 && remaining === 3) ? 'PRONTO!' : remaining;
-
-        const progressPercent = (mod3 / 3) * 100;
+        // Cálculo canônico do círculo e do programa de brindes
         const strokeDash = 220;
-        const offset = strokeDash - (strokeDash * (progressPercent / 100));
         const circleProg = document.getElementById('dashCircleProgress');
-        if (circleProg) circleProg.style.strokeDashoffset = offset;
-
+        const remainingEl = document.getElementById('tabGiftRemaining');
         const giftText = document.getElementById('dashGiftText');
-        if (giftText) {
-          if (purchases > 0 && remaining === 3) {
-            giftText.innerHTML = '🎉 <strong>Parabéns!</strong> Você atingiu a meta para resgatar seu brinde exclusivo de crochê!';
-          } else {
+        const banner = document.getElementById('dashCelebrationBanner');
+        const btnClaim1 = document.getElementById('btnClaimGift1');
+
+        if (giftsAvailableToClaim > 0) {
+          // Meta atingida com brinde pronto para resgate! Círculo 100% preenchido
+          if (circleProg) {
+            circleProg.style.strokeDashoffset = '0';
+            circleProg.classList.add('gift-unlocked-glow');
+          }
+          if (remainingEl) remainingEl.textContent = 'PRONTO!';
+          
+          if (banner) {
+            banner.style.display = 'block';
+            const titleEl = document.getElementById('dashCelebrationTitle');
+            const msgEl = document.getElementById('dashCelebrationMsg');
+            if (titleEl) titleEl.textContent = `🎉 Parabéns, ${client.name || 'Cliente'}! Brinde Exclusivo Liberado!`;
+            if (msgEl) {
+              msgEl.innerHTML = `Você atingiu a meta com <strong>${purchases} compras</strong> e conquistou <strong>${giftsAvailableToClaim} ${giftsAvailableToClaim === 1 ? 'brinde exclusivo' : 'brindes exclusivos'}</strong> do Ateliê Gold Crochet pronto(s) para resgate!`;
+            }
+          }
+
+          if (giftText) {
+            giftText.innerHTML = `🎉 <strong>Parabéns!</strong> Você conquistou <strong>${giftsAvailableToClaim} ${giftsAvailableToClaim === 1 ? 'brinde exclusivo' : 'brindes exclusivos'}</strong> do Ateliê Gold Crochet liberado(s) para resgate imediato!`;
+          }
+
+          if (btnClaim1) {
+            btnClaim1.className = 'gc-btn-pill-primary pulse-gold';
+            btnClaim1.innerHTML = '🎁 Resgatar Brinde';
+          }
+        } else {
+          // Sem brindes pendentes: calcula progresso até o próximo múltiplo de 3
+          const mod3 = purchases % 3;
+          const remaining = (purchases > 0 && mod3 === 0 && giftsAvailableToClaim === 0) ? 3 : (3 - mod3);
+          const progressPercent = ((purchases % 3) / 3) * 100;
+          const offset = strokeDash - (strokeDash * (progressPercent / 100));
+
+          if (circleProg) {
+            circleProg.style.strokeDashoffset = offset;
+            circleProg.classList.remove('gift-unlocked-glow');
+          }
+          if (remainingEl) remainingEl.textContent = remaining;
+          if (banner) banner.style.display = 'none';
+
+          if (giftText) {
             giftText.innerHTML = `Você já realizou <strong>${purchases}</strong> ${purchases === 1 ? 'compra' : 'compras'}. Faltam <strong>${remaining}</strong> para o próximo brinde artesanal!`;
+          }
+
+          if (btnClaim1) {
+            btnClaim1.className = 'gc-btn-pill-primary';
+            btnClaim1.innerHTML = giftsClaimed >= 1 ? '✅ Brinde Entregue' : '🎁 Resgatar Brinde';
           }
         }
 
         // Favoritos
         const favs = window.GoldFav ? window.GoldFav.list() : [];
-        document.getElementById('statFavCount').textContent = favs.length;
+        const favCountEl = document.getElementById('statFavCount');
+        if (favCountEl) favCountEl.textContent = favs.length;
 
-        // Preenche Formulários se existirem dados
-        if (client.measures) {
-          if (document.getElementById('mBusto')) document.getElementById('mBusto').value = client.measures.busto || '';
-          if (document.getElementById('mCintura')) document.getElementById('mCintura').value = client.measures.cintura || '';
-          if (document.getElementById('mQuadril')) document.getElementById('mQuadril').value = client.measures.quadril || '';
-          if (document.getElementById('mAltura')) document.getElementById('mAltura').value = client.measures.altura || '';
-          if (document.getElementById('mComprimento')) document.getElementById('mComprimento').value = client.measures.comprimento || '';
-          if (document.getElementById('mCor')) document.getElementById('mCor').value = client.measures.cor || '';
-        }
+        // Preenche Formulário de Medidas (suporta measures e measurements)
+        const m = client.measures || client.measurements || {};
+        if (document.getElementById('mBusto')) document.getElementById('mBusto').value = m.busto || '';
+        if (document.getElementById('mCintura')) document.getElementById('mCintura').value = m.cintura || '';
+        if (document.getElementById('mQuadril')) document.getElementById('mQuadril').value = m.quadril || '';
+        if (document.getElementById('mAltura')) document.getElementById('mAltura').value = m.altura || '';
+        if (document.getElementById('mComprimento')) document.getElementById('mComprimento').value = m.comprimento || '';
+        if (document.getElementById('mCor')) document.getElementById('mCor').value = m.cor || '';
 
-        if (client.address) {
-          if (document.getElementById('addrCep')) document.getElementById('addrCep').value = client.address.cep || '';
-          if (document.getElementById('addrRua')) document.getElementById('addrRua').value = client.address.rua || '';
-          if (document.getElementById('addrNum')) document.getElementById('addrNum').value = client.address.num || '';
-          if (document.getElementById('addrBairro')) document.getElementById('addrBairro').value = client.address.bairro || '';
-          if (document.getElementById('addrCidade')) document.getElementById('addrCidade').value = client.address.cidade || '';
-        }
+        // Preenche Formulário de Endereço (suporta chaves em PT e EN)
+        const a = client.address || {};
+        if (document.getElementById('addrCep')) document.getElementById('addrCep').value = a.cep || '';
+        if (document.getElementById('addrRua')) document.getElementById('addrRua').value = a.rua || a.street || '';
+        if (document.getElementById('addrNum')) document.getElementById('addrNum').value = a.num || a.number || '';
+        if (document.getElementById('addrBairro')) document.getElementById('addrBairro').value = a.bairro || '';
+        if (document.getElementById('addrCidade')) document.getElementById('addrCidade').value = a.cidade || a.city || '';
 
         this.renderOrders(client);
       },
@@ -946,64 +1228,91 @@
 
         if (!orders.length) {
           container.innerHTML = `
-            <div style="background:var(--color-tertiary);border:1.5px solid var(--color-border);border-radius:var(--radius-card);padding:44px 20px;text-align:center;box-shadow:var(--shadow-organic)">
-              <div style="width:64px;height:64px;border-radius:50%;background:var(--color-secondary);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.8rem">
+            <div style="background:var(--color-tertiary);border:1.5px solid var(--color-border);border-radius:var(--radius-card);padding:48px 24px;text-align:center;box-shadow:var(--shadow-organic)">
+              <div style="width:72px;height:72px;border-radius:50%;background:var(--color-secondary);border:1.5px solid var(--color-border);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:2.2rem">
                 🧶
               </div>
-              <h3 style="font-family:var(--font-display);font-size:1.45rem;color:var(--color-ebony);margin:0 0 8px">Nenhum pedido realizado ainda</h3>
-              <p style="color:var(--color-muted);max-width:440px;margin:0 auto 20px;font-size:0.9rem;line-height:1.6">
+              <h3 style="font-family:var(--font-display);font-size:1.6rem;color:var(--color-ebony);margin:0 0 8px">Nenhum pedido em confecção no momento</h3>
+              <p style="color:var(--color-muted);max-width:480px;margin:0 auto 24px;font-size:0.92rem;line-height:1.6">
                 Suas encomendas sob medida e pedidos feitos com a estilista no WhatsApp aparecerão aqui para você acompanhar a confecção ponto a ponto.
               </p>
-              <a href="./pecas.html" class="gc-btn-pill-primary" style="display:inline-flex;width:auto;padding:12px 28px;text-decoration:none">
-                Ver Coleções do Ateliê &rarr;
-              </a>
+              <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+                <a href="./pecas.html" class="gc-btn-pill-primary" style="display:inline-flex;width:auto;padding:12px 28px;text-decoration:none">
+                  Explorar Peças &rarr;
+                </a>
+                <a href="./index.html" class="gc-filter-pill" style="display:inline-flex;padding:12px 28px;text-decoration:none">
+                  Conhecer a Vitrine &rarr;
+                </a>
+              </div>
             </div>
           `;
           return;
         }
 
-        container.innerHTML = orders.map(ord => `
-          <div class="gc-order-card">
-            <div class="gc-order-header">
-              <div>
-                <span class="gc-badge-tag" style="position:static;margin-right:8px">${ord.id}</span>
-                <strong style="color:var(--color-ebony);font-size:0.95rem">${ord.item}</strong>
-                <span style="color:var(--color-muted);font-size:0.85rem"> (${ord.color || 'Sob medida'})</span>
-              </div>
-              <div style="font-family:var(--font-display);font-size:1.25rem;color:var(--color-gold-deep)">${ord.total || 'Em confecção'}</div>
-            </div>
+        container.innerHTML = orders.map(ord => {
+          let step = Number(ord.step) || 1;
+          if (ord.status === 'pendente') step = 1;
+          else if (ord.status === 'producao') step = 2;
+          else if (ord.status === 'acabamento') step = 3;
+          else if (ord.status === 'enviado' || ord.status === 'entregue') step = 4;
 
-            <!-- Timeline de Produção -->
-            <div class="gc-timeline-steps">
-              <div class="gc-timeline-step ${ord.step >= 1 ? 'completed' : ''}">
-                <div class="gc-timeline-circle">${ord.step > 1 ? '✓' : '1'}</div>
-                <div class="gc-timeline-text">Confirmado</div>
+          const orderId = ord.code || ord.id || 'Pedido Gold';
+          const trackingHtml = ord.trackingCode ? `
+            <div class="gc-tracking-box">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:1.1rem">📦</span>
+                <span style="font-size:0.82rem;font-weight:700;color:var(--color-ebony)">Código de Rastreio:</span>
+                <a href="https://rastreamento.correios.com.br/app/index.php?codigo=${encodeURIComponent(ord.trackingCode)}" target="_blank" rel="noopener noreferrer" style="font-family:monospace;font-weight:700;color:var(--color-gold-deep);text-decoration:underline">
+                  ${ord.trackingCode} ↗
+                </a>
               </div>
-              <div class="gc-timeline-step ${ord.step >= 2 ? (ord.step > 2 ? 'completed' : 'current') : ''}">
-                <div class="gc-timeline-circle">${ord.step > 2 ? '✓' : '🧶'}</div>
-                <div class="gc-timeline-text">Separação Fios</div>
-              </div>
-              <div class="gc-timeline-step ${ord.step >= 3 ? (ord.step > 3 ? 'completed' : 'current') : ''}">
-                <div class="gc-timeline-circle">${ord.step > 3 ? '✓' : '3'}</div>
-                <div class="gc-timeline-text">Tecendo Pontos</div>
-              </div>
-              <div class="gc-timeline-step ${ord.step >= 4 ? (ord.step > 4 ? 'completed' : 'current') : ''}">
-                <div class="gc-timeline-circle">${ord.step > 4 ? '✓' : '4'}</div>
-                <div class="gc-timeline-text">Acabamento</div>
-              </div>
-              <div class="gc-timeline-step ${ord.step >= 5 ? 'completed' : ''}">
-                <div class="gc-timeline-circle">5</div>
-                <div class="gc-timeline-text">Enviado</div>
-              </div>
-            </div>
-
-            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:14px">
-              <a href="https://wa.me/${WHATSAPP_NUM}?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20sobre%20meu%20pedido%20${encodeURIComponent(ord.id)}" target="_blank" class="gc-filter-pill" style="font-size:0.75rem;padding:6px 14px;text-decoration:none">
-                💬 Perguntar no WhatsApp
+              <a href="https://rastreamento.correios.com.br/app/index.php?codigo=${encodeURIComponent(ord.trackingCode)}" target="_blank" rel="noopener noreferrer" class="gc-filter-pill" style="font-size:0.75rem;padding:6px 14px;text-decoration:none">
+                Rastrear nos Correios
               </a>
             </div>
-          </div>
-        `).join('');
+          ` : '';
+
+          return `
+            <div class="gc-order-card">
+              <div class="gc-order-header">
+                <div>
+                  <span class="gc-badge-tag" style="position:static;margin-right:8px">${orderId}</span>
+                  <strong style="color:var(--color-ebony);font-size:0.95rem">${ord.item || 'Peça Artesanal Gold'}</strong>
+                  <span style="color:var(--color-muted);font-size:0.85rem"> (${ord.color || 'Sob medida'})</span>
+                </div>
+                <div style="font-family:var(--font-display);font-size:1.25rem;color:var(--color-gold-deep)">${ord.total || 'Em confecção'}</div>
+              </div>
+
+              <!-- Timeline Interativa de 4 Etapas Canônicas de Alta-Costura -->
+              <div class="gc-timeline-steps">
+                <div class="gc-timeline-step ${step >= 1 ? (step === 1 ? 'current' : 'completed') : ''}">
+                  <div class="gc-timeline-circle">${step > 1 ? '✓' : '1'}</div>
+                  <div class="gc-timeline-text">Pedido Feito</div>
+                </div>
+                <div class="gc-timeline-step ${step >= 2 ? (step === 2 ? 'current' : 'completed') : ''}">
+                  <div class="gc-timeline-circle">${step > 2 ? '✓' : '🧶'}</div>
+                  <div class="gc-timeline-text">Em Confecção</div>
+                </div>
+                <div class="gc-timeline-step ${step >= 3 ? (step === 3 ? 'current' : 'completed') : ''}">
+                  <div class="gc-timeline-circle">${step > 3 ? '✓' : '✨'}</div>
+                  <div class="gc-timeline-text">Acabamento de Alta-Costura</div>
+                </div>
+                <div class="gc-timeline-step ${step >= 4 ? 'completed' : ''}">
+                  <div class="gc-timeline-circle">${step >= 4 ? '✓' : '📦'}</div>
+                  <div class="gc-timeline-text">Enviado com Rastreio</div>
+                </div>
+              </div>
+
+              ${trackingHtml}
+
+              <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:14px">
+                <a href="${window.GoldPhone && window.GoldPhone.formatWhatsAppLink ? window.GoldPhone.formatWhatsAppLink(null, 'Olá, gostaria de saber sobre meu pedido ' + orderId) : 'https://wa.me/' + WHATSAPP_NUM + '?text=' + encodeURIComponent('Olá, gostaria de saber sobre meu pedido ' + orderId)}" target="_blank" class="gc-filter-pill" style="font-size:0.75rem;padding:6px 14px;text-decoration:none">
+                  💬 Perguntar no WhatsApp
+                </a>
+              </div>
+            </div>
+          `;
+        }).join('');
       },
 
       switchTab: function(tabId, btn) {
@@ -1055,6 +1364,7 @@
               cardNum: '#GC-BR-' + user.uid.slice(0, 5).toUpperCase(),
               orders: existing.orders || [],
               measures: existing.measures || {},
+              measurements: existing.measurements || existing.measures || {},
               address: existing.address || {}
             };
             client = await this.syncWithFirestore(client);
@@ -1072,7 +1382,7 @@
       },
 
       loginEmail: async function(e) {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
         const nameInput = document.getElementById('clientInputName');
         const emailInput = document.getElementById('clientInputEmail');
         const phoneInput = document.getElementById('clientInputPhone');
@@ -1082,7 +1392,7 @@
         const name = nameInput.value.trim();
         const email = emailInput.value.trim();
         const phoneRaw = phoneInput.value.trim();
-        const phone = phoneRaw.replace(/\D/g, '');
+        const phoneClean = window.GoldPhone && window.GoldPhone.normalize ? window.GoldPhone.normalize(phoneRaw) : phoneRaw.replace(/\D/g, '');
 
         if (!name) {
           this.showAuthError('Por favor, informe seu nome completo.');
@@ -1094,7 +1404,7 @@
           emailInput.focus();
           return;
         }
-        if (!phone || phone.length < 10) {
+        if (!phoneClean || (window.GoldPhone && window.GoldPhone.isValid ? !window.GoldPhone.isValid(phoneClean) : phoneClean.length < 10)) {
           this.showAuthError('O número de WhatsApp/Telefone é obrigatório (mínimo 10 dígitos com DDD). Ex: (31) 98456-6047.');
           phoneInput.focus();
           return;
@@ -1115,13 +1425,14 @@
             id: id,
             name: displayName,
             email: email,
-            phone: phone,
+            phone: phoneClean,
             role: 'customer',
             purchasesCount: existing.purchasesCount !== undefined ? existing.purchasesCount : 0,
             giftsClaimed: existing.giftsClaimed || 0,
             cardNum: existing.cardNum || ('#GC-BR-' + id.slice(0, 5).toUpperCase()),
             orders: existing.orders || [],
             measures: existing.measures || {},
+            measurements: existing.measurements || existing.measures || {},
             address: existing.address || {}
           };
 
@@ -1161,7 +1472,8 @@
           item: 'Encomenda Sob Medida Registrada',
           color: 'Fio 100% Algodão Nobre',
           total: 'Computado no Ateliê',
-          step: 2
+          step: 2,
+          status: 'producao'
         };
         client.orders.unshift(newOrder);
 
@@ -1201,17 +1513,41 @@
       claimGift: function(giftName) {
         const client = getLocalClient();
         if (!client) return;
-        const msg = `🎁 *Resgate de Brinde Exclusivo — Ateliê Gold Crochet*\n\nOlá, sou *${client.name}* e gostaria de resgatar meu brinde conquistado:\n\n▪ Brinde: *${giftName}*\n▪ E-mail da conta: ${client.email}\n▪ Compras computadas: ${client.purchasesCount}\n▪ Cartão VIP: ${client.cardNum}`;
-        const url = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
+        const gift = giftName || 'Porta-Copos Búzio Dourado';
+        const addr = client.address || {};
+        const street = addr.street || addr.rua || '';
+        const number = addr.number || addr.num || '';
+        const comp = addr.comp ? ` ${addr.comp}` : '';
+        const bairro = addr.bairro ? ` - ${addr.bairro}` : '';
+        const city = addr.city || addr.cidade || '';
+        const state = addr.state ? `/${addr.state}` : '';
+        const cep = addr.cep ? ` - CEP ${addr.cep}` : '';
+
+        let addrStr = 'Endereço a confirmar no WhatsApp';
+        if (street) {
+          addrStr = `${street}${number ? ', ' + number : ''}${comp}${bairro}${city ? ', ' + city : ''}${state}${cep}`;
+        }
+
+        let msg = `🎁 *Resgate de Brinde Exclusivo — Ateliê Gold Crochet*\n\n`;
+        msg += `Olá, sou *${client.name}* e gostaria de resgatar meu brinde conquistado:\n\n`;
+        msg += `▪ Brinde: *${gift}*\n`;
+        msg += `▪ E-mail: ${client.email}\n`;
+        msg += `▪ Compras computadas: ${client.purchasesCount || 0}\n`;
+        msg += `▪ Cartão VIP: ${client.cardNum || '#GC-VIP'}\n`;
+        msg += `▪ Endereço de Entrega: ${addrStr}`;
+
+        const url = window.GoldPhone && window.GoldPhone.formatWhatsAppLink
+          ? window.GoldPhone.formatWhatsAppLink(null, msg)
+          : `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
       },
 
       saveMeasures: async function(e) {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
         const client = getLocalClient();
         if (!client) return;
 
-        client.measures = {
+        const measuresData = {
           busto: document.getElementById('mBusto')?.value || '',
           cintura: document.getElementById('mCintura')?.value || '',
           quadril: document.getElementById('mQuadril')?.value || '',
@@ -1220,6 +1556,9 @@
           cor: document.getElementById('mCor')?.value || ''
         };
 
+        client.measures = { ...measuresData };
+        client.measurements = { ...measuresData };
+
         saveLocalClient(client);
 
         if (db && fsDoc && setDoc && client.id) {
@@ -1227,7 +1566,9 @@
             id: client.id,
             email: client.email,
             role: 'customer',
-            measures: client.measures
+            measures: client.measures,
+            measurements: client.measurements,
+            measurementsUpdatedAt: new Date().toISOString()
           }, { merge: true }).catch(console.warn);
         }
 
@@ -1236,27 +1577,39 @@
 
       sendMeasuresWhatsApp: function() {
         const client = getLocalClient();
-        if (!client || !client.measures) {
+        if (!client || (!client.measures && !client.measurements)) {
           alert('Por favor, salve suas medidas primeiro.');
           return;
         }
-        const m = client.measures;
+        const m = client.measures || client.measurements || {};
         const msg = `📐 *Medidas da Cliente — Gold Crochet*\n\nCliente: *${client.name}*\n- Busto: ${m.busto} cm\n- Cintura: ${m.cintura} cm\n- Quadril: ${m.quadril} cm\n- Altura: ${m.altura} cm\n- Comprimento: ${m.comprimento}\n- Cores: ${m.cor}`;
-        const url = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
+        const url = window.GoldPhone && window.GoldPhone.formatWhatsAppLink
+          ? window.GoldPhone.formatWhatsAppLink(null, msg)
+          : `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
       },
 
       saveAddress: async function(e) {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
         const client = getLocalClient();
         if (!client) return;
 
+        const cepVal = document.getElementById('addrCep')?.value || '';
+        const ruaVal = document.getElementById('addrRua')?.value || '';
+        const numVal = document.getElementById('addrNum')?.value || '';
+        const bairroVal = document.getElementById('addrBairro')?.value || '';
+        const cidadeVal = document.getElementById('addrCidade')?.value || '';
+
         client.address = {
-          cep: document.getElementById('addrCep')?.value || '',
-          rua: document.getElementById('addrRua')?.value || '',
-          num: document.getElementById('addrNum')?.value || '',
-          bairro: document.getElementById('addrBairro')?.value || '',
-          cidade: document.getElementById('addrCidade')?.value || ''
+          cep: cepVal,
+          rua: ruaVal,
+          street: ruaVal,
+          num: numVal,
+          number: numVal,
+          bairro: bairroVal,
+          cidade: cidadeVal,
+          city: cidadeVal,
+          state: client.address?.state || ''
         };
 
         saveLocalClient(client);

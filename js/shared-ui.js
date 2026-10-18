@@ -17,18 +17,88 @@
   const WA_FS_URL = 'https://firestore.googleapis.com/v1/projects/lucky-dolphin-861jg/databases/ai-studio-goldcrochetshop-0e84b9ac-6dbb-400f-9959-fc455c1c4776/documents/settings/whatsapp?key=AIzaSyDHHGEuFeQViQutklqIhFoEI5akvAv4Ko8';
   let waSettings = { phone: WA_DEFAULT_PHONE, greeting: 'Olá! Gostaria de falar com o concierge do ateliê Gold Crochet.', checkoutFooter: 'Poderiam me informar o prazo de envio e dados para pagamento?' };
   try { Object.assign(waSettings, JSON.parse(localStorage.getItem(WA_CACHE_KEY) || '{}')); } catch (e) {}
-  let WHATSAPP_PHONE = String(waSettings.phone || WA_DEFAULT_PHONE).replace(/\D/g, '') || WA_DEFAULT_PHONE;
 
-  function waUrl(text, phone) {
-    const num = String(phone || WHATSAPP_PHONE).replace(/\D/g, '');
-    return `https://wa.me/${num}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
+  // ════════════════════════════════════════
+  // UTILITÁRIOS CANÔNICOS DE TELEFONE BRASILEIRO & WHATSAPP
+  // Normaliza números, evita 5555... duplicados e valida DDDs oficiais
+  // ════════════════════════════════════════
+  const VALID_BRAZILIAN_DDDS = new Set([
+    '11', '12', '13', '14', '15', '16', '17', '18', '19',
+    '21', '22', '24', '27', '28',
+    '31', '32', '33', '34', '35', '37', '38',
+    '41', '42', '43', '44', '45', '46', '47', '48', '49',
+    '51', '53', '54', '55',
+    '61', '62', '63', '64', '65', '66', '67', '68', '69',
+    '71', '73', '74', '75', '77', '79',
+    '81', '82', '83', '84', '85', '86', '87', '88', '89',
+    '91', '92', '93', '94', '95', '96', '97', '98', '99'
+  ]);
+
+  function normalizeBrazilianPhone(rawPhone) {
+    let cleaned = String(rawPhone || '').replace(/\D/g, '');
+    if (!cleaned) return '';
+    // Remove múltiplos prefixos 55 duplicados caso o número tenha 12 ou mais dígitos
+    while (cleaned.startsWith('55') && cleaned.length >= 12) {
+      cleaned = cleaned.slice(2);
+    }
+    return cleaned;
   }
 
-  // Reescreve links wa.me já renderizados (inclusive em HTML estático) para o número atual
+  function isValidBrazilianPhone(rawPhone) {
+    const cleaned = normalizeBrazilianPhone(rawPhone);
+    if (!cleaned || (cleaned.length !== 10 && cleaned.length !== 11)) return false;
+    const ddd = cleaned.slice(0, 2);
+    return VALID_BRAZILIAN_DDDS.has(ddd);
+  }
+
+  function formatBrazilianPhoneDisplay(rawPhone) {
+    const cleaned = normalizeBrazilianPhone(rawPhone);
+    if (!cleaned) return String(rawPhone || '');
+    if (cleaned.length === 11) {
+      return cleaned.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+    }
+    if (cleaned.length === 10) {
+      return cleaned.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3');
+    }
+    return cleaned;
+  }
+
+  function formatWhatsAppLink(phone, message) {
+    let norm = normalizeBrazilianPhone(phone);
+    if (!norm) {
+      norm = normalizeBrazilianPhone(WHATSAPP_PHONE || WA_DEFAULT_PHONE);
+    }
+    const textParam = message ? `?text=${encodeURIComponent(message)}` : '';
+    return `https://wa.me/55${norm}${textParam}`;
+  }
+
+  window.GoldPhone = {
+    normalize: normalizeBrazilianPhone,
+    isValid: isValidBrazilianPhone,
+    formatDisplay: formatBrazilianPhoneDisplay,
+    formatWhatsAppLink: formatWhatsAppLink,
+    VALID_DDDS: VALID_BRAZILIAN_DDDS
+  };
+  window.GoldUtils = window.GoldUtils || {};
+  window.GoldUtils.normalizeBrazilianPhone = normalizeBrazilianPhone;
+  window.GoldUtils.isValidBrazilianPhone = isValidBrazilianPhone;
+  window.GoldUtils.formatBrazilianPhoneDisplay = formatBrazilianPhoneDisplay;
+  window.GoldUtils.formatWhatsAppLink = formatWhatsAppLink;
+
+  let WHATSAPP_PHONE = normalizeBrazilianPhone(waSettings.phone || WA_DEFAULT_PHONE) || '31984566047';
+
+  function waUrl(text, phone) {
+    return formatWhatsAppLink(phone || WHATSAPP_PHONE, text);
+  }
+
+  // Reescreve links wa.me já renderizados (inclusive em HTML estático) garantindo padrão sem duplicidade 55
   function refreshWhatsAppLinks() {
     document.querySelectorAll('a[href*="wa.me/"]').forEach(a => {
       if (a.dataset.waCustomer) return; // links para o telefone da cliente não mudam
-      a.setAttribute('href', a.getAttribute('href').replace(/wa\.me\/\d+/, `wa.me/${WHATSAPP_PHONE}`));
+      const currentHref = a.getAttribute('href') || '';
+      const textMatch = currentHref.match(/[?&]text=([^&]+)/);
+      const msg = textMatch ? decodeURIComponent(textMatch[1]) : '';
+      a.setAttribute('href', formatWhatsAppLink(WHATSAPP_PHONE, msg));
     });
   }
 
@@ -44,7 +114,7 @@
       if (!Object.keys(next).length) return;
       Object.assign(waSettings, next);
       localStorage.setItem(WA_CACHE_KEY, JSON.stringify(waSettings));
-      WHATSAPP_PHONE = String(waSettings.phone).replace(/\D/g, '') || WA_DEFAULT_PHONE;
+      WHATSAPP_PHONE = normalizeBrazilianPhone(waSettings.phone) || normalizeBrazilianPhone(WA_DEFAULT_PHONE);
       refreshWhatsAppLinks();
       document.dispatchEvent(new CustomEvent('gc:whatsapp-settings', { detail: waSettings }));
     } catch (e) { /* offline: mantém cache */ }
@@ -617,10 +687,46 @@
   }
 
   function saveCustomer(customer) {
+    if (!customer) return;
+    if (customer.measures && !customer.measurements) customer.measurements = { ...customer.measures };
+    if (customer.measurements && !customer.measures) customer.measures = { ...customer.measurements };
+    if (customer.purchasesCount === undefined) customer.purchasesCount = 0;
+    if (customer.giftsClaimed === undefined) customer.giftsClaimed = 0;
+    if (!Array.isArray(customer.orders)) customer.orders = customer.orders ? [customer.orders] : [];
+    if (!Array.isArray(customer.favs)) customer.favs = getFavs();
+    if (!customer.role) customer.role = 'customer';
     try {
       localStorage.setItem(USER_KEY, JSON.stringify(customer));
       updateUserUI();
     } catch (e) {}
+  }
+
+  async function saveAccountProfile(profileData) {
+    if (!profileData) return null;
+    const current = getCustomer() || {};
+    const measures = profileData.measures || profileData.measurements || current.measures || current.measurements || {};
+    const updated = {
+      ...current,
+      ...profileData,
+      id: profileData.id || profileData.uid || current.id || current.uid,
+      uid: profileData.uid || profileData.id || current.uid || current.id,
+      name: profileData.name || current.name || 'Cliente Gold',
+      email: profileData.email || current.email || '',
+      phone: profileData.phone ? (normalizeBrazilianPhone(profileData.phone) || profileData.phone) : (current.phone || ''),
+      role: current.role || profileData.role || 'customer',
+      purchasesCount: profileData.purchasesCount !== undefined ? Number(profileData.purchasesCount) : (current.purchasesCount || 0),
+      giftsClaimed: profileData.giftsClaimed !== undefined ? Number(profileData.giftsClaimed) : (current.giftsClaimed || 0),
+      orders: Array.isArray(profileData.orders) ? profileData.orders : (current.orders || []),
+      measures: { ...measures },
+      measurements: { ...measures },
+      address: profileData.address || current.address || {},
+      favs: Array.isArray(profileData.favs) ? profileData.favs : (current.favs || getFavs()),
+      createdAt: current.createdAt || profileData.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    saveCustomer(updated);
+    await syncUserCrossDevice(updated);
+    return updated;
   }
 
   const TARGET_PURCHASES_FOR_GIFT = 3;
@@ -782,60 +888,113 @@
 
   async function syncUserCrossDevice(cust) {
     if (!cust || !cust.email) return;
+    const nowIso = new Date().toISOString();
+    const cleanDocId = (cust.id || cust.uid || cust.email.toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '_'));
+    const normPhone = cust.phone ? normalizeBrazilianPhone(cust.phone) : '';
+    const measuresObj = cust.measures || cust.measurements || {};
+
+    let userPayload = {
+      id: cleanDocId,
+      uid: cleanDocId,
+      name: cust.name || 'Cliente Gold',
+      email: cust.email,
+      phone: normPhone || cust.phone || '',
+      role: cust.role || 'customer',
+      cart: getCart(),
+      favs: getFavs(),
+      purchasesCount: typeof cust.purchasesCount === 'number' ? cust.purchasesCount : 0,
+      giftsClaimed: typeof cust.giftsClaimed === 'number' ? cust.giftsClaimed : 0,
+      orders: Array.isArray(cust.orders) ? cust.orders : [],
+      measures: { ...measuresObj },
+      measurements: { ...measuresObj },
+      address: cust.address || {},
+      createdAt: cust.createdAt || nowIso,
+      updatedAt: nowIso
+    };
+
     try {
       const fb = await ensureFirebase();
       const currentAuthUser = fb && fb.auth && fb.auth.currentUser;
-      const cleanDocId = (currentAuthUser && currentAuthUser.uid) ? currentAuthUser.uid : (cust.id || cust.email.toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '_'));
+      const finalDocId = (currentAuthUser && currentAuthUser.uid) ? currentAuthUser.uid : cleanDocId;
+      userPayload.id = finalDocId;
+      userPayload.uid = finalDocId;
 
       if (fb && fb.db) {
         const { db, fsDoc, setDoc, getDoc } = fb;
-        const userRef = fsDoc(db, 'users', cleanDocId);
+        const userRef = fsDoc(db, 'users', finalDocId);
+        let existingRemote = null;
         try {
           const snap = await getDoc(userRef);
           if (snap && snap.exists && snap.exists()) {
-            const remote = snap.data();
-            if (Array.isArray(remote.favs)) {
+            existingRemote = snap.data();
+            if (Array.isArray(existingRemote.favs)) {
               const localFavs = getFavs();
-              const mergedFavs = Array.from(new Set([...localFavs, ...remote.favs]));
+              const mergedFavs = Array.from(new Set([...localFavs, ...existingRemote.favs]));
               localStorage.setItem(FAV_KEY, JSON.stringify(mergedFavs));
               updateFavUI();
             }
-            if (remote.measurements) {
-              cust.measurements = { ...remote.measurements, ...(cust.measurements || {}) };
+            if (existingRemote.measures || existingRemote.measurements) {
+              const m = existingRemote.measures || existingRemote.measurements || {};
+              cust.measures = { ...m, ...(cust.measures || {}), ...(cust.measurements || {}) };
+              cust.measurements = { ...cust.measures };
             }
-            if (remote.address) {
-              cust.address = { ...remote.address, ...(cust.address || {}) };
+            if (existingRemote.address) {
+              cust.address = { ...existingRemote.address, ...(cust.address || {}) };
             }
-            if (remote.purchasesCount !== undefined) {
-              cust.purchasesCount = Math.max(cust.purchasesCount || 0, remote.purchasesCount || 0);
+            if (existingRemote.purchasesCount !== undefined) {
+              cust.purchasesCount = Math.max(cust.purchasesCount || 0, Number(existingRemote.purchasesCount) || 0);
             }
-            if (remote.phone && !cust.phone) {
-              cust.phone = remote.phone;
+            if (existingRemote.giftsClaimed !== undefined) {
+              cust.giftsClaimed = Math.max(cust.giftsClaimed || 0, Number(existingRemote.giftsClaimed) || 0);
+            }
+            if (Array.isArray(existingRemote.orders) && existingRemote.orders.length) {
+              const localOrders = Array.isArray(cust.orders) ? cust.orders : [];
+              const orderMap = new Map();
+              localOrders.forEach(o => { if (o && o.id) orderMap.set(o.id, o); });
+              existingRemote.orders.forEach(o => { if (o && o.id && !orderMap.has(o.id)) orderMap.set(o.id, o); });
+              cust.orders = Array.from(orderMap.values());
+            }
+            if (existingRemote.phone && !cust.phone) {
+              cust.phone = existingRemote.phone;
             }
             saveCustomer(cust);
           }
         } catch(e) {}
 
-        const userPayload = {
-          id: cleanDocId,
-          uid: cleanDocId,
-          name: cust.name || 'Cliente Gold',
+        const finalMeasures = cust.measures || cust.measurements || (existingRemote && (existingRemote.measures || existingRemote.measurements)) || {};
+
+        userPayload = {
+          id: finalDocId,
+          uid: finalDocId,
+          name: cust.name || (existingRemote && existingRemote.name) || 'Cliente Gold',
           email: cust.email,
-          phone: cust.phone || '',
-          role: 'customer',
+          phone: (cust.phone ? normalizeBrazilianPhone(cust.phone) : '') || (existingRemote && existingRemote.phone) || '',
+          role: cust.role || (existingRemote && existingRemote.role) || 'customer',
           cart: getCart(),
           favs: getFavs(),
-          measurements: cust.measurements || {},
-          address: cust.address || {},
-          purchasesCount: cust.purchasesCount || 0,
-          updatedAt: new Date().toISOString()
+          purchasesCount: typeof cust.purchasesCount === 'number' ? cust.purchasesCount : (existingRemote && typeof existingRemote.purchasesCount === 'number' ? existingRemote.purchasesCount : 0),
+          giftsClaimed: typeof cust.giftsClaimed === 'number' ? cust.giftsClaimed : (existingRemote && typeof existingRemote.giftsClaimed === 'number' ? existingRemote.giftsClaimed : 0),
+          orders: Array.isArray(cust.orders) ? cust.orders : (existingRemote && Array.isArray(existingRemote.orders) ? existingRemote.orders : []),
+          measures: { ...finalMeasures },
+          measurements: { ...finalMeasures },
+          address: cust.address || (existingRemote && existingRemote.address) || {},
+          createdAt: (existingRemote && existingRemote.createdAt) || cust.createdAt || nowIso,
+          updatedAt: nowIso
         };
 
-        await setDoc(userRef, userPayload, { merge: true });
-        console.log('☁️ [Gold Crochet] Dados da cliente sincronizados com o Firestore!');
+        try {
+          await setDoc(userRef, userPayload, { merge: true });
+          console.log('☁️ [Gold Crochet] Dados da cliente sincronizados com o Firestore!');
+        } catch (remoteWriteErr) {
+          console.warn('⚠️ [Gold Crochet] Gravação remota Firestore falhou (sincronização local mantida):', remoteWriteErr && remoteWriteErr.message);
+        }
       }
     } catch(err) {
-      console.warn('⚠️ Sincronização offline ou local:', err.message);
+      console.warn('⚠️ Sincronização offline ou local:', err && err.message);
+    } finally {
+      // Notificação reativa incondicional para listeners locais e outras abas
+      document.dispatchEvent(new CustomEvent('gc:user-synced', { detail: userPayload }));
+      window.dispatchEvent(new CustomEvent('gc:user-synced', { detail: userPayload }));
     }
   }
 
@@ -1007,18 +1166,18 @@
       formEl.onsubmit = (e) => {
         if (e) e.preventDefault();
         const raw = inputEl.value.trim();
-        const digits = raw.replace(/\D/g, '');
+        const norm = normalizeBrazilianPhone(raw);
 
-        if (!digits || digits.length < 10) {
+        if (!norm || !isValidBrazilianPhone(norm)) {
           if (errEl) {
-            errEl.textContent = 'Por favor, informe seu número completo de WhatsApp (DDD + 8 ou 9 dígitos). Ex: (31) 98456-6047.';
+            errEl.textContent = 'Por favor, informe seu número completo de WhatsApp com DDD válido (ex: (31) 98456-6047).';
             errEl.style.display = 'block';
           }
           inputEl.focus();
           return;
         }
 
-        closePhoneModal(digits);
+        closePhoneModal(norm);
       };
     });
   }
@@ -1038,9 +1197,9 @@
         if (res && res.user) {
           const u = res.user;
           const existing = getCustomer() || {};
-          let phone = existing.phone || '';
+          let phone = existing.phone ? normalizeBrazilianPhone(existing.phone) : '';
           // Se não tem telefone cadastrado, abre o modal de alta-costura in-site para capturar obrigatoriamente
-          if (!phone) {
+          if (!phone || !isValidBrazilianPhone(phone)) {
             phone = await promptLuxuryPhoneModal({
               name: u.displayName || 'Cliente Gold',
               email: u.email || '',
@@ -1050,13 +1209,20 @@
 
           const cust = {
             id: u.uid,
-            name: u.displayName || 'Cliente Gold',
-            email: u.email || 'cliente@goldcrochet.com.br',
-            phone: phone || '',
-            purchasesCount: existing.purchasesCount || 0,
-            giftsClaimed: existing.giftsClaimed || 0,
-            measurements: existing.measurements || {},
-            address: existing.address || {}
+            uid: u.uid,
+            name: u.displayName || existing.name || 'Cliente Gold',
+            email: u.email || existing.email || 'cliente@goldcrochet.com.br',
+            phone: phone ? normalizeBrazilianPhone(phone) : '',
+            role: 'customer',
+            purchasesCount: typeof existing.purchasesCount === 'number' ? existing.purchasesCount : 0,
+            giftsClaimed: typeof existing.giftsClaimed === 'number' ? existing.giftsClaimed : 0,
+            orders: Array.isArray(existing.orders) ? existing.orders : [],
+            measures: existing.measures || existing.measurements || {},
+            measurements: existing.measurements || existing.measures || {},
+            address: existing.address || {},
+            favs: Array.isArray(existing.favs) ? existing.favs : getFavs(),
+            createdAt: existing.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           };
           await completeAuth(cust);
           return;
@@ -1089,7 +1255,7 @@
     const name = nameEl.value.trim();
     const email = emailEl.value.trim();
     const phoneRaw = phoneEl.value.trim();
-    const phone = phoneRaw.replace(/\D/g, '');
+    const phone = normalizeBrazilianPhone(phoneRaw);
 
     if (!name) {
       showAuthError('Por favor, informe seu nome completo.');
@@ -1101,8 +1267,8 @@
       emailEl.focus();
       return;
     }
-    if (!phone || phone.length < 10) {
-      showAuthError('O número de WhatsApp/Telefone é obrigatório (mínimo 10 dígitos com DDD). Ex: (31) 98456-6047.');
+    if (!phone || !isValidBrazilianPhone(phone)) {
+      showAuthError('O número de WhatsApp/Telefone é obrigatório e deve conter DDD válido (mínimo 10 dígitos). Ex: (31) 98456-6047.');
       phoneEl.focus();
       return;
     }
@@ -1113,16 +1279,23 @@
     }
 
     const existing = getCustomer() || {};
-    const cliId = existing.id || ('cli_' + email.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) + Date.now().toString().slice(-4));
+    const cliId = existing.id || existing.uid || ('cli_' + email.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) + Date.now().toString().slice(-4));
     const cust = {
       id: cliId,
+      uid: cliId,
       name: name,
       email: email,
       phone: phone,
-      purchasesCount: existing.purchasesCount !== undefined ? existing.purchasesCount : 0,
-      giftsClaimed: existing.giftsClaimed || 0,
-      measurements: existing.measurements || {},
-      address: existing.address || {}
+      role: 'customer',
+      purchasesCount: typeof existing.purchasesCount === 'number' ? existing.purchasesCount : 0,
+      giftsClaimed: typeof existing.giftsClaimed === 'number' ? existing.giftsClaimed : 0,
+      orders: Array.isArray(existing.orders) ? existing.orders : [],
+      measures: existing.measures || existing.measurements || {},
+      measurements: existing.measurements || existing.measures || {},
+      address: existing.address || {},
+      favs: Array.isArray(existing.favs) ? existing.favs : getFavs(),
+      createdAt: existing.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     try {
@@ -1472,19 +1645,23 @@
       return;
     }
 
-    if (!customer.phone || customer.phone.length < 10) {
+    let normPhone = customer.phone ? normalizeBrazilianPhone(customer.phone) : '';
+    if (!normPhone || !isValidBrazilianPhone(normPhone)) {
       const phoneEntered = await promptLuxuryPhoneModal({
         name: customer.name || 'Cliente Gold',
         email: customer.email || '',
         title: 'Confirmação do WhatsApp',
         message: 'Para finalizarmos seu pedido e nossa estilista te contatar sobre o prazo e envio, confirme seu WhatsApp com DDD:'
       });
-      if (!phoneEntered || phoneEntered.length < 10) {
+      if (!phoneEntered) {
         return; // Usuário cancelou ou não digitou o número
       }
-      customer.phone = phoneEntered;
+      normPhone = normalizeBrazilianPhone(phoneEntered);
+      customer.phone = normPhone;
       saveCustomer(customer);
       syncUserCrossDevice(customer);
+    } else {
+      customer.phone = normPhone;
     }
 
     const orderCode = 'GC' + Date.now().toString(36).toUpperCase().slice(-6);
@@ -1493,7 +1670,7 @@
     msg += `🧾 Código: *${orderCode}*\n\n`;
     if (customer && customer.name) {
       msg += `👤 Cliente: *${customer.name}*\n`;
-      if (customer.phone) msg += `📱 WhatsApp: *${customer.phone}*\n`;
+      if (customer.phone) msg += `📱 WhatsApp: *${formatBrazilianPhoneDisplay(customer.phone)}*\n`;
       msg += `\n`;
     }
     msg += `Gostaria de encomendar os seguintes itens:\n\n`;
@@ -1520,8 +1697,21 @@
     msg += `\n*Total Estimado:* R$ ${finalTotal.toFixed(2).replace('.', ',')}\n\n`;
     msg += waSettings.checkoutFooter || 'Poderiam me informar o prazo de envio e dados para pagamento?';
 
+    const clientOrderItem = {
+      id: orderCode,
+      code: orderCode,
+      date: new Date().toLocaleDateString('pt-BR'),
+      item: cart.map(i => `${i.qty}x ${i.name}`).join(', '),
+      color: cart[0]?.color || 'Artesanal Gold',
+      total: `R$ ${finalTotal.toFixed(2).replace('.', ',')}`,
+      step: 1,
+      status: 'pendente'
+    };
+
     if (customer) {
       customer.purchasesCount = (customer.purchasesCount || 0) + 1;
+      if (!Array.isArray(customer.orders)) customer.orders = [];
+      customer.orders.unshift(clientOrderItem);
       saveCustomer(customer);
       syncUserCrossDevice(customer);
     }
@@ -1532,125 +1722,165 @@
     // Limpa a sacola de compras após a finalização
     saveCart([]);
 
-    // Registra o pedido no Firestore → aparece ao vivo no painel admin
-    registerWhatsAppOrder({ orderCode, cart, subtotal, discountVal, finalTotal, customer });
+    // Registra o pedido no Firestore com incremento atômico → aparece ao vivo no painel admin
+    registerWhatsAppOrder({ orderCode, cart, subtotal, discountVal, finalTotal, customer, clientOrderItem });
   }
 
-  async function registerWhatsAppOrder({ orderCode, cart, subtotal, discountVal, finalTotal, customer }) {
+  async function registerWhatsAppOrder({ orderCode, cart, subtotal, discountVal, finalTotal, customer, clientOrderItem }) {
+    const targetUserId = (customer && (customer.id || customer.uid)) || 'guest-' + Date.now();
+    const normPhone = normalizeBrazilianPhone((customer && (customer.phone || customer.whatsapp)) || '');
+    const summaryItem = clientOrderItem || {
+      id: orderCode,
+      code: orderCode,
+      date: new Date().toLocaleDateString('pt-BR'),
+      item: cart.map(i => `${i.qty}x ${i.name}`).join(', '),
+      color: cart[0]?.color || 'Artesanal Gold',
+      total: `R$ ${finalTotal.toFixed(2).replace('.', ',')}`,
+      step: 1,
+      status: 'pendente'
+    };
+
+    // 1. Salva imediatamente no histórico local do cliente e na fila local
+    const localOrder = {
+      id: orderCode,
+      code: orderCode,
+      source: 'whatsapp-checkout',
+      userId: targetUserId,
+      userName: (customer && customer.name) || 'Cliente VIP',
+      userEmail: (customer && customer.email) || '',
+      phone: normPhone,
+      items: cart.slice(0, 100).map(i => ({ name: i.name || '', qty: Number(i.qty) || 1, price: Number(i.price) || 0, color: i.color || '' })),
+      subtotal: Number(subtotal.toFixed(2)),
+      discount: Number(discountVal.toFixed(2)),
+      coupon: appliedCoupon ? appliedCoupon.code : '',
+      total: Number(finalTotal.toFixed(2)),
+      status: 'pendente',
+      address: (customer && customer.address) || {},
+      createdAt: new Date().toISOString()
+    };
+
     try {
-      // 1. Salva imediatamente no histórico local do cliente e na fila local
-      const localOrder = {
-        id: orderCode,
-        code: orderCode,
-        source: 'whatsapp-checkout',
-        userId: (customer && (customer.id || customer.uid)) || 'guest-' + Date.now(),
-        userName: (customer && customer.name) || 'Cliente VIP',
-        userEmail: (customer && customer.email) || '',
-        phone: String((customer && (customer.phone || customer.whatsapp)) || '').replace(/\D/g, ''),
-        items: cart.slice(0, 100).map(i => ({ name: i.name || '', qty: Number(i.qty) || 1, price: Number(i.price) || 0, color: i.color || '' })),
-        subtotal: Number(subtotal.toFixed(2)),
-        discount: Number(discountVal.toFixed(2)),
-        coupon: appliedCoupon ? appliedCoupon.code : '',
-        total: Number(finalTotal.toFixed(2)),
-        status: 'pendente',
-        createdAt: new Date().toISOString()
-      };
+      const cachedOrders = JSON.parse(localStorage.getItem('gc_cached_orders') || '[]');
+      const existingIdx = cachedOrders.findIndex(o => (o.code === orderCode || o.id === orderCode));
+      if (existingIdx !== -1) cachedOrders[existingIdx] = localOrder;
+      else cachedOrders.unshift(localOrder);
+      localStorage.setItem('gc_cached_orders', JSON.stringify(cachedOrders.slice(0, 100)));
+    } catch (errCache) {}
 
-      try {
-        const cachedOrders = JSON.parse(localStorage.getItem('gc_cached_orders') || '[]');
-        const existingIdx = cachedOrders.findIndex(o => (o.code === orderCode || o.id === orderCode));
-        if (existingIdx !== -1) cachedOrders[existingIdx] = localOrder;
-        else cachedOrders.unshift(localOrder);
-        localStorage.setItem('gc_cached_orders', JSON.stringify(cachedOrders.slice(0, 100)));
-      } catch (errCache) {}
+    // Dispara evento reativo de novo pedido imediatamente após cache local para resposta instantânea
+    const eventDetail = { orderCode, order: localOrder, customer };
+    document.dispatchEvent(new CustomEvent('gc:order-placed', { detail: eventDetail }));
+    window.dispatchEvent(new CustomEvent('gc:order-placed', { detail: eventDetail }));
 
-      // 2. Garante inicialização do Firebase
+    let orderPayload = localOrder;
+
+    try {
+      // 2. Garante inicialização do Firebase e persistência atômica via writeBatch / increment
       const fb = await ensureFirebase();
-      if (fb && fb.db && fb.setDoc && fb.fsDoc) {
-        const user = fb.auth && fb.auth.currentUser;
-        const targetUserId = (user && user.uid) || (customer && (customer.id || customer.uid));
-        await fb.setDoc(fb.fsDoc(fb.db, 'orders', orderCode), {
+      if (fb && fb.db && fb.fsDoc) {
+        const { db, fsDoc, setDoc, writeBatch, increment, arrayUnion, serverTimestamp } = fb;
+        const currentAuth = fb.auth && fb.auth.currentUser;
+        const finalUserId = (currentAuth && currentAuth.uid) || targetUserId;
+
+        const orderDocRef = fsDoc(db, 'orders', orderCode);
+        orderPayload = {
+          id: orderCode,
           code: orderCode,
           source: 'whatsapp-checkout',
-          userId: targetUserId || 'guest',
-          userName: (customer && customer.name) || (user && user.displayName) || 'Cliente VIP',
-          userEmail: (customer && customer.email) || (user && user.email) || '',
-          phone: String((customer && (customer.phone || customer.whatsapp)) || (user && user.phoneNumber) || '').replace(/\D/g, ''),
+          userId: finalUserId || 'guest',
+          userName: (customer && customer.name) || (currentAuth && currentAuth.displayName) || 'Cliente VIP',
+          userEmail: (customer && customer.email) || (currentAuth && currentAuth.email) || '',
+          phone: normPhone || (currentAuth && currentAuth.phoneNumber ? normalizeBrazilianPhone(currentAuth.phoneNumber) : ''),
           items: cart.slice(0, 100).map(i => ({ name: i.name || '', qty: Number(i.qty) || 1, price: Number(i.price) || 0, color: i.color || '' })),
           subtotal: Number(subtotal.toFixed(2)),
           discount: Number(discountVal.toFixed(2)),
           coupon: appliedCoupon ? appliedCoupon.code : '',
           total: Number(finalTotal.toFixed(2)),
           status: 'pendente',
-          createdAt: (fb.serverTimestamp && fb.serverTimestamp()) || new Date().toISOString()
-        });
+          address: (customer && customer.address) || {},
+          createdAt: (serverTimestamp && serverTimestamp()) || new Date().toISOString()
+        };
 
-        // Atualiza a lista de pedidos dentro do perfil do usuário em users/{userId}
-        if (targetUserId && targetUserId !== 'guest') {
+        const isRealUser = finalUserId && !finalUserId.startsWith('guest');
+
+        if (writeBatch && isRealUser) {
           try {
-            const userRef = fb.fsDoc(fb.db, 'users', targetUserId);
-            const userSnap = await fb.getDoc(userRef).catch(() => null);
-            const userOrders = (userSnap && userSnap.exists() && Array.isArray(userSnap.data().orders)) ? userSnap.data().orders : [];
-            const clientOrderItem = {
-              id: orderCode,
-              date: new Date().toLocaleDateString('pt-BR'),
-              item: cart.map(i => `${i.qty}x ${i.name}`).join(', '),
-              color: cart[0]?.color || 'Artesanal Gold',
-              total: `R$ ${finalTotal.toFixed(2).replace('.', ',')}`,
-              step: 1,
-              status: 'pendente'
+            const batch = writeBatch(db);
+            batch.set(orderDocRef, orderPayload);
+            const userRef = fsDoc(db, 'users', finalUserId);
+            const userUpdate = {
+              purchasesCount: increment ? increment(1) : ((customer && customer.purchasesCount) || 1),
+              orders: arrayUnion ? arrayUnion(summaryItem) : [summaryItem],
+              updatedAt: (serverTimestamp && serverTimestamp()) || new Date().toISOString()
             };
-            userOrders.unshift(clientOrderItem);
-            await fb.setDoc(userRef, { orders: userOrders.slice(0, 50) }, { merge: true }).catch(() => {});
-          } catch(e) {}
+            batch.set(userRef, userUpdate, { merge: true });
+            await batch.commit();
+            console.log('✅ [Checkout] Pedido e contador gravados atomicamente via writeBatch:', orderCode);
+          } catch (batchErr) {
+            console.warn('[Checkout] writeBatch falhou, executando setDoc individual:', batchErr);
+            await setDoc(orderDocRef, orderPayload).catch(() => {});
+            const userRef = fsDoc(db, 'users', finalUserId);
+            await setDoc(userRef, {
+              purchasesCount: increment ? increment(1) : ((customer && customer.purchasesCount) || 1),
+              orders: arrayUnion ? arrayUnion(summaryItem) : [summaryItem],
+              updatedAt: (serverTimestamp && serverTimestamp()) || new Date().toISOString()
+            }, { merge: true }).catch(() => {});
+          }
+        } else {
+          await setDoc(orderDocRef, orderPayload).catch(() => {});
+          if (isRealUser) {
+            const userRef = fsDoc(db, 'users', finalUserId);
+            await setDoc(userRef, {
+              purchasesCount: increment ? increment(1) : ((customer && customer.purchasesCount) || 1),
+              orders: arrayUnion ? arrayUnion(summaryItem) : [summaryItem],
+              updatedAt: (serverTimestamp && serverTimestamp()) || new Date().toISOString()
+            }, { merge: true }).catch(() => {});
+          }
         }
-
-        console.log('✅ [Checkout] Pedido registrado no Firestore com sucesso:', orderCode);
-        return;
-      }
-
-      // 3. Fallback Direto via Firestore REST API se o SDK não estiver carregado
-      const projectId = 'lucky-dolphin-861jg';
-      const databaseId = 'ai-studio-goldcrochetshop-0e84b9ac-6dbb-400f-9959-fc455c1c4776';
-      const restUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${databaseId}/documents/orders/${orderCode}`;
-      
-      const restPayload = {
-        fields: {
-          code: { stringValue: orderCode },
-          source: { stringValue: 'whatsapp-checkout' },
-          userId: { stringValue: (customer && (customer.id || customer.uid)) || 'guest' },
-          userName: { stringValue: (customer && customer.name) || 'Cliente VIP' },
-          userEmail: { stringValue: (customer && customer.email) || '' },
-          phone: { stringValue: String((customer && (customer.phone || customer.whatsapp)) || '').replace(/\D/g, '') },
-          items: {
-            arrayValue: {
-              values: cart.slice(0, 100).map(i => ({
-                mapValue: {
-                  fields: {
-                    name: { stringValue: i.name || '' },
-                    qty: { integerValue: String(Number(i.qty) || 1) },
-                    price: { doubleValue: Number(i.price) || 0 },
-                    color: { stringValue: i.color || '' }
+      } else {
+        // 3. Fallback Direto via Firestore REST API se o SDK não estiver carregado
+        const projectId = 'lucky-dolphin-861jg';
+        const databaseId = 'ai-studio-goldcrochetshop-0e84b9ac-6dbb-400f-9959-fc455c1c4776';
+        const restUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${databaseId}/documents/orders/${orderCode}`;
+        
+        const restPayload = {
+          fields: {
+            code: { stringValue: orderCode },
+            source: { stringValue: 'whatsapp-checkout' },
+            userId: { stringValue: targetUserId || 'guest' },
+            userName: { stringValue: (customer && customer.name) || 'Cliente VIP' },
+            userEmail: { stringValue: (customer && customer.email) || '' },
+            phone: { stringValue: normPhone },
+            items: {
+              arrayValue: {
+                values: cart.slice(0, 100).map(i => ({
+                  mapValue: {
+                    fields: {
+                      name: { stringValue: i.name || '' },
+                      qty: { integerValue: String(Number(i.qty) || 1) },
+                      price: { doubleValue: Number(i.price) || 0 },
+                      color: { stringValue: i.color || '' }
+                    }
                   }
-                }
-              }))
-            }
-          },
-          subtotal: { doubleValue: Number(subtotal.toFixed(2)) },
-          discount: { doubleValue: Number(discountVal.toFixed(2)) },
-          coupon: { stringValue: appliedCoupon ? appliedCoupon.code : '' },
-          total: { doubleValue: Number(finalTotal.toFixed(2)) },
-          status: { stringValue: 'pendente' },
-          createdAt: { timestampValue: new Date().toISOString() }
-        }
-      };
+                }))
+              }
+            },
+            subtotal: { doubleValue: Number(subtotal.toFixed(2)) },
+            discount: { doubleValue: Number(discountVal.toFixed(2)) },
+            coupon: { stringValue: appliedCoupon ? appliedCoupon.code : '' },
+            total: { doubleValue: Number(finalTotal.toFixed(2)) },
+            status: { stringValue: 'pendente' },
+            createdAt: { timestampValue: new Date().toISOString() }
+          }
+        };
 
-      await fetch(restUrl, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(restPayload)
-      });
-      console.log('✅ [Checkout] Pedido registrado via Firestore REST:', orderCode);
+        await fetch(restUrl, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(restPayload)
+        });
+        console.log('✅ [Checkout] Pedido registrado via Firestore REST:', orderCode);
+      }
     } catch (err) {
       console.warn('[Checkout] Pedido não registrado no Firestore:', err && err.message);
     }
@@ -2073,7 +2303,11 @@
     addPurchase: addCustomerPurchase,
     claimGift: claimCustomerGift,
     logout: logoutCustomer,
-    getCustomer: getCustomer
+    getCustomer: getCustomer,
+    saveCustomer: saveCustomer,
+    saveProfile: saveAccountProfile,
+    saveAccountProfile: saveAccountProfile,
+    syncUserCrossDevice: syncUserCrossDevice
   };
 
   window.GoldMobileNav = {

@@ -85,21 +85,32 @@ export function setLocalSession(userObj) {
   updateAuthUI();
 }
 
-// Garante que o documento do usuário exista no Firestore
+// Garante que o documento do usuário exista no Firestore com schema canônico
 export async function ensureUserDoc(user, customName) {
   if (!user) return null;
   const isOwnerAdmin = ['goldcrochet.suporte@gmail.com', 'rossipereira2010@gmail.com'].includes(user.email);
   const baseName = customName || user.displayName || (isOwnerAdmin ? 'Ateliê Gold Crochet' : 'Cliente');
   const role = isOwnerAdmin ? 'admin' : 'customer';
 
-  // Se o usuário está em sessão local/atelier, salva apenas no localStorage
+  // Se o usuário está em sessão local/atelier, salva apenas no localStorage com schema canônico
   if (user.uid?.startsWith('atelier_') || user.uid?.startsWith('user_') || !auth.currentUser?.getIdToken) {
     const profile = {
       id: user.uid,
+      uid: user.uid,
+      name: baseName,
       displayName: baseName,
       email: user.email || '',
+      phone: user.phoneNumber || user.phone || '',
       role: role,
+      purchasesCount: typeof user.purchasesCount === 'number' ? user.purchasesCount : 0,
+      giftsClaimed: typeof user.giftsClaimed === 'number' ? user.giftsClaimed : 0,
+      orders: Array.isArray(user.orders) ? user.orders : [],
+      measures: user.measures || user.measurements || {},
+      measurements: user.measurements || user.measures || {},
+      address: user.address || {},
+      favs: Array.isArray(user.favs) ? user.favs : [],
       photoURL: user.photoURL || './assets/icon.svg',
+      createdAt: user.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
     localStorage.setItem('goldcrochet_user_profile', JSON.stringify(profile));
@@ -112,15 +123,26 @@ export async function ensureUserDoc(user, customName) {
     const snap = await getDoc(ref);
     const nowIso = new Date().toISOString();
     if (!snap.exists()) {
-      await setDoc(ref, {
+      const canonicalUser = {
         id: user.uid,
+        uid: user.uid,
+        name: baseName,
         displayName: baseName,
         email: user.email || '',
+        phone: user.phoneNumber || user.phone || '',
         role: role,
+        purchasesCount: 0,
+        giftsClaimed: 0,
+        orders: [],
+        measures: {},
+        measurements: {},
+        address: {},
+        favs: [],
         photoURL: user.photoURL || '',
         createdAt: nowIso,
         updatedAt: nowIso
-      });
+      };
+      await setDoc(ref, canonicalUser);
       if (isOwnerAdmin) {
         try {
           await setDoc(fsDoc(db, 'admins', user.uid), {
@@ -131,14 +153,26 @@ export async function ensureUserDoc(user, customName) {
         } catch(e) {}
       }
     } else {
-      await setDoc(ref, {
+      const existingData = snap.data() || {};
+      const mergedUser = {
         id: user.uid,
-        displayName: baseName,
-        email: user.email || '',
-        role: role,
-        photoURL: user.photoURL || '',
+        uid: user.uid,
+        name: baseName || existingData.name || existingData.displayName || 'Cliente',
+        displayName: baseName || existingData.displayName || existingData.name || 'Cliente',
+        email: user.email || existingData.email || '',
+        phone: user.phoneNumber || user.phone || existingData.phone || '',
+        role: existingData.role || role,
+        purchasesCount: typeof existingData.purchasesCount === 'number' ? existingData.purchasesCount : 0,
+        giftsClaimed: typeof existingData.giftsClaimed === 'number' ? existingData.giftsClaimed : 0,
+        orders: Array.isArray(existingData.orders) ? existingData.orders : [],
+        measures: existingData.measures || existingData.measurements || {},
+        measurements: existingData.measurements || existingData.measures || {},
+        address: existingData.address || {},
+        favs: Array.isArray(existingData.favs) ? existingData.favs : [],
+        photoURL: user.photoURL || existingData.photoURL || '',
         updatedAt: nowIso
-      }, { merge: true });
+      };
+      await setDoc(ref, mergedUser, { merge: true });
     }
   } catch (e) {
     console.warn('[Firestore] ensureUserDoc:', e.message);
