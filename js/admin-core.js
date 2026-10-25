@@ -1805,6 +1805,12 @@ export async function executeSaveAndPush(pData, token = '') {
 
 export function switchView(viewName) {
   adminState.currentView = viewName;
+  const sidebar = document.getElementById('adminSidebar');
+  const backdrop = document.getElementById('adminSidebarBackdrop');
+  if (sidebar && sidebar.classList.contains('open')) {
+    sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('active');
+  }
   document.querySelectorAll('.view-container').forEach(el => el.classList.add('hidden'));
   document.querySelectorAll('.admin-nav-item').forEach(el => el.classList.remove('active'));
 
@@ -2593,6 +2599,9 @@ export function renderProductsList() {
   const subcatFilter = adminState.selectedSubcategoryFilter || 'all';
   const stockFilter = adminState.selectedStockFilter || 'all';
 
+  // Ordena prioritariamente por orderIndex
+  adminState.products.sort((a, b) => (Number(a.orderIndex) || 999) - (Number(b.orderIndex) || 999));
+
   let filtered = adminState.products.filter(p => {
     const tax = resolveProductTaxonomy(p);
     const inStock = p.inStock !== false;
@@ -2710,6 +2719,14 @@ export function renderProductsList() {
         `<span class="luxury-product-stock-tag out-of-stock" onclick="window.AdminCore.toggleProductStock('${p.id}')" style="cursor:pointer" title="Alternar estoque">⏳ Sob Medida</span>`;
       const isShimmer = p.badge && (p.badge.toLowerCase().includes('destaque') || p.badge.toLowerCase().includes('novo'));
       const badgeHtml = p.badge ? `<div class="luxury-product-badge ${isShimmer ? 'badge-gold-shimmer' : ''}">${p.badge}</div>` : '';
+      const orderNum = p.orderIndex || (adminState.products.indexOf(p) + 1);
+      const orderBadge = `<div style="position:absolute;bottom:10px;left:10px;background:rgba(18,18,18,0.85);color:#cda434;font-size:0.75rem;font-weight:800;padding:3px 8px;border-radius:12px;border:1px solid rgba(205,164,52,0.5);display:flex;align-items:center;gap:4px">
+        <span>#${orderNum}</span>
+        <div style="display:flex;gap:2px;margin-left:4px">
+          <button type="button" onclick="event.stopPropagation();window.AdminCore.moveProductOrder('${p.id}', 'up')" style="background:none;border:none;color:#cda434;cursor:pointer;padding:0 2px;font-size:0.75rem" title="Subir na vitrine">▲</button>
+          <button type="button" onclick="event.stopPropagation();window.AdminCore.moveProductOrder('${p.id}', 'down')" style="background:none;border:none;color:#cda434;cursor:pointer;padding:0 2px;font-size:0.75rem" title="Descer na vitrine">▼</button>
+        </div>
+      </div>`;
       const artisanBadge = `<span class="luxury-badge-artisan" title="Peça autoral tecida artesanalmente pela artesã Rossi Pereira">🧶 Autoral</span>`;
 
       const titleHtml = highlightSearchMatch(p.name, rawQuery);
@@ -2723,6 +2740,7 @@ export function renderProductsList() {
             <img src="${img}" alt="${p.name}" class="luxury-product-thumb" onerror="this.src='./assets/icon.svg'">
             ${badgeHtml}
             ${stockBadge}
+            ${orderBadge}
           </div>
           <div class="luxury-product-body">
             <div class="luxury-product-meta">
@@ -3713,7 +3731,11 @@ export function toggleAudioAlert() {
 
 export function toggleSidebar() {
   const sidebar = document.getElementById('adminSidebar');
-  if (sidebar) sidebar.classList.toggle('open');
+  const backdrop = document.getElementById('adminSidebarBackdrop');
+  if (sidebar) {
+    const isOpen = sidebar.classList.toggle('open');
+    if (backdrop) backdrop.classList.toggle('active', isOpen);
+  }
 }
 
 export function clearLogs() {
@@ -4225,6 +4247,9 @@ export function openNewProductModal(dept = null, subcat = null) {
   // Reseta para a primeira aba
   switchProdModalTab('prodTabGeneral', document.querySelector('.editor-tab-btn[data-tab="prodTabGeneral"]'));
 
+  const orderIdxEl = document.getElementById('prodOrderIndex');
+  if (orderIdxEl) orderIdxEl.value = (adminState.products ? adminState.products.length + 1 : 1);
+
   const modal = document.getElementById('productModal');
   if (modal) modal.classList.remove('hidden');
 }
@@ -4269,6 +4294,8 @@ export function editProduct(productId) {
 
   const inStockEl = document.getElementById('prodInStock');
   if (inStockEl) inStockEl.value = p.inStock === false ? 'false' : 'true';
+  const orderIdxEl = document.getElementById('prodOrderIndex');
+  if (orderIdxEl) orderIdxEl.value = p.orderIndex || (adminState.products.indexOf(p) + 1);
 
   const colorsEl = document.getElementById('prodColors');
   if (colorsEl) {
@@ -4297,6 +4324,44 @@ export function getDefaultCoupons() {
     { code: 'OURO20', discount: 20, type: 'percent', description: '20% OFF Lançamento', active: true },
     { code: 'FRETEGRATIS', discount: 50, type: 'fixed', description: 'R$ 50 OFF Frete Cortesia', active: true }
   ];
+}
+
+// ─────────────────────────────────────────────
+// REORDENAÇÃO RÁPIDA DE PRODUTOS NA GRADE
+// ─────────────────────────────────────────────
+
+export async function moveProductOrder(productId, direction) {
+  const idx = adminState.products.findIndex(p => String(p.id) === String(productId));
+  if (idx === -1) return;
+
+  const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+  if (targetIdx < 0 || targetIdx >= adminState.products.length) return;
+
+  // Troca as posições no array
+  const temp = adminState.products[idx];
+  adminState.products[idx] = adminState.products[targetIdx];
+  adminState.products[targetIdx] = temp;
+
+  // Atualiza os orderIndex sequencialmente
+  adminState.products.forEach((p, i) => {
+    p.orderIndex = i + 1;
+  });
+
+  try {
+    localStorage.setItem('gc_cached_products', JSON.stringify(adminState.products));
+  } catch(e) {}
+
+  renderProductsList();
+  showToast(`Ordem da peça "${temp.name}" atualizada para #${targetIdx + 1}!`, 'success');
+  logActivity('Reordenou Peça', `${temp.name} -> Posição #${targetIdx + 1}`);
+
+  const fb = window.GoldFirebase;
+  if (fb && fb.db) {
+    try {
+      await fb.setDoc(fb.fsDoc(fb.db, 'products', String(adminState.products[idx].id)), { orderIndex: adminState.products[idx].orderIndex }, { merge: true });
+      await fb.setDoc(fb.fsDoc(fb.db, 'products', String(adminState.products[targetIdx].id)), { orderIndex: adminState.products[targetIdx].orderIndex }, { merge: true });
+    } catch(err) {}
+  }
 }
 
 export function renderCouponsList() {
@@ -4543,6 +4608,7 @@ if (typeof window !== 'undefined') {
     deleteCurrentOrder,
     setCatalogDisplayMode,
     switchProdModalTab,
+    moveProductOrder,
     renderCouponsList,
     openNewCouponModal,
     closeCouponModal,
@@ -4779,6 +4845,7 @@ if (typeof window !== 'undefined') {
           desc: document.getElementById('prodDesc') ? document.getElementById('prodDesc').value : '',
           inStock: inStockVal,
           colors: colorsArr,
+          orderIndex: parseInt(document.getElementById('prodOrderIndex')?.value || '999', 10),
           image: mainCover,
           gallery: finalGallery
         };

@@ -810,6 +810,9 @@
         return true;
       });
 
+      // Ordenação rigorosa por orderIndex (Posição 1, 2, 3...)
+      filtered.sort((a, b) => (Number(a.orderIndex) || 999) - (Number(b.orderIndex) || 999));
+
       if (counter) {
         counter.textContent = `${filtered.length} ${filtered.length === 1 ? 'peça encontrada' : 'peças encontradas'}`;
       }

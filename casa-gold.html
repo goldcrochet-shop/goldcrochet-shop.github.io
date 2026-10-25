@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Casa Gold — Gold Crochet Brasil</title>
-  <meta name="description" content="Linha Casa Gold da Gold Crochet Brasil: Jogos americanos, trilhos de mesa botânicos e peças de decoração em crochê manual.">
+  <title>Casa Gold — A Maison | Gold Crochet Brasil</title>
+  <meta name="description" content="Conheça a Casa Gold: a história da Maison, a fundadora Rossi Pereira, o manifesto da alta-costura brasileira e o processo artesanal de fios nobres tecidos à mão.">
   <link rel="canonical" href="https://goldcrochet-shop.github.io/casa-gold.html">
   <meta name="theme-color" content="#cda434">
 
   <!-- OpenGraph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Casa Gold — Gold Crochet Brasil">
-  <meta property="og:description" content="Linha Casa Gold da Gold Crochet Brasil: Jogos americanos, trilhos de mesa botânicos e peças de decoração em crochê manual.">
+  <meta property="og:title" content="Casa Gold — A Maison | Gold Crochet Brasil">
+  <meta property="og:description" content="A arte, a história e a alma por trás da Maison Gold Crochet. Alta-costura autoral tecida à mão no Brasil.">
   <meta property="og:image" content="./assets/logo.png">
   <meta property="og:url" content="https://goldcrochet-shop.github.io/casa-gold.html">
   <meta property="og:site_name" content="Gold Crochet Brasil">
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Casa Gold — Gold Crochet Brasil">
-  <meta name="twitter:description" content="Linha Casa Gold da Gold Crochet Brasil: Jogos americanos, trilhos de mesa botânicos e peças de decoração em crochê manual.">
+  <meta name="twitter:title" content="Casa Gold — A Maison | Gold Crochet Brasil">
+  <meta name="twitter:description" content="A arte, a história e a alma por trás da Maison Gold Crochet. Alta-costura autoral tecida à mão no Brasil.">
   <meta name="twitter:image" content="./assets/logo.png">
 
   <!-- Favicons -->
@@ -37,125 +37,249 @@
   <link rel="stylesheet" href="./css/luxury-core.css?v=2026">
 
   <style>
-    .gc-home-manifesto {
+    .maison-hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .maison-hero-tag {
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--color-gold-deep, #a67c00);
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+    .maison-hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      color: var(--color-ebony);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .maison-hero-desc {
+      font-size: 1.15rem;
+      color: var(--color-muted);
+      line-height: 1.8;
+      max-width: 720px;
+      margin: 0 auto;
+      font-style: italic;
+    }
+
+    .maison-grid-story {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      align-items: center;
+      margin: 50px auto;
       background: var(--color-sand);
       border-radius: var(--radius-lg);
-      padding: 48px 36px;
-      margin: 40px auto;
+      padding: 48px;
       border: 1px solid var(--color-border);
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 36px;
-      align-items: center;
     }
-    @media (max-width: 800px) {
-      .gc-home-manifesto {
+    @media (max-width: 860px) {
+      .maison-grid-story {
         grid-template-columns: 1fr;
         padding: 24px;
+        gap: 32px;
       }
     }
-    .gc-home-manifesto h3 {
+
+    .maison-story-title {
       font-family: var(--font-display);
-      font-size: 1.8rem;
+      font-size: 2.2rem;
+      color: var(--color-ebony);
+      margin-bottom: 16px;
+      line-height: 1.25;
+    }
+
+    .maison-story-text {
+      color: var(--color-muted);
+      line-height: 1.8;
+      font-size: 1rem;
+      margin-bottom: 18px;
+    }
+
+    .maison-quote-box {
+      border-left: 3px solid var(--color-gold-deep, #a67c00);
+      padding-left: 20px;
+      margin: 24px 0;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--color-ebony);
+      line-height: 1.6;
+    }
+
+    .maison-pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+      margin: 60px auto 40px;
+    }
+
+    .maison-pillar-card {
+      background: #ffffff;
+      padding: 36px 28px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-subtle);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      text-align: center;
+    }
+    .maison-pillar-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-card);
+      border-color: var(--color-gold-deep);
+    }
+    .maison-pillar-icon {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+    .maison-pillar-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
       color: var(--color-ebony);
       margin-bottom: 12px;
     }
-    .gc-home-manifesto p {
+    .maison-pillar-desc {
       color: var(--color-muted);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    .maison-cta-section {
+      text-align: center;
+      background: var(--color-ebony);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 56px 28px;
+      margin: 60px auto 40px;
+      border: 1px solid rgba(205, 164, 52, 0.4);
+    }
+    .maison-cta-title {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--color-gold-light, #ffd700);
+      margin-bottom: 14px;
+    }
+    .maison-cta-desc {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto 28px;
       line-height: 1.7;
-      font-size: 0.95rem;
+    }
+    .maison-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--gradient-gold, linear-gradient(135deg, #cda434, #9a761b));
+      color: #ffffff;
+      padding: 16px 36px;
+      border-radius: var(--radius-pill, 50px);
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .maison-cta-btn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 10px 24px rgba(205, 164, 52, 0.4);
     }
   </style>
 </head>
 <body>
 
   <main class="gc-container">
-    <!-- Hero da Casa Gold -->
-    <header class="gc-page-hero">
-      <span class="gc-page-hero-tag">Linha Exclusiva de Decoração</span>
-      <h1 class="gc-page-hero-title">Casa Gold</h1>
-      <p class="gc-page-hero-desc">
-        A arte de receber com afeto e elegância. Peças tecidas para vestir sua mesa posta e decorar ambientes com a alma e a botânica brasileira.
+    <!-- Hero Editorial da Maison -->
+    <header class="maison-hero">
+      <span class="maison-hero-tag">A Essência &amp; O Manifesto</span>
+      <h1 class="maison-hero-title">Casa Gold</h1>
+      <p class="maison-hero-desc">
+        “Onde a alta-costura internacional encontra as raízes, o tempo e a alma da arte têxtil brasileira.”
       </p>
     </header>
 
-    <!-- Manifesto Mesa Posta -->
-    <section class="gc-home-manifesto">
+    <!-- História da Maison e da Fundadora -->
+    <section class="maison-grid-story">
       <div>
-        <span class="gc-badge-tag" style="position:static;display:inline-block;margin-bottom:10px">Mesa Posta &amp; Afeto</span>
-        <h3>O Ritual de Reunir em Torno da Mesa</h3>
-        <p>
-          Cada jogo americano e trilho de mesa é criado com fios de alta gramatura e resistência térmica, trazendo detalhes em relevo inspirados nas folhas de ipê e na vegetação nativa do Brasil.
+        <span class="maison-hero-tag">A Estilista &amp; Fundadora</span>
+        <h2 class="maison-story-title">A Arte Ponto por Ponto com Rossi Pereira</h2>
+        <p class="maison-story-text">
+          A Casa Gold nasceu de um propósito nobre: elevar o crochê artesanal tradicional ao patamar da alta-costura contemporânea. Fundada e desenhada criativamente por <strong>Rossi Pereira</strong>, a Maison desafia a efemeridade da moda rápida em prol do <em>quiet luxury</em> — o luxo silencioso das peças autorais tecidas pacientemente à mão.
         </p>
-        <p style="margin-top:10px">
-          Ideal para almoços de domingo, jantares intimistas e momentos especiais em família.
+        <p class="maison-story-text">
+          Cada criação que deixa nosso ateliê carrega de dezenas a centenas de horas de confecção manual meticulosa, transformando fios puros de algodão nobre e matérias-primas selecionadas em esculturas vestíveis e peças atemporais.
         </p>
+        <div class="maison-quote-box">
+          “Não tecemos apenas roupas ou acessórios. Tecemos sentimentos, memórias e o prestígio da verdadeira arte manual brasileira.”
+        </div>
       </div>
-      <div style="background:white;padding:24px;border-radius:var(--radius-md);border:1px solid var(--color-border);text-align:center">
-        <span style="font-family:var(--font-display);font-size:2.8rem;color:var(--color-gold-deep);display:block;margin-bottom:6px">100%</span>
-        <strong style="font-family:var(--font-body);font-size:1rem;color:var(--color-ebony);display:block">Algodão e Fibras Nobres</strong>
-        <p style="font-size:0.85rem;color:var(--color-muted);margin-top:6px">Laváveis, duráveis e com toque suave e aveludado.</p>
+      <div style="background:#ffffff;padding:32px 28px;border-radius:var(--radius-md);border:1px solid var(--color-border);text-align:center">
+        <div style="width:120px;height:120px;margin:0 auto 20px;border-radius:50%;background:var(--color-sand);display:flex;align-items:center;justify-content:center;border:2px solid var(--color-gold-deep)">
+          <span style="font-family:var(--font-display);font-size:3rem;color:var(--color-gold-deep)">R</span>
+        </div>
+        <h3 style="font-family:var(--font-display);font-size:1.6rem;color:var(--color-ebony);margin-bottom:4px">Rossi Pereira</h3>
+        <span style="font-size:0.85rem;color:var(--color-gold-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:14px">Estilista &amp; Diretora Criativa</span>
+        <p style="font-size:0.9rem;color:var(--color-muted);line-height:1.6">
+          Mestre na arte dos pontos clássicos e contemporâneos, aliando a estrutura da alfaiataria ao caimento orgânico dos fios de luxo.
+        </p>
       </div>
     </section>
 
-    <!-- Grade de Produtos de Casa -->
+    <!-- Pilares da Maison -->
     <section>
-      <div style="border-bottom:1px solid var(--color-border);padding-bottom:14px;margin-bottom:28px">
-        <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-ebony)">Peças para o Lar</h2>
+      <div style="text-align:center;max-width:680px;margin:0 auto 20px">
+        <span class="maison-hero-tag">Nossos Valores Fundamentais</span>
+        <h2 style="font-family:var(--font-display);font-size:2.3rem;color:var(--color-ebony)">Os Pilares da Casa Gold</h2>
       </div>
-      <div id="gridCasaGold" class="gc-grid-products">
-        <!-- Injetado dinamicamente via JS -->
+
+      <div class="maison-pillars-grid">
+        <div class="maison-pillar-card">
+          <div class="maison-pillar-icon">🌿</div>
+          <h3 class="maison-pillar-title">Fios Nobres e Puros</h3>
+          <p class="maison-pillar-desc">
+            Trabalhamos exclusivamente com algodão 100% nobre, fios estruturados de alta gramatura e fibras antialérgicas que proporcionam toque sedoso, durabilidade eterna e beleza incomparável.
+          </p>
+        </div>
+
+        <div class="maison-pillar-card">
+          <div class="maison-pillar-icon">⏳</div>
+          <h3 class="maison-pillar-title">O Elogio ao Tempo</h3>
+          <p class="maison-pillar-desc">
+            Em um mundo acelerado, celebramos o tempo desacelerado. Cada ponto é executado de forma irrepetível, honrando a cadência natural do trabalho manual e garantindo acabamento impecável.
+          </p>
+        </div>
+
+        <div class="maison-pillar-card">
+          <div class="maison-pillar-icon">✨</div>
+          <h3 class="maison-pillar-title">Atelier Privé &amp; Exclusividade</h3>
+          <p class="maison-pillar-desc">
+            Todas as criações possuem tiragens estritamente limitadas ou são desenvolvidas sob medida, adaptando medidas, cores e modelagens aos desejos mais refinados de cada cliente.
+          </p>
+        </div>
       </div>
+    </section>
+
+    <!-- Sessão Concierge & Encomenda Sob Medida -->
+    <section class="maison-cta-section">
+      <span class="maison-hero-tag" style="color:var(--color-gold-light)">Experiência Sob Medida</span>
+      <h2 class="maison-cta-title">Agende um Atendimento com a Estilista</h2>
+      <p class="maison-cta-desc">
+        Deseja uma peça exclusiva para um evento inesquecível, um presente marcante ou uma cor personalizada? Nosso Concierge do Ateliê está à sua disposição.
+      </p>
+      <a href="https://wa.me/5531984566047?text=Ol%C3%A1!%20Visitei%20a%20Casa%20Gold%20e%20gostaria%20de%20conversar%20sobre%20uma%20encomenda%20sob%20medida%20com%20a%20estilista%20Rossi%20Pereira." target="_blank" rel="noopener" class="maison-cta-btn">
+        <span>💬 Conversar no WhatsApp do Ateliê</span>
+      </a>
     </section>
   </main>
 
   <!-- Scripts Essenciais de Luxo -->
   <script src="./js/loader.js?v=2026"></script>
   <script src="./js/shared-ui.js?v=2026"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const products = await window.fetchCatalog();
-      if (!products || !products.length) return;
-
-      // Filtra produtos de casa ou decoracao
-      const casaProducts = products.filter(p => p.section === 'casa' || p.category === 'decoracoes' || (p.name && p.name.toLowerCase().includes('casa')) || (p.name && p.name.toLowerCase().includes('mesa')));
-
-      const grid = document.getElementById('gridCasaGold');
-      if (grid) {
-        grid.innerHTML = casaProducts.map(p => {
-          const slug = p.slug || 'produto';
-          const priceStr = p.price ? `R$ ${Number(p.price).toFixed(2).replace('.', ',')}` : 'Sob Consulta';
-          const img = p.image || (p.gallery && p.gallery[0]) || './assets/icon.svg';
-          const badge = p.badge ? `<span class="gc-badge-tag">${p.badge}</span>` : '<span class="gc-badge-tag">Casa &amp; Mesa</span>';
-
-          return `
-            <div class="gc-product-card" onclick="window.location.href='./produtos/${slug}.html'" style="cursor:pointer">
-              <div class="gc-product-card-img-wrap">
-                ${badge}
-                <button class="gc-card-fav-btn" data-id="${p.id}" onclick="event.stopPropagation(); window.GoldFav.toggle(${p.id});" aria-label="Favoritar">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
-                </button>
-                <img src="${img}" alt="${p.name}" class="gc-product-card-img" loading="lazy" onerror="this.src='./assets/icon.svg'">
-              </div>
-              <div class="gc-product-card-body">
-                <span class="gc-product-category">${p.category || 'Mesa Posta'}</span>
-                <h3 class="gc-product-title">${p.name}</h3>
-                <p class="gc-product-desc">${p.desc || ''}</p>
-                <div class="gc-product-price-row">
-                  <span class="gc-product-price">${priceStr}</span>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      if (window.GoldFav && window.GoldFav.updateUI) {
-        window.GoldFav.updateUI();
-      }
-    });
-  </script>
 </body>
 </html>
