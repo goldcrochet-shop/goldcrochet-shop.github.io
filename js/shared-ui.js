@@ -1566,13 +1566,25 @@
     }
 
     try {
-      const res = await fetch(`${root}data.json?v=${Date.now()}`);
-      const data = await res.json();
-      const list = data.coupons || [
-        { code: 'ATELIER10', discount: 10, type: 'percent', description: '10% OFF Ateliê', active: true },
-        { code: 'OURO20', discount: 20, type: 'percent', description: '20% OFF Lançamento', active: true },
-        { code: 'FRETEGRATIS', discount: 50, type: 'fixed', description: 'R$ 50 OFF Frete Cortesia', active: true }
-      ];
+      let list = null;
+      try {
+        const cached = localStorage.getItem('gc_cached_coupons');
+        if (cached) list = JSON.parse(cached);
+      } catch(e) {}
+
+      if (!list || !list.length) {
+        const res = await fetch(`${root}data.json?v=${Date.now()}`);
+        const data = await res.json();
+        list = data.coupons || [];
+      }
+
+      if (!list || !list.length) {
+        list = [
+          { code: 'ATELIER10', discount: 10, type: 'percent', description: '10% OFF Ateliê', active: true },
+          { code: 'OURO20', discount: 20, type: 'percent', description: '20% OFF Lançamento', active: true },
+          { code: 'FRETEGRATIS', discount: 50, type: 'fixed', description: 'R$ 50 OFF Frete Cortesia', active: true }
+        ];
+      }
       const match = list.find(c => c.code && c.code.toUpperCase() === code && c.active);
 
       if (!match) {

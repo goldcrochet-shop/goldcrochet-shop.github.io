@@ -868,6 +868,14 @@ export function loadLocalCache() {
       if (custBadge) custBadge.textContent = adminState.customers.length;
     }
 
+    const localCoupons = localStorage.getItem('gc_cached_coupons');
+    if (localCoupons) {
+      adminState.coupons = JSON.parse(localCoupons);
+    } else {
+      adminState.coupons = getDefaultCoupons();
+      try { localStorage.setItem('gc_cached_coupons', JSON.stringify(adminState.coupons)); } catch(e) {}
+    }
+
     const localLogs = localStorage.getItem('gc_admin_logs');
     if (localLogs) adminState.logs = JSON.parse(localLogs);
   } catch (e) {}
@@ -901,6 +909,10 @@ async function fetchDefaultCatalog() {
       if (data.categories && data.categories.length) {
         adminState.categories = data.categories.map(c => typeof c === 'string' ? { id: c, name: c.toUpperCase(), slug: c } : c);
         localStorage.setItem('gc_cached_categories', JSON.stringify(adminState.categories));
+      }
+      if (data.coupons && data.coupons.length) {
+        adminState.coupons = data.coupons;
+        localStorage.setItem('gc_cached_coupons', JSON.stringify(adminState.coupons));
       }
       calculateMetrics();
       renderCurrentView();
@@ -1166,6 +1178,8 @@ export function updateSidebarBadges() {
   if (oBadge) oBadge.textContent = adminState.orders.length;
   const custBadge = document.getElementById('navBadgeCustomers');
   if (custBadge) custBadge.textContent = (adminState.customers && adminState.customers.length) ? adminState.customers.length : 0;
+  const coupBadge = document.getElementById('navBadgeCoupons');
+  if (coupBadge) coupBadge.textContent = (adminState.coupons && adminState.coupons.length) ? adminState.coupons.filter(c => c.active).length : 0;
   if (activeCounter) activeCounter.textContent = `${adminState.metrics.activeOrders} pedidos em andamento`;
 
   // Atualiza contadores nas abas de filtros de pedidos
@@ -1661,6 +1675,7 @@ export async function pushCatalogToGitHub(token = '') {
   const payloadData = {
     products: adminState.products,
     categories: adminState.categories.map(c => c.slug || c),
+    coupons: adminState.coupons,
     _meta: {
       updated: new Date().toISOString(),
       version: '5.0',
@@ -1824,6 +1839,9 @@ export function renderCurrentView() {
       break;
     case 'sync':
       renderSyncView();
+      break;
+    case 'coupons':
+      renderCouponsList();
       break;
     case 'whatsapp':
       loadWhatsAppSettings();
@@ -4269,6 +4287,199 @@ export function closeProductModal() {
   adminState.activeGallery = [];
 }
 
+// ─────────────────────────────────────────────
+// GESTÃO DE CUPONS DE DESCONTO (ADMIN)
+// ─────────────────────────────────────────────
+
+export function getDefaultCoupons() {
+  return [
+    { code: 'ATELIER10', discount: 10, type: 'percent', description: '10% OFF Ateliê', active: true },
+    { code: 'OURO20', discount: 20, type: 'percent', description: '20% OFF Lançamento', active: true },
+    { code: 'FRETEGRATIS', discount: 50, type: 'fixed', description: 'R$ 50 OFF Frete Cortesia', active: true }
+  ];
+}
+
+export function renderCouponsList() {
+  const tbody = document.getElementById('couponsTableBody');
+  const badge = document.getElementById('navBadgeCoupons');
+  if (badge) {
+    badge.textContent = adminState.coupons ? adminState.coupons.filter(c => c.active).length : 0;
+  }
+  if (!tbody) return;
+
+  if (!adminState.coupons || !adminState.coupons.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">
+          Nenhum cupom cadastrado ainda. Clique em <strong>+ Novo Cupom</strong> para começar.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = adminState.coupons.map(c => {
+    const isPercent = c.type === 'percent';
+    const discountFormatted = isPercent ? `${c.discount}% OFF` : `R$ ${Number(c.discount).toFixed(2).replace('.', ',')} OFF`;
+    const typeLabel = isPercent ? 'Porcentagem (%)' : 'Valor Fixo (R$)';
+    const statusClass = c.active ? 'status-pill status-online' : 'status-pill';
+    const statusText = c.active ? 'Ativo' : 'Inativo';
+    const toggleTitle = c.active ? 'Desativar cupom' : 'Ativar cupom';
+    const toggleIcon = c.active ? '⏸️ Desativar' : '▶️ Ativar';
+
+    return `
+      <tr style="transition:background 0.2s">
+        <td>
+          <span style="font-family:monospace;font-weight:700;font-size:0.95rem;background:var(--surface-subtle);padding:3px 8px;border-radius:4px;border:1px solid var(--border-subtle);letter-spacing:0.05em">
+            ${c.code}
+          </span>
+        </td>
+        <td><span style="font-size:0.85rem;color:var(--text-muted)">${typeLabel}</span></td>
+        <td><strong style="color:var(--gold-primary, #b8860b)">${discountFormatted}</strong></td>
+        <td><span style="font-size:0.85rem;color:var(--text)">${c.description || '—'}</span></td>
+        <td>
+          <span class="${statusClass}" style="display:inline-flex;align-items:center;gap:4px">
+            <span class="status-dot"></span> ${statusText}
+          </span>
+        </td>
+        <td style="text-align:right">
+          <div style="display:inline-flex;gap:6px;justify-content:flex-end">
+            <button class="btn-action edit" onclick="window.AdminCore.editCoupon('${c.code}')" title="Editar Cupom">
+              ✏️ Editar
+            </button>
+            <button class="btn-action" onclick="window.AdminCore.toggleCouponStatus('${c.code}')" title="${toggleTitle}">
+              ${toggleIcon}
+            </button>
+            <button class="btn-action delete" onclick="window.AdminCore.deleteCoupon('${c.code}')" title="Excluir Cupom">
+              🗑️ Excluir
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+export function openNewCouponModal() {
+  const modal = document.getElementById('couponModal');
+  const form = document.getElementById('couponForm');
+  const title = document.getElementById('couponModalTitle');
+  if (form) form.reset();
+  document.getElementById('couponOriginalCode').value = '';
+  document.getElementById('couponActiveCheck').checked = true;
+  updateCouponInputSuffix();
+  if (title) title.textContent = 'Novo Cupom de Desconto';
+  if (modal) modal.classList.remove('hidden');
+}
+
+export function closeCouponModal() {
+  const modal = document.getElementById('couponModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+export function updateCouponInputSuffix() {
+  const select = document.getElementById('couponTypeSelect');
+  const suffix = document.getElementById('couponSuffixLabel');
+  if (!select || !suffix) return;
+  suffix.textContent = select.value === 'fixed' ? 'R$' : '%';
+}
+
+export function editCoupon(code) {
+  const coupon = adminState.coupons.find(c => c.code.toUpperCase() === code.toUpperCase());
+  if (!coupon) return;
+
+  document.getElementById('couponOriginalCode').value = coupon.code;
+  document.getElementById('couponCodeInput').value = coupon.code;
+  document.getElementById('couponTypeSelect').value = coupon.type || 'percent';
+  document.getElementById('couponDiscountInput').value = coupon.discount;
+  document.getElementById('couponDescInput').value = coupon.description || '';
+  document.getElementById('couponActiveCheck').checked = coupon.active !== false;
+
+  updateCouponInputSuffix();
+  const title = document.getElementById('couponModalTitle');
+  if (title) title.textContent = `Editar Cupom ${coupon.code}`;
+
+  const modal = document.getElementById('couponModal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+export function saveCoupon(e) {
+  if (e && e.preventDefault) e.preventDefault();
+
+  const originalCode = document.getElementById('couponOriginalCode').value.trim();
+  const code = document.getElementById('couponCodeInput').value.trim().toUpperCase();
+  const type = document.getElementById('couponTypeSelect').value;
+  const discount = parseFloat(document.getElementById('couponDiscountInput').value);
+  const description = document.getElementById('couponDescInput').value.trim();
+  const active = document.getElementById('couponActiveCheck').checked;
+
+  if (!code) {
+    showToast('Informe o código do cupom.', 'error');
+    return;
+  }
+  if (isNaN(discount) || discount <= 0) {
+    showToast('Informe um valor de desconto válido e positivo.', 'error');
+    return;
+  }
+
+  // Verifica duplicação de código
+  const existingIdx = adminState.coupons.findIndex(c => c.code.toUpperCase() === code);
+  if (originalCode) {
+    // Modo edição
+    const origIdx = adminState.coupons.findIndex(c => c.code.toUpperCase() === originalCode.toUpperCase());
+    if (origIdx !== -1) {
+      adminState.coupons[origIdx] = { code, type, discount, description, active };
+    }
+  } else {
+    // Novo cupom
+    if (existingIdx !== -1) {
+      showToast(`O cupom "${code}" já existe! Escolha outro código.`, 'error');
+      return;
+    }
+    adminState.coupons.unshift({ code, type, discount, description, active });
+  }
+
+  try {
+    localStorage.setItem('gc_cached_coupons', JSON.stringify(adminState.coupons));
+  } catch(err) {}
+
+  updateSidebarBadges();
+  renderCouponsList();
+  closeCouponModal();
+  showToast(`Cupom ${code} salvo com sucesso!`, 'success');
+  logActivity('Salvou Cupom', code);
+}
+
+export function toggleCouponStatus(code) {
+  const coupon = adminState.coupons.find(c => c.code.toUpperCase() === code.toUpperCase());
+  if (!coupon) return;
+
+  coupon.active = !coupon.active;
+  try {
+    localStorage.setItem('gc_cached_coupons', JSON.stringify(adminState.coupons));
+  } catch(err) {}
+
+  updateSidebarBadges();
+  renderCouponsList();
+  showToast(`Cupom ${code} agora está ${coupon.active ? 'Ativo' : 'Inativo'}.`, 'info');
+  logActivity('Alternou Status Cupom', `${code} -> ${coupon.active ? 'Ativo' : 'Inativo'}`);
+}
+
+export function deleteCoupon(code) {
+  if (!confirm(`Deseja realmente excluir o cupom "${code}"?`)) return;
+
+  adminState.coupons = adminState.coupons.filter(c => c.code.toUpperCase() !== code.toUpperCase());
+  try {
+    localStorage.setItem('gc_cached_coupons', JSON.stringify(adminState.coupons));
+  } catch(err) {}
+
+  updateSidebarBadges();
+  renderCouponsList();
+  showToast(`Cupom ${code} excluído com sucesso.`, 'info');
+  logActivity('Excluiu Cupom', code);
+}
+
+
 // Inicializador Global no window
 if (typeof window !== 'undefined') {
   window.AdminCore = {
@@ -4332,6 +4543,14 @@ if (typeof window !== 'undefined') {
     deleteCurrentOrder,
     setCatalogDisplayMode,
     switchProdModalTab,
+    renderCouponsList,
+    openNewCouponModal,
+    closeCouponModal,
+    updateCouponInputSuffix,
+    editCoupon,
+    saveCoupon,
+    toggleCouponStatus,
+    deleteCoupon,
     openManualCustomerModal,
     closeCustomerModal,
     editCustomer,

@@ -321,5 +321,28 @@
     "updated": "2026-10-18T01:16:18.261Z",
     "version": "5.0",
     "syncedBy": "rossipereira2010@gmail.com"
-  }
+  },
+  "coupons": [
+    {
+      "code": "ATELIER10",
+      "discount": 10,
+      "type": "percent",
+      "description": "10% OFF Ateliê",
+      "active": true
+    },
+    {
+      "code": "OURO20",
+      "discount": 20,
+      "type": "percent",
+      "description": "20% OFF Lançamento",
+      "active": true
+    },
+    {
+      "code": "FRETEGRATIS",
+      "discount": 50,
+      "type": "fixed",
+      "description": "R$ 50 OFF Frete Cortesia",
+      "active": true
+    }
+  ]
 }

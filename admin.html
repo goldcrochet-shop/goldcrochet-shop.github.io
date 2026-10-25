@@ -1685,6 +1685,10 @@
           <div class="admin-nav-item-inner"><span class="nav-icon">🎁</span> Clientes &amp; Brindes</div>
           <span class="nav-badge-pill" id="navBadgeCustomers">0</span>
         </button>
+        <button class="admin-nav-item" data-view="coupons" onclick="window.AdminCore.switchView('coupons')">
+          <div class="admin-nav-item-inner"><span class="nav-icon">🎟️</span> Cupons &amp; Descontos</div>
+          <span class="nav-badge-pill" id="navBadgeCoupons">0</span>
+        </button>
         <button class="admin-nav-item" data-view="whatsapp" onclick="window.AdminCore.switchView('whatsapp')">
           <div class="admin-nav-item-inner"><span class="nav-icon">💬</span> WhatsApp Oficial</div>
         </button>
@@ -2184,6 +2188,42 @@
               <button class="btn-secondary-action" onclick="window.AdminCore.initDashboardData()">
                 🔄 Forçar Atualização do Firestore
               </button>
+            </div>
+          </div>
+        </div>
+      </section>
+          <!-- VIEW 6: CUPONS & DESCONTOS -->
+      <section id="viewCoupons" class="view-container hidden">
+        <div class="card-panel">
+          <div class="card-panel-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+            <div>
+              <h3 class="card-panel-title">🎟️ Cupons de Desconto &amp; Campanhas</h3>
+              <p style="font-size:0.85rem;color:var(--text-muted);margin-top:4px">
+                Crie, ative ou desative cupons de desconto aplicáveis na sacola de compras do site.
+              </p>
+            </div>
+            <button class="btn-primary-action" onclick="window.AdminCore.openNewCouponModal()" style="display:inline-flex;align-items:center;gap:6px">
+              ✨ + Novo Cupom
+            </button>
+          </div>
+
+          <div style="padding:20px 24px">
+            <div class="data-table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Código do Cupom</th>
+                    <th>Tipo</th>
+                    <th>Desconto</th>
+                    <th>Descrição / Regra</th>
+                    <th>Status</th>
+                    <th style="text-align:right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="couponsTableBody">
+                  <!-- Renderizado via JS -->
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -2807,5 +2847,61 @@
   <!-- Scripts do Firebase e do Motor do Painel -->
   <script type="module" src="./js/firebase.js?v=2026"></script>
   <script type="module" src="./js/admin-core.js?v=2026"></script>
+  <!-- ════════════════════════════════════════
+       MODAL DE CRIAÇÃO / EDIÇÃO DE CUPOM
+       ════════════════════════════════════════ -->
+  <div id="couponModal" class="modal-backdrop hidden">
+    <div class="modal-container" style="max-width:520px">
+      <div class="modal-header">
+        <h3 class="modal-title" id="couponModalTitle">Novo Cupom de Desconto</h3>
+        <button class="modal-close" onclick="window.AdminCore.closeCouponModal()">&times;</button>
+      </div>
+      <form id="couponForm" onsubmit="window.AdminCore.saveCoupon(event)">
+        <div class="modal-body">
+          <input type="hidden" id="couponOriginalCode" value="">
+          
+          <div class="form-group">
+            <label class="form-label" for="couponCodeInput">Código do Cupom *</label>
+            <input type="text" id="couponCodeInput" class="form-input" placeholder="Ex: ATELIER10, NATAL20" style="text-transform:uppercase;font-weight:700;letter-spacing:0.05em" required>
+            <span style="font-size:0.75rem;color:var(--text-muted)">Será convertido automaticamente em letras maiúsculas.</span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="form-group">
+              <label class="form-label" for="couponTypeSelect">Tipo de Desconto *</label>
+              <select id="couponTypeSelect" class="form-input" required onchange="window.AdminCore.updateCouponInputSuffix()">
+                <option value="percent">Porcentagem (%)</option>
+                <option value="fixed">Valor Fixo (R$)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="couponDiscountInput">Valor do Desconto *</label>
+              <div style="display:flex;align-items:center;gap:6px">
+                <input type="number" step="0.01" min="0.01" id="couponDiscountInput" class="form-input" placeholder="Ex: 10" required>
+                <span id="couponSuffixLabel" style="font-weight:700;color:var(--text-muted);font-size:0.9rem">%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="couponDescInput">Descrição / Finalidade</label>
+            <input type="text" id="couponDescInput" class="form-input" placeholder="Ex: 10% OFF para primeira compra do Ateliê">
+          </div>
+
+          <div class="form-group" style="display:flex;align-items:center;gap:10px;margin-top:12px;background:var(--surface-subtle);padding:12px;border-radius:var(--radius-sm)">
+            <input type="checkbox" id="couponActiveCheck" checked style="width:18px;height:18px;cursor:pointer">
+            <label for="couponActiveCheck" style="margin:0;cursor:pointer;font-weight:600;font-size:0.88rem">
+              Cupom Ativo (disponível para uso na sacola)
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer" style="display:flex;justify-content:flex-end;gap:10px">
+          <button type="button" class="btn-secondary-action" onclick="window.AdminCore.closeCouponModal()">Cancelar</button>
+          <button type="submit" class="btn-primary-action">Salvar Cupom</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </body>
 </html>
