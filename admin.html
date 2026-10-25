@@ -2844,9 +2844,6 @@
   <!-- Container de Toasts -->
   <div id="adminToastContainer"></div>
 
-  <!-- Scripts do Firebase e do Motor do Painel -->
-  <script type="module" src="./js/firebase.js?v=2026"></script>
-  <script type="module" src="./js/admin-core.js?v=2026"></script>
   <!-- ════════════════════════════════════════
        MODAL DE CRIAÇÃO / EDIÇÃO DE CUPOM
        ════════════════════════════════════════ -->
@@ -2854,7 +2851,7 @@
     <div class="modal-container" style="max-width:520px">
       <div class="modal-header">
         <h3 class="modal-title" id="couponModalTitle">Novo Cupom de Desconto</h3>
-        <button class="modal-close" onclick="window.AdminCore.closeCouponModal()">&times;</button>
+        <button class="modal-close-btn" onclick="window.AdminCore.closeCouponModal()">&times;</button>
       </div>
       <form id="couponForm" onsubmit="window.AdminCore.saveCoupon(event)">
         <div class="modal-body">
@@ -2902,6 +2899,10 @@
       </form>
     </div>
   </div>
+
+  <!-- Scripts do Firebase e do Motor do Painel -->
+  <script type="module" src="./js/firebase.js?v=2026"></script>
+  <script type="module" src="./js/admin-core.js?v=1792897122"></script>
 
 </body>
 </html>
