@@ -2720,11 +2720,12 @@ export function renderProductsList() {
       const isShimmer = p.badge && (p.badge.toLowerCase().includes('destaque') || p.badge.toLowerCase().includes('novo'));
       const badgeHtml = p.badge ? `<div class="luxury-product-badge ${isShimmer ? 'badge-gold-shimmer' : ''}">${p.badge}</div>` : '';
       const orderNum = p.orderIndex || (adminState.products.indexOf(p) + 1);
-      const orderBadge = `<div style="position:absolute;bottom:10px;left:10px;background:rgba(18,18,18,0.85);color:#cda434;font-size:0.75rem;font-weight:800;padding:3px 8px;border-radius:12px;border:1px solid rgba(205,164,52,0.5);display:flex;align-items:center;gap:4px">
-        <span>#${orderNum}</span>
-        <div style="display:flex;gap:2px;margin-left:4px">
-          <button type="button" onclick="event.stopPropagation();window.AdminCore.moveProductOrder('${p.id}', 'up')" style="background:none;border:none;color:#cda434;cursor:pointer;padding:0 2px;font-size:0.75rem" title="Subir na vitrine">▲</button>
-          <button type="button" onclick="event.stopPropagation();window.AdminCore.moveProductOrder('${p.id}', 'down')" style="background:none;border:none;color:#cda434;cursor:pointer;padding:0 2px;font-size:0.75rem" title="Descer na vitrine">▼</button>
+      const orderPos = adminState.products.indexOf(p);
+      const orderBadge = `<div class="gc-order-row">
+        <span class="gc-order-label">Posição na vitrine: <strong>#${orderNum}</strong></span>
+        <div class="gc-order-btns">
+          <button type="button" class="gc-order-btn" ${orderPos <= 0 ? 'disabled' : ''} onclick="event.stopPropagation();window.AdminCore.moveProductOrder('${p.id}', 'up')" aria-label="Subir ${String(p.name).replace(/"/g, '')} uma posição">▲</button>
+          <button type="button" class="gc-order-btn" ${orderPos >= adminState.products.length - 1 ? 'disabled' : ''} onclick="event.stopPropagation();window.AdminCore.moveProductOrder('${p.id}', 'down')" aria-label="Descer ${String(p.name).replace(/"/g, '')} uma posição">▼</button>
         </div>
       </div>`;
       const artisanBadge = `<span class="luxury-badge-artisan" title="Peça autoral tecida artesanalmente pela artesã Rossi Pereira">🧶 Autoral</span>`;
@@ -2740,9 +2741,9 @@ export function renderProductsList() {
             <img src="${img}" alt="${p.name}" class="luxury-product-thumb" onerror="this.src='./assets/icon.svg'">
             ${badgeHtml}
             ${stockBadge}
-            ${orderBadge}
           </div>
           <div class="luxury-product-body">
+            ${orderBadge}
             <div class="luxury-product-meta">
               <span class="category-tag" style="color:var(--color-gold-deep, #a67c00);font-weight:700">${deptHtml}</span>
               <span style="font-size:0.75rem;color:var(--text-muted)">· ${subcatHtml}</span>
@@ -2759,11 +2760,11 @@ export function renderProductsList() {
                 <span class="luxury-product-price">${priceText}</span>
               </div>
               <div class="luxury-card-actions">
-                <button class="btn-action view-quick" onclick="window.AdminCore.openProductQuickView('${p.id}')" title="Visualização Rápida">👁️</button>
-                <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar Peça">✏️</button>
-                <button class="btn-action" onclick="window.AdminCore.duplicateProduct('${p.id}')" title="Duplicar Peça">📋</button>
-                <button class="btn-action view" onclick="window.open('./produtos/${p.slug || 'bolsa-paraty'}.html', '_blank')" title="Ver na Loja">👁</button>
-                <button class="btn-action delete" onclick="window.AdminCore.deleteProduct('${p.id}')" title="Excluir Peça">🗑</button>
+                <button class="btn-action view-quick" onclick="window.AdminCore.openProductQuickView('${p.id}')" title="Visualização Rápida" aria-label="Visualização Rápida">👁️</button>
+                <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar Peça" aria-label="Editar Peça">✏️</button>
+                <button class="btn-action" onclick="window.AdminCore.duplicateProduct('${p.id}')" title="Duplicar Peça" aria-label="Duplicar Peça">📋</button>
+                <button class="btn-action view" onclick="window.open('./produtos/${p.slug || 'bolsa-paraty'}.html', '_blank')" title="Ver na Loja" aria-label="Ver na Loja">👁</button>
+                <button class="btn-action delete" onclick="window.AdminCore.deleteProduct('${p.id}')" title="Excluir Peça" aria-label="Excluir Peça">🗑</button>
               </div>
             </div>
           </div>
@@ -2822,11 +2823,11 @@ export function renderProductsList() {
             ${stockPill}${prodTime}
           </td>
           <td class="table-actions">
-            <button class="btn-action view-quick" onclick="window.AdminCore.openProductQuickView('${p.id}')" title="Visualização Rápida">👁️</button>
-            <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar Peça">✏️</button>
-            <button class="btn-action" onclick="window.AdminCore.duplicateProduct('${p.id}')" title="Duplicar Peça">📋</button>
+            <button class="btn-action view-quick" onclick="window.AdminCore.openProductQuickView('${p.id}')" title="Visualização Rápida" aria-label="Visualização Rápida">👁️</button>
+            <button class="btn-action edit" onclick="window.AdminCore.editProduct('${p.id}')" title="Editar Peça" aria-label="Editar Peça">✏️</button>
+            <button class="btn-action" onclick="window.AdminCore.duplicateProduct('${p.id}')" title="Duplicar Peça" aria-label="Duplicar Peça">📋</button>
             <button class="btn-action view" onclick="window.open('./produtos/${p.slug || 'bolsa-paraty'}.html', '_blank')" title="Ver na Loja ao Vivo">👁</button>
-            <button class="btn-action delete" onclick="window.AdminCore.deleteProduct('${p.id}')" title="Excluir Peça">🗑</button>
+            <button class="btn-action delete" onclick="window.AdminCore.deleteProduct('${p.id}')" title="Excluir Peça" aria-label="Excluir Peça">🗑</button>
           </td>
         </tr>
       `;

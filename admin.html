@@ -1633,6 +1633,88 @@
       background: var(--gold-primary);
       color: #181614;
     }
+  
+    /* ═══ MOBILE & ACESSIBILIDADE (v2) ═══ */
+    #adminApp > * { min-width: 0; }
+    .admin-main-content { overflow-x: hidden; }
+    #adminMobileMenuBtn { display: none; }
+    .luxury-product-meta { flex-wrap: wrap; row-gap: 4px; }
+    .luxury-card-actions { flex-wrap: wrap; }
+    .gc-order-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin: 0 0 12px; padding: 8px 10px;
+      background: var(--surface-subtle); border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+    }
+    .gc-order-label { font-size: 0.82rem; font-weight: 700; color: var(--ebony); }
+    .gc-order-label strong { color: var(--gold-deep); font-size: 1rem; }
+    .gc-order-btns { display: flex; gap: 8px; }
+    .gc-order-btn {
+      width: 44px; height: 44px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--ebony); font-size: 1rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .gc-order-btn:hover:not(:disabled) { border-color: var(--gold-deep); color: var(--gold-deep); }
+    .gc-order-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--gold-deep); outline-offset: 2px;
+    }
+
+    @media (max-width: 960px) {
+      #adminMobileMenuBtn {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 44px; height: 44px; padding: 0 !important; font-size: 1.3rem;
+      }
+      .admin-sidebar { width: 82vw !important; max-width: 300px; left: -310px !important; z-index: 1000 !important; overflow-y: auto; }
+      .admin-sidebar.open { transform: translateX(310px) !important; }
+      #adminSidebarBackdrop { z-index: 999 !important; }
+      .admin-nav-item { min-height: 48px; }
+    }
+
+    @media (max-width: 768px) {
+      body { font-size: 15px; }
+      .admin-main-content { padding: 12px 12px 90px !important; }
+      .main-top-bar { flex-direction: column; align-items: stretch !important; gap: 12px !important; }
+      .main-top-bar > div:first-child { width: 100%; }
+      .page-title { font-size: 1.35rem !important; line-height: 1.2; }
+      .top-actions-row { width: 100%; display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px !important; }
+      .top-actions-row .status-pill { grid-column: 1 / -1; justify-content: center; }
+      .top-actions-row .btn-primary-action,
+      .top-actions-row .btn-secondary-action { width: 100%; justify-content: center; min-height: 44px; flex: none !important; }
+
+      .card-panel { border-radius: 12px; }
+      .card-panel-header { flex-direction: column; align-items: stretch !important; gap: 10px; }
+      .card-panel-header > * { width: 100%; }
+      .card-panel-header [style*="display:flex"] { flex-wrap: wrap; }
+
+      .products-cards-grid { grid-template-columns: 1fr !important; padding: 12px !important; }
+      .luxury-product-card:hover { transform: none; }
+      .luxury-product-thumb-wrap { height: 220px; }
+      .luxury-product-title { font-size: 1.1rem; }
+      .luxury-product-price-row { flex-direction: column; align-items: stretch; gap: 12px; }
+      .luxury-card-actions { display: grid !important; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+      .luxury-card-actions .btn-action { width: 100%; height: 44px; font-size: 1.05rem; }
+
+      .btn-action { min-width: 40px; min-height: 40px; }
+      .btn-primary-action, .btn-secondary-action { min-height: 44px; }
+      .form-input, select.form-input, textarea.form-input { font-size: 16px !important; min-height: 44px; }
+
+      .modal-backdrop { padding: 0 !important; align-items: flex-end !important; }
+      .modal-container { width: 100% !important; max-width: 100% !important; max-height: 94vh !important;
+        border-radius: 18px 18px 0 0 !important; display: flex; flex-direction: column; }
+      .modal-container form { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+      .modal-body { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; }
+      .modal-footer { position: sticky; bottom: 0; background: var(--surface); gap: 8px; }
+      .modal-footer > button { flex: 1; }
+      .modal-grid-2 { grid-template-columns: 1fr !important; }
+      .modal-close-btn { width: 44px; height: 44px; }
+      .editor-tabs-nav { padding: 0 8px !important; overflow-x: auto; }
+      .editor-tab-btn { flex-shrink: 0; padding: 12px 10px; }
+
+      .data-table-wrapper { -webkit-overflow-scrolling: touch; }
+      .data-table { min-width: 640px; }
+    }
   </style>
 </head>
 <body>
@@ -1762,7 +1844,7 @@
     <main class="admin-main-content">
       <header class="main-top-bar">
         <div style="display:flex;align-items:center;gap:14px">
-          <button id="adminMobileMenuBtn" class="btn-secondary-action" style="padding:8px 12px" onclick="window.AdminCore.toggleSidebar()" title="Abrir Menu">
+          <button id="adminMobileMenuBtn" class="btn-secondary-action" style="padding:8px 12px" onclick="window.AdminCore.toggleSidebar()" title="Abrir Menu" aria-label="Abrir menu">
             ☰
           </button>
           <div>
@@ -2951,7 +3033,7 @@
 
   <!-- Scripts do Firebase e do Motor do Painel -->
   <script type="module" src="./js/firebase.js?v=2026"></script>
-  <script type="module" src="./js/admin-core.js?v=1792897122"></script>
+  <script type="module" src="./js/admin-core.js?v=1792898947"></script>
 
 </body>
 </html>
