@@ -221,32 +221,17 @@
       min-height: 100vh;
       position: relative;
     }
-    @media (max-width: 960px) {
-      #adminApp { grid-template-columns: 1fr; }
-      .admin-sidebar {
-        position: fixed;
-        left: -280px;
-        top: 0;
-        bottom: 0;
-        width: 270px;
-        z-index: 998;
-        transition: transform 0.3s ease;
-      }
-      .admin-sidebar.open {
-        transform: translateX(280px);
-        box-shadow: 10px 0 40px rgba(0,0,0,0.5);
-      }
-    }
 
-    /* Sidebar */
+
+    /* Sidebar Base */
     .admin-sidebar {
       background: var(--ebony);
       color: var(--text-light);
       display: flex;
       flex-direction: column;
       border-right: 1px solid rgba(255, 255, 255, 0.08);
-      position: sticky;
-      top: 0;
+      width: 260px;
+      min-width: 260px;
       height: 100vh;
       z-index: 100;
     }
@@ -389,47 +374,7 @@
       max-width: 1480px;
       width: 100%;
     }
-    @media (max-width: 960px) {
-      #adminSidebarBackdrop {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(3px);
-        z-index: 997;
-      }
-      #adminSidebarBackdrop.active {
-        display: block;
-      }
-      #adminCloseSidebarBtn {
-        display: block !important;
-      }
-    }
 
-    @media (max-width: 768px) {
-      .admin-main-content { padding: 14px 10px; }
-      .page-title { font-size: 1.5rem !important; }
-      .main-top-bar { margin-bottom: 16px; gap: 10px; }
-      .main-top-bar > div:last-child { width: 100%; display: flex; gap: 8px; }
-      .main-top-bar > div:last-child button,
-      .main-top-bar > div:last-child a { flex: 1; justify-content: center; font-size: 0.85rem; padding: 10px 12px; }
-      .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; margin-bottom: 18px; }
-      .kpi-card { padding: 14px 12px !important; }
-      .kpi-value { font-size: 1.3rem !important; }
-      .products-cards-grid { grid-template-columns: 1fr !important; padding: 14px 10px !important; gap: 14px !important; }
-      .modal-container { width: 95% !important; max-height: 92vh !important; }
-      .modal-body { padding: 16px !important; }
-      .modal-header { padding: 14px 16px !important; }
-      .modal-footer { padding: 14px 16px !important; flex-wrap: wrap; }
-      .card-panel-header { padding: 16px 14px !important; }
-      .filter-pills-group { overflow-x: auto; flex-wrap: nowrap !important; max-width: 100%; padding-bottom: 4px; }
-      .filter-tab-pill { flex-shrink: 0; }
-    }
-
-    @media (max-width: 480px) {
-      .kpi-grid { grid-template-columns: 1fr !important; }
-      .main-top-bar > div:last-child { flex-direction: column; }
-    }
 
     .main-top-bar {
       display: flex;
@@ -1666,9 +1611,6 @@
         display: inline-flex; align-items: center; justify-content: center;
         width: 44px; height: 44px; padding: 0 !important; font-size: 1.3rem;
       }
-      .admin-sidebar { width: 82vw !important; max-width: 300px; left: -310px !important; z-index: 1000 !important; overflow-y: auto; }
-      .admin-sidebar.open { transform: translateX(310px) !important; }
-      #adminSidebarBackdrop { z-index: 999 !important; }
       .admin-nav-item { min-height: 48px; }
     }
 
@@ -1715,9 +1657,101 @@
       .data-table-wrapper { -webkit-overflow-scrolling: touch; }
       .data-table { min-width: 640px; }
     }
+
+    /* ═══ SIDEBAR DEFINITIVA & RESPONSIVIDADE PURA ═══ */
+    #adminSidebarBackdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(2px);
+      z-index: 999;
+    }
+    #adminSidebarBackdrop.active {
+      display: block !important;
+    }
+
+    /* DESKTOP (>= 961px): Sidebar fixa à esquerda, sempre visível com 260px */
+    @media (min-width: 961px) {
+      #adminApp {
+        display: grid !important;
+        grid-template-columns: 260px minmax(0, 1fr) !important;
+        min-height: 100vh;
+      }
+      .admin-sidebar {
+        position: sticky !important;
+        top: 0;
+        left: 0 !important;
+        width: 260px !important;
+        min-width: 260px !important;
+        height: 100vh;
+        transform: none !important;
+        box-shadow: none !important;
+        visibility: visible !important;
+      }
+      #adminCloseSidebarBtn {
+        display: none !important;
+      }
+      #adminMobileMenuBtn {
+        display: none !important;
+      }
+      #adminSidebarBackdrop {
+        display: none !important;
+      }
+    }
+
+    /* MOBILE / TABLET (<= 960px): Sidebar gaveta oculta fora da tela à esquerda */
+    @media (max-width: 960px) {
+      #adminApp {
+        display: block !important;
+        width: 100% !important;
+        min-height: 100vh;
+      }
+      .admin-sidebar {
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0 !important;
+        width: 280px !important;
+        max-width: 85vw !important;
+        height: 100vh !important;
+        transform: translateX(-105%) !important;
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        z-index: 1001 !important;
+        overflow-y: auto !important;
+        box-shadow: none !important;
+      }
+      .admin-sidebar.open {
+        transform: translateX(0) !important;
+        box-shadow: 8px 0 36px rgba(0, 0, 0, 0.6) !important;
+      }
+      #adminCloseSidebarBtn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: #ffffff;
+        cursor: pointer;
+        font-size: 1.2rem;
+      }
+      #adminMobileMenuBtn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        padding: 0 !important;
+        font-size: 1.25rem;
+      }
+    }
   </style>
 </head>
 <body>
+  <div id="adminSidebarBackdrop" onclick="window.AdminCore.toggleSidebar()"></div>
 
   <!-- ════════════════════════════════════════
        1. TELA DE LOGIN FIREBASE AUTH
@@ -1771,7 +1805,6 @@
     </audio>
 
     <!-- Sidebar de Navegação -->
-    <div id="adminSidebarBackdrop" onclick="window.AdminCore.toggleSidebar()"></div>
     <aside class="admin-sidebar" id="adminSidebar">
       <div class="sidebar-header">
         <div class="sidebar-header-icon">✨</div>
@@ -3033,7 +3066,7 @@
 
   <!-- Scripts do Firebase e do Motor do Painel -->
   <script type="module" src="./js/firebase.js?v=2026"></script>
-  <script type="module" src="./js/admin-core.js?v=1792898947"></script>
+  <script type="module" src="./js/admin-core.js?v=1792900041"></script>
 
 </body>
 </html>
